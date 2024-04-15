@@ -17,6 +17,7 @@ const app = express();
 app.use(cors({ origin: '*' }))
 app.use(morgan('tiny'));
 
+app.get('/', (req, res) => res.send('Hello world'))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
 
