@@ -1,4 +1,3 @@
-
 name: depoy-to-azure
 on:
   push:
