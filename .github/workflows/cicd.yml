@@ -1,0 +1,25 @@
+
+name: depoy-to-azure
+on:
+  push:
+    branches:
+      - main
+
+job:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup nodejs version
+        uses: action/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Deploy to Azure app Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: learn-tutoringacademy-server
+          publish-profile: ${{ secrets.AZUREWEBAPPPUBLISHPROFILE }}
+          package: .
