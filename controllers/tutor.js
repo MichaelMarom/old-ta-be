@@ -83,9 +83,9 @@ let subjects = (req, res) => {
     var poolConnection = await sql.connect(config);
     if (poolConnection) {
       var resultSet = await poolConnection.request().query(
-        `
-                    SELECT Id,FacultyId,SubjectName FROM Subjects WHERE CONVERT(VARCHAR, FacultyId) =  '${id}'
-                `
+        `SELECT Id,FacultyId,SubjectName 
+        FROM 
+        Subjects WHERE CONVERT(VARCHAR, FacultyId) =  '${id}' `
       );
 
       res.send(resultSet);
