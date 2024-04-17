@@ -1,6 +1,6 @@
-const { marom_db, connecteToDB } = require('../db');
-const { insert, getAll, findById, findByAnyIdColumn, update, find, updateById, parameterizedInsertQuery, parameteriedUpdateQuery } = require('../helperfunctions/crud_queries');
-const { express, path, fs, parser, cookieParser, mocha, morgan, cors, shortId, jwt } = require('../modules');
+const { marom_db } = require('../db');
+const { insert, findByAnyIdColumn, update, find, parameterizedInsertQuery, parameteriedUpdateQuery } = require('../helperfunctions/crud_queries');
+const { shortId } = require('../modules');
 require('dotenv').config();
 const moment = require('moment-timezone');
 const sql = require('mssql');
@@ -9,7 +9,6 @@ const studentAd = require('../schema/student/studentAd.js')
 
 const executeQuery = async (query, res) => {
     try {
-        const db = await marom_db(() => { })
         await marom_db(async (config) => {
             try {
                 const sql = require('mssql');
@@ -236,14 +235,22 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 const subjects = await poolConnection.request().query(`
                 SELECT 
                 SR.rate,
+
                 TS.Photo, 
                 TS.ResponseHrs, 
+                TS.FirstName,
+                TS.LastName,
                 TS.Status as status,
                 TS.AcademyId,
                 TS.Country,
                 TS.GMT,
+                TS.disableColor,
+                TS.DiscountHours,
+
                 TR.CancellationPolicy as cancPolicy,
                 TR.IntroSessionDiscount,
+                TR.ActivateSubscriptionOption,
+
                 SSL.CodeApplied
             FROM 
                 SubjectRates as SR 
