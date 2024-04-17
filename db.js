@@ -1,6 +1,8 @@
-const { mongodb } = require('./modules');
+const { mongodb, } = require('./modules');
 var TYPES = require('tedious').TYPES;
 let { MongoClient } = mongodb
+require('dotenv').config();
+
 
 let ConnectToMongoDb = async (cb) => {
   let localUri = 'mongodb://localhost:27017'

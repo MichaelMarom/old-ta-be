@@ -8,6 +8,7 @@ const HOLIDAY_ROUTES = require('./routes/holiday')
 const FILE_ROUTER = require('./routes/file')
 const { MEETING_ROUTES } = require('./routes/meeting');
 const CHAT_ROUTES = require('./routes/chat')
+require('dotenv').config();
 
 var { PeerServer } = require("peer");
 var myPeerServer = PeerServer({ port: 8080 });
@@ -25,7 +26,6 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
 
 
-require('dotenv').config();
 
 // app.use(verifyToken)
 app.use(TUTOR_ROUTES);
