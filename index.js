@@ -16,7 +16,11 @@ const app = express();
 app.use(cors({ origin: '*' }))
 app.use(morgan('tiny'));
 
-app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base}))
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+});
+app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base }))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
 

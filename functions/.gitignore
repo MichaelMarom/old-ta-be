@@ -87,6 +87,9 @@ typings/
 dist
 out
 
+#vscode
+.vscode/
+
 # Azure Functions artifacts
 bin
 obj
