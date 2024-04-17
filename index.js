@@ -38,8 +38,7 @@ app.use(CHAT_ROUTES)
 app.use('/api/', MEETING_ROUTES);
 app.use(COMMON_ROUTERS)
 
-var server = app.listen(process.env.PORT, () =>
-    console.log('app is live @', process.env.PORT));
+
 
 const io = socket(server, {
     cors: {
@@ -141,6 +140,10 @@ myPeerServer.on("connection", function ({ id }) {
 myPeerServer.on("disconnect", function ({ id }) {
     console.log(id + " has disconnected from the PeerServer");
 });
+
+
+var server = app.listen(process.env.PORT, () =>
+    console.log('app is live @', process.env.PORT));
 
 process.on('unhandledRejection', (reason, promise) => {
     try {
