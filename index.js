@@ -13,7 +13,7 @@ var { PeerServer } = require("peer");
 var myPeerServer = PeerServer({ port: 8080 });
 
 const app = express();
-app.use(cors({ origin: '*' }))
+app.use(cors({ origin: process.env.Remote_Base }))
 app.use(morgan('tiny'));
 
 app.use((req, res, next) => {
