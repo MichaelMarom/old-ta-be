@@ -21,7 +21,7 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     next();
 });
-app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base, server: process.env.SERVER }))
+app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base}))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
 
