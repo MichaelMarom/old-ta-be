@@ -245,12 +245,12 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TS.Country,
                 TS.GMT,
                 TS.disableColor,
-                TS.DiscountHours,
-
+                
                 TR.CancellationPolicy as cancPolicy,
                 TR.IntroSessionDiscount,
                 TR.ActivateSubscriptionOption,
-
+                
+                SSL.DiscountHours,
                 SSL.CodeApplied
             FROM 
                 SubjectRates as SR 
