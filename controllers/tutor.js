@@ -1876,6 +1876,7 @@ const get_feedback_data = async (req, res) => {
   marom_db(async (config) => {
     try {
       const { tutorId } = req.params;
+      const { timeZone } = req.query
       const poolConnection = await sql.connect(config);
       const result = await poolConnection.request().query(`
             SELECT 
@@ -1903,7 +1904,12 @@ const get_feedback_data = async (req, res) => {
         const studentFound = result.recordset.find(
           (record) => record.studentId === session.studentId
         );
-        if (moment(session.end).isBefore(moment().subtract(11, "minutes"))) {
+        const currentTimeInTimeZone = moment().tz(timeZone);
+
+        const sessionEndInTimeZone = moment(session.end).tz(timeZone);
+        const minutesDifference = sessionEndInTimeZone.diff(currentTimeInTimeZone, 'minutes');
+
+        if (minutesDifference <= 10 && minutesDifference > 0) {
           session = {
             ...session,
             tutorFeedbackEligible: true,

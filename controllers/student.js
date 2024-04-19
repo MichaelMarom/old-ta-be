@@ -780,6 +780,8 @@ const payment_report = async (req, res) => {
                     WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
                 );
 
+             
+
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
