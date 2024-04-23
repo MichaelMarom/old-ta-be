@@ -20,7 +20,10 @@ let get_tutor_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT * From TutorSetup where Status='${status}'`
+          `SELECT TS.Status,TS.GMT, TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email
+          From TutorSetup TS
+          inner join Users1 US on US.SID = TS.userId
+          where TS.Status='${status}'`
         )
         .then((result) => {
           res.status(200).send(result.recordset);
