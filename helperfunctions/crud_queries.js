@@ -51,7 +51,6 @@ const update = (tableName, values, where, casting = {}, returnUpdated = true) =>
     const query = `UPDATE ${tableName} SET ${setClause} WHERE ${whereClause};
     ${returnUpdated ? `SELECT * FROM  ${tableName}  WHERE  ${whereClause};` : ``}
     `;
-    console.log(query)
     return query;
 };
 
@@ -74,7 +73,6 @@ const parameteriedUpdateQuery = (tableName, values, where, returnUpdated = true)
         ${returnUpdated ? `SELECT * FROM ${tableName} WHERE ${whereClause};` : ``}
         `;
 
-    console.log(parameterizedQuery);
     return { query: parameterizedQuery, values: parameterizedValues };
 };
 
@@ -92,7 +90,6 @@ const parameterizedInsertQuery = (tableName, values) => {
 
     const parameterizedValues = { ...values, value: valuesArray };
 
-    console.log(query);
     return { query, values: parameterizedValues };
 };
 
@@ -131,7 +128,6 @@ const findByAnyIdColumn = (tableName, condition, casting = null) => {
         idColumn = `CAST(${idColumn} AS ${casting})`;
     }
     let query = `SELECT TOP 1 * FROM ${tableName} where ${idColumn} = ${value}`;
-    console.log(query)
     return query;
 }
 
@@ -156,7 +152,6 @@ const find = (tableName, where, opr = 'AND', casting = {}) => {
 
     const whereClause = conditions.join(` ${opr} `);
     const sql = `SELECT * FROM ${tableName} WHERE ${whereClause}`;
-    console.log(sql);
     return sql;
 };
 
