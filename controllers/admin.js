@@ -20,7 +20,7 @@ let get_tutor_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT TS.Status,TS.GMT, TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email
+          `SELECT TS.Status,TS.GMT, TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email as Email
           From TutorSetup TS
           inner join Users1 US on US.SID = TS.userId
           where TS.Status='${status}'`
