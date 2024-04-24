@@ -35,7 +35,14 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
                 .query(`UPDATE TutorAds
                 SET Status = 'expired', Published_At = NULL
                 WHERE Published_At < DATEADD(DAY, -7, GETDATE())`);
-            res.status(200).send(result);
+
+            const studentAdsUpdates = await poolConnection
+                .request()
+                .query(`UPDATE StudentAds
+                SET Status = 'expired', Published_At = NULL
+                WHERE Published_At < DATEADD(DAY, -7, GETDATE())`);
+
+            res.status(200).send({ tutorAds: result, studentAds: studentAdsUpdates });
         } catch (err) {
             res.status(400).send({
                 message: "Error Completing the Request",
