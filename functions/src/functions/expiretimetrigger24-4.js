@@ -5,8 +5,8 @@ app.timer('expiretimetrigger24-4', {
     schedule: '0 */5 * * * *',
     handler: async (myTimer, context) => {
         try {
-            const response = await axios.get('https://learn-tutoringacademy-server.azurewebsites.net/')
-            context.log(`statusCode: ${response.status}`);
+            const response = await axios.put('https://learn-tutoringacademy-server.azurewebsites.net/api/update-expire-ads')
+            context.log(`status: ${response.status}`);
             context.log(response);
             context.log(response.data);
 

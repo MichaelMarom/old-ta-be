@@ -30,12 +30,12 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
     marom_db(async (config) => {
         try {
             const poolConnection = await sql.connect(config);
-            const { recordset } = await poolConnection
+            const result = await poolConnection
                 .request()
                 .query(`UPDATE TutorAds
                 SET Status = 'expired', Published_At = NULL
                 WHERE Published_At < DATEADD(DAY, -7, GETDATE())`);
-            res.status(200).send(recordset);
+            res.status(200).send(result);
         } catch (err) {
             res.status(400).send({
                 message: "Error Completing the Request",
