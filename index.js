@@ -1,4 +1,6 @@
-const { express, path, morgan, socket, cors } = require('./modules');
+const { express, path, morgan, socket, cors, parser } = require('./modules');
+const { marom_db } = require('./db')
+const sql = require('mssql')
 const { STUDENT_ROUTES } = require('./routes/student');
 const { ADMIN_ROUTES } = require('./routes/admin');
 const { TUTOR_ROUTES } = require('./routes/tutor');
@@ -21,10 +23,27 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     next();
 });
-app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base}))
+app.get('/', (req, res) => res.send({ message: 'Hello world', base: process.env.Remote_Base }))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
-
+app.put('/api/update-expire-ads', parser, (req, res) => {
+    marom_db(async (config) => {
+        try {
+            const poolConnection = await sql.connect(config);
+            const { recordset } = await poolConnection
+                .request()
+                .query(`UPDATE TutorAds
+                SET Status = 'expired', Published_At = NULL
+                WHERE Published_At < DATEADD(DAY, -7, GETDATE())`);
+            res.status(200).send(recordset);
+        } catch (err) {
+            res.status(400).send({
+                message: "Error Completing the Request",
+                reason: err.message,
+            });
+        }
+    });
+})
 
 
 // app.use(verifyToken)

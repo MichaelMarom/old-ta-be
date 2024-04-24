@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
+    "axios": "^1.6.8",
     "azure-functions-core-tools": "^4.0.5530",
     "dotenv": "^16.4.5",
     "tedious": "^17.0.0"
