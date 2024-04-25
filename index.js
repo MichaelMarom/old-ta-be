@@ -13,6 +13,7 @@ const CHAT_ROUTES = require('./routes/chat')
 require('dotenv').config();
 
 var { PeerServer } = require("peer");
+const { sendErrors } = require('./helperfunctions/handleReqErrors');
 var myPeerServer = PeerServer({ port: 8080 });
 
 const app = express();
@@ -44,10 +45,7 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
 
             res.status(200).send({ tutorAds: result, studentAds: studentAdsUpdates });
         } catch (err) {
-            res.status(400).send({
-                message: "Error Completing the Request",
-                reason: err.message,
-            });
+            sendErrors(err, res)
         }
     });
 })

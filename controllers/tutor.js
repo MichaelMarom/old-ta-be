@@ -852,14 +852,37 @@ const get_faculty_subjects = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(`
-                SELECT * from Subjects where FacultyId = '${facultyId}' 
+     
+	  SELECT 
+    s.Id, s.SubjectName, s.FacultyId,
+    COUNT(DISTINCT CAST(ts_filtered.AcademyId AS NVARCHAR(255))) AS tutor_count
+    FROM 
+        Subjects s
+    LEFT JOIN 
+        (
+            SELECT 
+                DISTINCT cast (sr.subject as varchar) as subject, ts.AcademyId as AcademyId
+            FROM 
+                SubjectRates sr
+            LEFT JOIN 
+                TutorSetup ts ON CAST(sr.AcademyId AS VARCHAR) = CAST(ts.AcademyId AS VARCHAR)
+            WHERE 
+                ts.Status = 'active'
+        ) ts_filtered ON CAST(s.SubjectName AS VARCHAR) = CAST(ts_filtered.subject AS VARCHAR)
+    WHERE 
+        s.FacultyId = '${facultyId}'
+    GROUP BY  
+        s.Id, s.SubjectName, s.FacultyId;
+  
             `);
+
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err)
+      sendErrors(err, res)
     }
   });
 };
+
 let get_rates = (req, res) => {
   let { AcademyId, facultyId, subject } = req.query;
   marom_db(async (config) => {
@@ -1271,7 +1294,7 @@ let get_tutor_market_data = async (req, res) => {
       });
     } catch (err) {
       res.status(400).send({
-        message: "Error completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1923,7 +1946,7 @@ const get_feedback_data = async (req, res) => {
       res.status(200).send(sessionsWithPhotos);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1940,7 +1963,7 @@ const get_tutor_feedback_questions = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1957,7 +1980,7 @@ const delete_ad = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2000,7 +2023,7 @@ const delete_ad_from_shortlist = async (req, res) => {
       res.status(200).send(data);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2023,7 +2046,7 @@ const ad_to_shortlist = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2051,7 +2074,7 @@ const get_shortlist_ads = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2075,7 +2098,7 @@ const get_student_public_profile_data = async (req, res) => {
       res.status(200).send(recordset[0]);
     } catch (err) {
       res.status(400).send({
-        message: "Error Completing the Request",
+        message: "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }

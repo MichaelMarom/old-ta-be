@@ -235,6 +235,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 const subjects = await poolConnection.request().query(`
                 SELECT 
                 SR.rate,
+                SR.grades,
 
                 TS.Photo, 
                 TS.ResponseHrs, 
@@ -246,7 +247,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TS.GMT,
                 TS.disableColor,
                 
-                TR.CancellationPolicy as cancPolicy,
+                TR.CancellationPolicy,
                 TR.IntroSessionDiscount,
                 TR.ActivateSubscriptionOption,
                 
@@ -436,7 +437,7 @@ let get_student_short_list_data = (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Error Completing the Request", reason: err.message })
+                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
             })
     })
 }
@@ -458,7 +459,7 @@ const post_student_ad = async (req, res) => {
                 res.status(200).send(result.recordset[0])
             } catch (err) {
                 res.status(400).send({
-                    message: "Error Completing the Request",
+                    message: "Backend server is down, please wait for administrator to run it again.",
                     reason: err.message
                 })
             }
@@ -466,7 +467,7 @@ const post_student_ad = async (req, res) => {
     }
     catch (err) {
         res.status(400).send({
-            message: "Error Completing the Request",
+            message: "Backend server is down, please wait for administrator to run it again.",
             reason: err.message
         })
     }
@@ -487,7 +488,7 @@ const get_student_ads = async (req, res) => {
                 res.status(200).send(recordset)
             } catch (err) {
                 res.status(400).send({
-                    message: "Error Completing the Request",
+                    message: "Backend server is down, please wait for administrator to run it again.",
                     reason: err.message
                 })
             }
@@ -495,7 +496,7 @@ const get_student_ads = async (req, res) => {
     }
     catch (err) {
         res.status(400).send({
-            message: "Error Completing the Request",
+            message: "Backend server is down, please wait for administrator to run it again.",
             reason: err.message
         })
     }
@@ -517,7 +518,7 @@ let get_student_market_data = async (req, res) => {
                 res.status(200).send(recordset)
             } catch (err) {
                 res.status(400).send({
-                    message: "Error Completing the Request",
+                    message: "Backend server is down, please wait for administrator to run it again.",
                     reason: err.message
                 })
             }
@@ -525,7 +526,7 @@ let get_student_market_data = async (req, res) => {
     }
     catch (err) {
         res.status(400).send({
-            message: "Error Completing the Request",
+            message: "Backend server is down, please wait for administrator to run it again.",
             reason: err.message
         })
     }
@@ -594,13 +595,13 @@ const post_student_bookings = async (req, res) => {
                             })
                             .catch(err => {
                                 res.status(400).send({
-                                    message: 'Error Completing the Request', reason: err.message
+                                    message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message
                                 });
                             })
                     }
                 })
                 .catch(err => {
-                    res.status(400).send({ message: 'Error Completing the Request', reason: err.message })
+                    res.status(400).send({ message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message })
                 })
         }
         else {
@@ -620,7 +621,7 @@ const get_student_or_tutor_bookings = async (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                res.statsu(400).send({ message: 'Error Completing the Request', reason: err.message })
+                res.statsu(400).send({ message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message })
             })
     })
 }
@@ -636,7 +637,7 @@ const get_student_bookings = async (req, res) => {
                 res.status(200).send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Error Completing the Request", reason: err.message })
+                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
             })
     })
 }
@@ -652,7 +653,7 @@ const get_tutor_bookings = async (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Error Completing the Request", reason: err.message })
+                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
             })
     })
 }
@@ -1021,7 +1022,7 @@ const ad_to_shortlist = async (req, res) => {
         }
         catch (err) {
             res.status(400).send({
-                message: "Error Completing the Request",
+                message: "Backend server is down, please wait for administrator to run it again.",
                 reason: err.message
             })
         }
@@ -1046,7 +1047,7 @@ const get_shortlist_ads = async (req, res) => {
         }
         catch (err) {
             res.status(400).send({
-                message: "Error Completing the Request",
+                message: "Backend server is down, please wait for administrator to run it again.",
                 reason: err.message
             })
         }
@@ -1064,7 +1065,7 @@ const delete_ad_from_shortlist = async (req, res) => {
         }
         catch (err) {
             res.status(400).send({
-                message: "Error Completing the Request",
+                message: "Backend server is down, please wait for administrator to run it again.",
                 reason: err.message
             })
         }

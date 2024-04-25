@@ -2,6 +2,7 @@ const { marom_db } = require('../db');
 const { insert, find, findByAnyIdColumn, update } = require('../helperfunctions/crud_queries');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { sendErrors } = require('../helperfunctions/handleReqErrors');
 
 
 function generateToken(user) {
@@ -133,8 +134,7 @@ const get_user_detail = async (req, res) => {
                 res.status(200).send(recordset[0]);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
