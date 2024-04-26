@@ -151,7 +151,14 @@ let get_student_setup = (req, res) => {
                 findByAnyIdColumn('StudentSetup', req.query)
             )
                 .then((result) => {
-                    res.status(200).send(result.recordset)
+                    const { recordset } = result;
+                    const offset = parseInt(recordset[0].GMT, 10);
+                    let timezones = moment.tz.names().filter(name =>
+                        (moment.tz(name).utcOffset()) === offset * 60);
+                    const timeZone = timezones[0] || null
+
+                    const formattedResult = [{ ...recordset[0], timeZone }];
+                    res.status(200).send(formattedResult)
                 })
                 .catch(err => {
                     console.log(err);
@@ -767,21 +774,22 @@ const payment_report = async (req, res) => {
             if (poolConnection) {
                 const result = await poolConnection.request().query(
                     `SELECT 
-                   b.studentId AS studentId,
-                   b.tutorId AS tutorId,
-                   b.reservedSlots AS reservedSlots,
-                   b.bookedSlots AS bookedSlots,
-                   r.rate AS rate
-                    FROM StudentBookings AS b
-                    JOIN StudentShortList AS r ON
-                    b.studentId  = CAST( r.Student as varchar(max)) AND 
-                    b.tutorId =  CAST(r.AcademyId as varchar(max))
-                    inner join TutorSetup AS ts On
-                    ts.AcademyId = CAST(r.AcademyId as varchar(max))
+                    b.studentId AS studentId,
+                    b.tutorId AS tutorId,
+                    b.reservedSlots AS reservedSlots,
+                    b.bookedSlots AS bookedSlots,
+                    r.rate AS rate,
+                    ts.Photo
+                     FROM StudentBookings AS b
+                     JOIN StudentShortList AS r ON
+                     b.studentId  = CAST( r.Student as varchar(max)) AND 
+                     b.tutorId =  CAST(r.AcademyId as varchar(max))
+                     inner join TutorSetup AS ts On
+                     ts.AcademyId = CAST(r.AcademyId as varchar(max))
                     WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
                 );
 
-             
+
 
                 res.status(200).send(result.recordset);
             }
