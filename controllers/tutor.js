@@ -1096,9 +1096,8 @@ let storeCalenderTutorRecord = (req, res) => {
           .request()
           .query(updateById(id, "TutorSetup", req.body))
           .then((result) => {
-            res.status(200).send(result.recordset);
+            res.status(200).send(result.rowsAffected);
           });
-        // .catch(err => console.log(err))
       }
     });
   } catch (error) {
@@ -1932,7 +1931,7 @@ const get_feedback_data = async (req, res) => {
         const sessionEndInTimeZone = moment(session.end).tz(timeZone);
         const minutesDifference = sessionEndInTimeZone.diff(currentTimeInTimeZone, 'minutes');
 
-        if (minutesDifference <= 10 && minutesDifference > 0) {
+        if (minutesDifference <= 10 ) {
           session = {
             ...session,
             tutorFeedbackEligible: true,

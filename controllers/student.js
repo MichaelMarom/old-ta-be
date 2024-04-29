@@ -5,7 +5,8 @@ require('dotenv').config();
 const moment = require('moment-timezone');
 const sql = require('mssql');
 const { capitalizeFirstLetter } = require('../constants/helperfunctions.js')
-const studentAd = require('../schema/student/studentAd.js')
+const studentAd = require('../schema/student/studentAd.js');
+const { sendErrors } = require('../helperfunctions/handleReqErrors.js');
 
 const executeQuery = async (query, res) => {
     try {
@@ -578,41 +579,46 @@ const put_ad = async (req, res) => {
 const post_student_bookings = async (req, res) => {
     const { tutorId, studentId } = req.body;
     marom_db(async (config) => {
-        const poolConnection = await sql.connect(config);
-        if (tutorId && studentId) {
-            poolConnection.request().query(
-                find('StudentBookings', { studentId, tutorId })
-            )
-                .then((result) => {
-                    if (result.recordset.length) {
-                        poolConnection.request().query(
-                            update('StudentBookings', req.body,
-                                { studentId: req.body.studentId, tutorId: req.body.tutorId }
+        try {
+            const poolConnection = await sql.connect(config);
+            if (tutorId && studentId) {
+                poolConnection.request().query(
+                    find('StudentBookings', { studentId, tutorId })
+                )
+                    .then((result) => {
+                        if (result.recordset.length) {
+                            poolConnection.request().query(
+                                update('StudentBookings', req.body,
+                                    { studentId: req.body.studentId, tutorId: req.body.tutorId }
+                                )
                             )
-                        )
-                            .then((result) => res.send(result.recordset))
-                            .catch(err => console.log(err))
-                    }
-                    else {
-                        poolConnection.request().query(
-                            insert('StudentBookings', req.body)
-                        )
-                            .then((result) => {
-                                res.status(200).send(result.recordset);
-                            })
-                            .catch(err => {
-                                res.status(400).send({
-                                    message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message
-                                });
-                            })
-                    }
-                })
-                .catch(err => {
-                    res.status(400).send({ message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message })
-                })
+                                .then((result) => res.send(result.recordset))
+                                .catch(err => console.log(err))
+                        }
+                        else {
+                            poolConnection.request().query(
+                                insert('StudentBookings', req.body)
+                            )
+                                .then((result) => {
+                                    res.status(200).send(result.recordset);
+                                })
+                                .catch(err => {
+                                    res.status(400).send({
+                                        message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message
+                                    });
+                                })
+                        }
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message })
+                    })
+            }
+            else {
+                throw new Error('Missing tutorId/studentId')
+            }
         }
-        else {
-            res.status(400).send({ message: `missing params tutorId/studentId` })
+        catch (err) {
+            sendErrors(err, res)
         }
     })
 }
@@ -828,7 +834,7 @@ const get_feedback_of_questions = async (req, res) => {
 
             if (poolConnection) {
                 const result = await poolConnection.request().query(
-                    `SELECT fq.questionText as questionText, f.rating as star, fq.SID as SID
+                `SELECT fq.questionText as questionText, f.rating as star, fq.SID as SID
                   FROM Feedback f
                   JOIN feedbackQuestions fq ON f.feedbackQuestionsId = fq.SID
                   WHERE f.StudentId = '${req.params.StudentId}'
