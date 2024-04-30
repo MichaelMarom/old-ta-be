@@ -53,7 +53,8 @@ const { subjects,
     ad_to_shortlist,
     get_shortlist_ads,
     delete_ad_from_shortlist,
-    get_student_public_profile_data, recordVideoController, getVideo, getSessionDetailById } = require('../controllers/tutor');
+    get_student_public_profile_data, recordVideoController, getVideo, getSessionDetailById, 
+    get_tutor_photos} = require('../controllers/tutor');
 
 const { express, path, fs, parser, cookieParser, mocha, morgan, cors, shortId, jwt } = require('../modules');
 
@@ -84,6 +85,7 @@ TUTOR_ROUTES.get('/tutor/my-edu', verifyToken, get_my_edu)
 TUTOR_ROUTES.get('/tutor/tutor-bank-details', verifyToken, get_bank_details)
 
 TUTOR_ROUTES.get('/tutor/tutor-setup', parser, verifyToken, get_tutor_setup);
+TUTOR_ROUTES.get('/tutor/photos', verifyToken, get_tutor_photos);
 TUTOR_ROUTES.get('/tutor/feedbacks/:tutorId', parser, verifyToken, get_feedback_data);
 TUTOR_ROUTES.get('/tutor/feedback/questions', verifyToken, get_tutor_feedback_questions)
 

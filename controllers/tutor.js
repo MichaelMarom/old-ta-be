@@ -63,9 +63,9 @@ let post_new_subject = (req, res) => {
           result.rowsAffected[0] === 1
             ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
             : res.send({
-              bool: false,
-              mssg: "Data Was Not Successfully Saved",
-            });
+                bool: false,
+                mssg: "Data Was Not Successfully Saved",
+              });
         })
         .catch((err) => {
           console.log(err);
@@ -108,12 +108,10 @@ const subject_already_exist = async (req, res) => {
         );
 
         if (result.recordset.length) {
-          return res
-            .status(200)
-            .send({
-              message: "request exist",
-              faculties: result.recordset.map((subject) => subject.faculty),
-            });
+          return res.status(200).send({
+            message: "request exist",
+            faculties: result.recordset.map((subject) => subject.faculty),
+          });
         } else {
           const result = await poolConnection.request().query(
             // find('Subjects', { SubjectName: req.params.subject }, 'AND', { SubjectName: 'varchar' })
@@ -124,12 +122,10 @@ const subject_already_exist = async (req, res) => {
           );
           console.log(result.recordset);
           if (result.recordset.length) {
-            return res
-              .status(200)
-              .send({
-                message: "subject exist",
-                faculties: result.recordset.map((subject) => subject.Faculty),
-              });
+            return res.status(200).send({
+              message: "subject exist",
+              faculties: result.recordset.map((subject) => subject.Faculty),
+            });
           } else {
             res.status(200).send({ subjectExist: false, faculties: [] });
           }
@@ -396,9 +392,11 @@ let post_tutor_rates_form = (req, res) => {
                             VALUES ( '${MutiStudentHourlyRate}', 
                             '${CancellationPolicy}','${FreeDemoLesson}',
                             '${ConsentRecordingLesson}','${ActivateSubscriptionOption}',
-                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${MultiStudent ? 1 : 0
+                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${
+              MultiStudent ? 1 : 0
             },
-                            ${CodeShareable ? 1 : 0},${IntroSessionDiscount ? 1 : 0
+                            ${CodeShareable ? 1 : 0},${
+              IntroSessionDiscount ? 1 : 0
             },
                             '${CodeStatus}')  `
           );
@@ -695,10 +693,10 @@ let upload_tutor_bank = (req, res) => {
       var poolConnection = await sql.connect(config);
       let response = poolConnection
         ? await poolConnection
-          .request()
-          .query(
-            `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
-          )
+            .request()
+            .query(
+              `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
+            )
         : "err conneecting to db";
 
       cb(response.rowsAffected[0]);
@@ -878,7 +876,7 @@ const get_faculty_subjects = async (req, res) => {
 
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -970,9 +968,7 @@ let faculties = (req, res) => {
     if (poolConnection) {
       poolConnection
         .request()
-        .query(
-          `SELECT * From Faculty `
-        )
+        .query(`SELECT * From Faculty `)
         .then((result) => {
           res.status(200).send(result.recordset);
         })
@@ -1031,6 +1027,31 @@ let get_tutor_setup = (req, res) => {
     } catch (err) {
       console.log(err);
       res.status(400).send({ message: err.message });
+    }
+  });
+};
+
+const get_tutor_photos = async (req, res) => {
+  marom_db(async (config) => {
+    const sql = require("mssql");
+    const { AcademyIds } = req.query;
+
+    var poolConnection = await sql.connect(config);
+    if (poolConnection) {
+      poolConnection
+        .request()
+        .query(
+          `Select AcademyId, Photo as photo from TutorSetup where AcademyId IN (${AcademyIds.map(
+            (id) => `'${id}'`
+          )})`
+        )
+        .then((result) => {
+          res.status(200).send(result.recordset);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).send(err);
+        });
     }
   });
 };
@@ -1195,31 +1216,29 @@ const post_tutor_setup = (req, res) => {
           const result = await request.query(query);
 
           if (result.rowsAffected[0]) {
-            const result = await poolConnection
-              .request()
-              .query(
-                findByAnyIdColumn("TutorSetup", {
-                  AcademyId: findtutorSetup.recordset[0].AcademyId,
-                })
-              );
+            const result = await poolConnection.request().query(
+              findByAnyIdColumn("TutorSetup", {
+                AcademyId: findtutorSetup.recordset[0].AcademyId,
+              })
+            );
             res.status(200).send(result.recordset);
           } else res.status(200).send([]);
         } else {
           req.body.AcademyId =
             req.body.MiddleName.length > 0
               ? req.body.FirstName +
-              "." +
-              " " +
-              req.body.MiddleName[0] +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate()
+                "." +
+                " " +
+                req.body.MiddleName[0] +
+                "." +
+                " " +
+                req.body.LastName[0] +
+                shortId.generate()
               : req.body.FirstName +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate();
+                "." +
+                " " +
+                req.body.LastName[0] +
+                shortId.generate();
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
@@ -1293,7 +1312,8 @@ let get_tutor_market_data = async (req, res) => {
       });
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1484,14 +1504,12 @@ let getSessionsDetails = async (req, res) => {
         );
         const currentYearAccHours = currentYearFullfilledSessions.length;
 
-        res
-          .status(200)
-          .send({
-            currentYearEarning,
-            previousYearEarning,
-            currentYearAccHours,
-            sessions: sessionsWithinPayDay,
-          });
+        res.status(200).send({
+          currentYearEarning,
+          previousYearEarning,
+          currentYearAccHours,
+          sessions: sessionsWithinPayDay,
+        });
       }
     } catch (err) {
       console.log(err);
@@ -1559,25 +1577,21 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
             inMins = true;
           }
 
-          res
-            .status(200)
-            .send({
-              sessions: allSessions,
-              currentSession,
-              upcomingSession,
-              inMins,
-              upcomingSessionFromNow: timeUntilStart,
-            });
+          res.status(200).send({
+            sessions: allSessions,
+            currentSession,
+            upcomingSession,
+            inMins,
+            upcomingSessionFromNow: timeUntilStart,
+          });
         } else {
-          res
-            .status(200)
-            .send({
-              sessions: [],
-              currentSession: {},
-              upcomingSession: {},
-              inMins: false,
-              upcomingSessionFromNow: "",
-            });
+          res.status(200).send({
+            sessions: [],
+            currentSession: {},
+            upcomingSession: {},
+            inMins: false,
+            upcomingSessionFromNow: "",
+          });
         }
       }
     } catch (err) {
@@ -1898,7 +1912,7 @@ const get_feedback_data = async (req, res) => {
   marom_db(async (config) => {
     try {
       const { tutorId } = req.params;
-      const { timeZone } = req.query
+      const { timeZone } = req.query;
       const poolConnection = await sql.connect(config);
       const result = await poolConnection.request().query(`
             SELECT 
@@ -1929,9 +1943,12 @@ const get_feedback_data = async (req, res) => {
         const currentTimeInTimeZone = moment().tz(timeZone);
 
         const sessionEndInTimeZone = moment(session.end).tz(timeZone);
-        const minutesDifference = sessionEndInTimeZone.diff(currentTimeInTimeZone, 'minutes');
+        const minutesDifference = sessionEndInTimeZone.diff(
+          currentTimeInTimeZone,
+          "minutes"
+        );
 
-        if (minutesDifference <= 10 ) {
+        if (minutesDifference <= 10) {
           session = {
             ...session,
             tutorFeedbackEligible: true,
@@ -1945,7 +1962,8 @@ const get_feedback_data = async (req, res) => {
       res.status(200).send(sessionsWithPhotos);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1962,7 +1980,8 @@ const get_tutor_feedback_questions = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -1979,7 +1998,8 @@ const delete_ad = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2022,7 +2042,8 @@ const delete_ad_from_shortlist = async (req, res) => {
       res.status(200).send(data);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2045,7 +2066,8 @@ const ad_to_shortlist = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2073,7 +2095,8 @@ const get_shortlist_ads = async (req, res) => {
       res.status(200).send(recordset);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2097,7 +2120,8 @@ const get_student_public_profile_data = async (req, res) => {
       res.status(200).send(recordset[0]);
     } catch (err) {
       res.status(400).send({
-        message: "Backend server is down, please wait for administrator to run it again.",
+        message:
+          "Backend server is down, please wait for administrator to run it again.",
         reason: err.message,
       });
     }
@@ -2181,8 +2205,8 @@ const getSessionDetailById = async (req, res) => {
 
       const session = result.recordset[0]?.sessions
         ? JSON.parse(result.recordset[0]?.sessions)?.filter(
-          (session) => session.id === sessionId
-        )?.[0]
+            (session) => session.id === sessionId
+          )?.[0]
         : {};
 
       const sessionTime = session.id
@@ -2252,4 +2276,5 @@ module.exports = {
   storeCalenderTutorRecord,
   get_tutor_status,
   get_faculty_subjects,
+  get_tutor_photos,
 };
