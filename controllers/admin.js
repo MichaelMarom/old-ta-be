@@ -32,6 +32,29 @@ let get_tutor_data = (req, res) => {
   });
 };
 
+let get_tutor_count_by_status = (req, res) => {
+  marom_db(async (config) => {
+    const sql = require("mssql");
+    const { status } = req.query;
+    console.log(status);
+    var poolConnection = await sql.connect(config);
+    // console.log(poolConnection._connected)
+    if (poolConnection) {
+      poolConnection
+        .request()
+        .query(
+          `SELECT count(*) as count, Status
+          From TutorSetup TS
+         group by Status`
+        )
+        .then((result) => {
+          res.status(200).send(result.recordset);
+        })
+        .catch((err) => console.log(err));
+    }
+  });
+};
+
 let set_tutor_status = (req, res) => {
   let { Id, Status } = req.body;
   marom_db(async (config) => {
@@ -300,4 +323,5 @@ module.exports = {
   get_tutor_new_subject,
   accept_new_subject,
   decline_new_subject,
+  get_tutor_count_by_status
 };
