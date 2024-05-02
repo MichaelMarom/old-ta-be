@@ -1,7 +1,7 @@
 const { app } = require('@azure/functions');
 const axios = require('axios')
 
-app.timer('expiretimetrigger24-4', {
+app.timer('expireStudentTutorAds', {
     schedule: '0 0 0 * * *',
     handler: async (myTimer, context) => {
         try {

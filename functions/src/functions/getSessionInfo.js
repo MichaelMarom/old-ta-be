@@ -1,7 +1,7 @@
 const { app } = require('@azure/functions');
 
-app.http('newtrigger', {
-    methods: ['GET', 'POST'],
+app.http('getSessionInfo', {
+    methods: ['GET'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);

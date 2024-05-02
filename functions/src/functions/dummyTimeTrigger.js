@@ -2,7 +2,7 @@ const { app } = require('@azure/functions');
 const { Connection, Request } = require('tedious');
 require('dotenv').config();
 
-app.timer('newtriggerexpre', {
+app.timer('dummyTimeTrigger', {
     schedule: '0 */2 * * * *',
     handler: (myTimer, context) => {
         const config = {
