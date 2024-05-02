@@ -8,6 +8,8 @@ const {
 } = require("../helperfunctions/crud_queries");
 const { shortId } = require("../modules");
 const sql = require("mssql");
+const { clerkClient } = require('@clerk/clerk-sdk-node');
+const { sendErrors } = require('../helperfunctions/handleReqErrors');
 
 let get_tutor_data = (req, res) => {
   marom_db(async (config) => {
@@ -19,10 +21,11 @@ let get_tutor_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT TS.Status,TS.GMT, TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email as Email
+          `SELECT TS.Status,TS.GMT, TS.AcademyId,TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email as Email
           From TutorSetup TS
           left join Users1 US on US.SID = TS.userId
-          where TS.Status='${status}'`
+          where TS.Status='${status}'
+          `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
@@ -55,6 +58,19 @@ let get_tutor_count_by_status = (req, res) => {
   });
 };
 
+const get_users_list = async (req, res) => {
+  try {
+    const response = await clerkClient.users.getUserList();
+
+    console.log(response);
+    res.status(200).send(response)
+  }
+
+  catch (err) {
+    res.status(400).send({ reason: err.errors[0].message, message: "Failed" })
+  }
+}
+
 let set_tutor_status = (req, res) => {
   let { Id, Status } = req.body;
   marom_db(async (config) => {
@@ -73,13 +89,13 @@ let set_tutor_status = (req, res) => {
         .then((result) => {
           result.rowsAffected[0] === 1
             ? res.status(200).send({
-                bool: true,
-                mssg: "Tutor status was updated successfully",
-              })
+              bool: true,
+              mssg: "Tutor status was updated successfully",
+            })
             : res.status(200).send({
-                bool: false,
-                mssg: "Tutor status was not updated successfully please try",
-              });
+              bool: false,
+              mssg: "Tutor status was not updated successfully please try",
+            });
 
           //result.recordset.map(item => item.AcademyId === user_id ? item : null)
         })
@@ -133,13 +149,13 @@ let set_student_status = (req, res) => {
         .then((result) => {
           result.rowsAffected[0] === 1
             ? res.status(200).send({
-                bool: true,
-                mssg: "Student status was updated successfully",
-              })
+              bool: true,
+              mssg: "Student status was updated successfully",
+            })
             : res.status(200).send({
-                bool: false,
-                mssg: "Tutor status was not updated successfully please try",
-              });
+              bool: false,
+              mssg: "Tutor status was not updated successfully please try",
+            });
 
           //result.recordset.map(item => item.AcademyId === user_id ? item : null)
         })
@@ -171,6 +187,23 @@ let get_tutor_new_subject = async (req, res) => {
   });
 };
 
+const get_new_sub_count = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+
+      if (poolConnection) {
+        const result = await poolConnection.request().query(
+          `SELECT count(*) as count From NewTutorSubject`
+        );
+        res.status(200).send(result.recordset);
+      }
+    } catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
 let accept_new_subject = async (req, res) => {
   let { id, subject, AcademyId } = req.body;
   marom_db(async (config) => {
@@ -192,13 +225,13 @@ let accept_new_subject = async (req, res) => {
             .then((result) => {
               result.rowsAffected[0] === 1
                 ? res.status(200).send({
-                    bool: true,
-                    mssg: "Data was uploaded successfully",
-                  })
+                  bool: true,
+                  mssg: "Data was uploaded successfully",
+                })
                 : res.status(200).send({
-                    bool: false,
-                    mssg: "Database Error, Please Try Again...",
-                  });
+                  bool: false,
+                  mssg: "Database Error, Please Try Again...",
+                });
             })
             .catch((err) => console.log(err));
         }
@@ -317,8 +350,10 @@ module.exports = {
   postTerms,
   get_Constants,
   get_tutor_data,
+  get_users_list,
   get_student_data,
   set_tutor_status,
+  get_new_sub_count,
   set_student_status,
   get_tutor_new_subject,
   accept_new_subject,

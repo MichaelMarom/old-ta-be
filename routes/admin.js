@@ -9,11 +9,12 @@ const {
   decline_new_subject,
   get_Constants,
   postTerms,
+  get_users_list,
   get_tutor_count_by_status,
+  get_new_sub_count,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
-
 const ADMIN_ROUTES = express.Router();
 
 ADMIN_ROUTES.get("/admin/tutor-data", verifyToken, get_tutor_data);
@@ -22,13 +23,20 @@ ADMIN_ROUTES.get(
   verifyToken,
   get_tutor_count_by_status
 );
-
+ADMIN_ROUTES.get("/admin/user/list", verifyToken, get_users_list)
 ADMIN_ROUTES.get("/admin/student-data", verifyToken, get_student_data);
 ADMIN_ROUTES.get(
   "/admin/tutor-new-subject",
   verifyToken,
   get_tutor_new_subject
 );
+
+ADMIN_ROUTES.get(
+  "/admin/tutor/new-subject/count",
+  verifyToken,
+  get_new_sub_count
+);
+
 ADMIN_ROUTES.get("/admin/get-constants/:id", verifyToken, get_Constants);
 
 ADMIN_ROUTES.post(
