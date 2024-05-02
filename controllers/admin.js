@@ -13,7 +13,6 @@ let get_tutor_data = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
     const { status } = req.query;
-    console.log(status);
     var poolConnection = await sql.connect(config);
     // console.log(poolConnection._connected)
     if (poolConnection) {
@@ -22,7 +21,7 @@ let get_tutor_data = (req, res) => {
         .query(
           `SELECT TS.Status,TS.GMT, TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email as Email
           From TutorSetup TS
-          inner join Users1 US on US.SID = TS.userId
+          left join Users1 US on US.SID = TS.userId
           where TS.Status='${status}'`
         )
         .then((result) => {
