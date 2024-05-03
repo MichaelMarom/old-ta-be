@@ -8,7 +8,8 @@ const {
 } = require("../helperfunctions/crud_queries");
 const { shortId } = require("../modules");
 const sql = require("mssql");
-const { clerkClient } = require('@clerk/clerk-sdk-node');
+const pkg = require('@clerk/clerk-sdk-node');
+const clerkClient = pkg.default;
 const { sendErrors } = require('../helperfunctions/handleReqErrors');
 
 let get_tutor_data = (req, res) => {

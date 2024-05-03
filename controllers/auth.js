@@ -19,7 +19,7 @@ function generateToken(user) {
 
 const verifyToken = async (req, res, next) => {
     if (req.originalUrl === '/auth/signup' || req.originalUrl === '/auth/login'
-        || req?.route?.path === '/user/:SID'
+        || req?.route?.path === '/user/:SID' || req.originalUrl === '/admin/user/list'
     ) next()
     // const publicKey = process.env.CLERK_SECRET_KEY
     // const cookies = new Cookies(req, res);
