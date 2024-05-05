@@ -119,7 +119,7 @@ let upload_setup_info = (req, res) => {
         '${parentAName}', '${parentBName}','${is_18}', '${grade}', '${add1}','${add2}','${city}','${state}',
          '${zipCode}',
         '${country}','${timeZone}',
-         '${UserId}','${screenName}','${photo}', 'Pending', '${parentConsent}','${userId}')`)
+         '${UserId}','${screenName}','${photo}', 'pending', '${parentConsent}','${userId}')`)
 
         let result = await records.rowsAffected[0] === 1 ? true : false
         //console.log(result, 'boolean...')

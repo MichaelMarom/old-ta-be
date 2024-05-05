@@ -10,8 +10,8 @@ const {
   get_Constants,
   postTerms,
   get_users_list,
-  get_tutor_count_by_status,
   get_new_sub_count,
+  get_role_count_by_status,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
@@ -19,9 +19,9 @@ const ADMIN_ROUTES = express.Router();
 
 ADMIN_ROUTES.get("/admin/tutor-data", verifyToken, get_tutor_data);
 ADMIN_ROUTES.get(
-  "/admin/tutor/status/count",
+  "/admin/:role/status/count",
   verifyToken,
-  get_tutor_count_by_status
+  get_role_count_by_status
 );
 ADMIN_ROUTES.get("/admin/user/list", verifyToken, get_users_list)
 ADMIN_ROUTES.get("/admin/student-data", verifyToken, get_student_data);

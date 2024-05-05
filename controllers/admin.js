@@ -36,25 +36,25 @@ let get_tutor_data = (req, res) => {
   });
 };
 
-let get_tutor_count_by_status = (req, res) => {
+let get_role_count_by_status = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
-    const { status } = req.query;
-    console.log(status);
+    const { role } = req.params
     var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
+
     if (poolConnection) {
       poolConnection
         .request()
         .query(
-          `SELECT count(*) as count, Status
-          From TutorSetup TS
-         group by Status`
+          `
+          SELECT count(*) as count, cast(Status as varchar) as Status
+              From ${role === 'student' ? 'StudentSetup' : 'TutorSetup'} as TS
+             group by cast(Status as varchar) `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => sendErrors(err, res));
     }
   });
 };
@@ -112,22 +112,19 @@ let set_tutor_status = (req, res) => {
 let get_student_data = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
+    const { status } = req.query
 
     var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
     if (poolConnection) {
       poolConnection
         .request()
         .query(
-          `
-                    SELECT * From StudentSetup 
-                `
+          `SELECT * From StudentSetup  where cast(Status as varchar) = '${status}' `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
-          //result.recordset.map(item => item.AcademyId === user_id ? item : null)
         })
-        .catch((err) => console.log(err));
+        .catch((err) => sendErrors(err, res));
     }
   });
 };
@@ -138,13 +135,12 @@ let set_student_status = (req, res) => {
     const sql = require("mssql");
 
     var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
     if (poolConnection) {
       poolConnection
         .request()
         .query(
-          `
-                    UPDATE StudentSetup SET Status = '${Status}' WHERE CONVERT(VARCHAR, AcademyId) = '${Id}'
+          ` UPDATE StudentSetup SET Status = '${Status}'
+           WHERE CONVERT(VARCHAR, AcademyId) = '${Id}'
                 `
         )
         .then((result) => {
@@ -157,13 +153,9 @@ let set_student_status = (req, res) => {
               bool: false,
               mssg: "Tutor status was not updated successfully please try",
             });
-
-          //result.recordset.map(item => item.AcademyId === user_id ? item : null)
         })
         .catch((err) =>
-          res
-            .status(200)
-            .send({ bool: false, mssg: "Database Error, Please Try Again..." })
+          sendErrors(err, res)
         );
     }
   });
@@ -359,5 +351,5 @@ module.exports = {
   get_tutor_new_subject,
   accept_new_subject,
   decline_new_subject,
-  get_tutor_count_by_status
+  get_role_count_by_status
 };
