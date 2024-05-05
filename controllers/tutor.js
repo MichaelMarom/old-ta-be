@@ -2128,8 +2128,7 @@ const get_student_public_profile_data = async (req, res) => {
 
 const recordVideoController = async (req, res) => {
   try {
-    const { user_id, AcademyId } = req.body;
-    console.log(AcademyId)
+    const { user_id } = req.body;
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
       return res.status(400).send({ message: "Please upload a video file" });
     }
@@ -2161,16 +2160,6 @@ const recordVideoController = async (req, res) => {
         const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
         const url = await blobClient.uploadFile(outputFileName);
         deleteFolderContents("interviews/");
-        marom_db(async (config) => {
-          try {
-            const poolConnection = await sql.connect(config);
-            await poolConnection.request().query(
-              parameteriedUpdateQuery('TutorSetup', { IsVideoRecorded: true }, { AcademyId }).query);
-            console.log('video flag added')
-          } catch (err) {
-            sendErrors(err, res)
-          }
-        })
         res.send({ message: "Video flipped successfully", url });
       });
     });
