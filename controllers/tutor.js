@@ -63,9 +63,9 @@ let post_new_subject = (req, res) => {
           result.rowsAffected[0] === 1
             ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
             : res.send({
-                bool: false,
-                mssg: "Data Was Not Successfully Saved",
-              });
+              bool: false,
+              mssg: "Data Was Not Successfully Saved",
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -392,11 +392,9 @@ let post_tutor_rates_form = (req, res) => {
                             VALUES ( '${MutiStudentHourlyRate}', 
                             '${CancellationPolicy}','${FreeDemoLesson}',
                             '${ConsentRecordingLesson}','${ActivateSubscriptionOption}',
-                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${
-              MultiStudent ? 1 : 0
+                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${MultiStudent ? 1 : 0
             },
-                            ${CodeShareable ? 1 : 0},${
-              IntroSessionDiscount ? 1 : 0
+                            ${CodeShareable ? 1 : 0},${IntroSessionDiscount ? 1 : 0
             },
                             '${CodeStatus}')  `
           );
@@ -693,10 +691,10 @@ let upload_tutor_bank = (req, res) => {
       var poolConnection = await sql.connect(config);
       let response = poolConnection
         ? await poolConnection
-            .request()
-            .query(
-              `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
-            )
+          .request()
+          .query(
+            `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
+          )
         : "err conneecting to db";
 
       cb(response.rowsAffected[0]);
@@ -1227,18 +1225,18 @@ const post_tutor_setup = (req, res) => {
           req.body.AcademyId =
             req.body.MiddleName.length > 0
               ? req.body.FirstName +
-                "." +
-                " " +
-                req.body.MiddleName[0] +
-                "." +
-                " " +
-                req.body.LastName[0] +
-                shortId.generate()
+              "." +
+              " " +
+              req.body.MiddleName[0] +
+              "." +
+              " " +
+              req.body.LastName[0] +
+              shortId.generate()
               : req.body.FirstName +
-                "." +
-                " " +
-                req.body.LastName[0] +
-                shortId.generate();
+              "." +
+              " " +
+              req.body.LastName[0] +
+              shortId.generate();
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
@@ -2130,8 +2128,8 @@ const get_student_public_profile_data = async (req, res) => {
 
 const recordVideoController = async (req, res) => {
   try {
-    const { user_id } = req.body;
-
+    const { user_id, AcademyId } = req.body;
+    console.log(AcademyId)
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
       return res.status(400).send({ message: "Please upload a video file" });
     }
@@ -2159,17 +2157,25 @@ const recordVideoController = async (req, res) => {
           console.error(error);
           return res.status(500).send({ message: "Failed to delete video" });
         }
-        console.log(outputFileName, stderr, stdout);
-        // const readAbleStream = fs.createReadStream()
+
         const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
         const url = await blobClient.uploadFile(outputFileName);
         deleteFolderContents("interviews/");
+        marom_db(async (config) => {
+          try {
+            const poolConnection = await sql.connect(config);
+            await poolConnection.request().query(
+              parameteriedUpdateQuery('TutorSetup', { IsVideoRecorded: true }, { AcademyId }).query);
+            console.log('video flag added')
+          } catch (err) {
+            sendErrors(err, res)
+          }
+        })
         res.send({ message: "Video flipped successfully", url });
       });
     });
   } catch (err) {
-    console.log(err.message);
-    res.status(400).send({ message: err.message, reason: err.message });
+    sendErrors(err, res)
   }
 };
 
@@ -2177,7 +2183,7 @@ const getVideo = async (req, res) => {
   try {
     const { user_id } = req.query;
     const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
-    res.status(200).send(blobClient);
+    res.status(200).send({ url: blobClient.url });
   } catch (err) {
     sendErrors(err, res);
   }
@@ -2205,8 +2211,8 @@ const getSessionDetailById = async (req, res) => {
 
       const session = result.recordset[0]?.sessions
         ? JSON.parse(result.recordset[0]?.sessions)?.filter(
-            (session) => session.id === sessionId
-          )?.[0]
+          (session) => session.id === sessionId
+        )?.[0]
         : {};
 
       const sessionTime = session.id
