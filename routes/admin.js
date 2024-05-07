@@ -1,3 +1,4 @@
+const sendMultipleEmails = require("../config/sendingEmails");
 const { sendingSMS } = require("../config/sendingMessages");
 const {
   get_tutor_data,
@@ -65,6 +66,8 @@ ADMIN_ROUTES.post(
 );
 ADMIN_ROUTES.post("/admin/store-terms", parser, verifyToken, postTerms);
 ADMIN_ROUTES.post("/send-message", parser, verifyToken, sendingSMS);
+ADMIN_ROUTES.post("/send-email", parser, verifyToken, sendMultipleEmails);
+
 
 module.exports = {
   ADMIN_ROUTES,
