@@ -339,11 +339,91 @@ let get_Constants = (req, res) => {
   });
 };
 
+const api_save_email_template = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+           insert('EmailTemplates', req.body)
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_update_email_template = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+            update('EmailTemplates', req.body, {id:req.params.id})
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_get_email_template = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+            ` SELECT * From EmailTemplates where id = '${req.params.id}'  `
+          )
+        res.status(200).send(recordset[0]);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_get_email_templates = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+            ` SELECT * From EmailTemplates `
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
 module.exports = {
   postTerms,
   get_Constants,
   get_tutor_data,
   get_users_list,
+  api_save_email_template,
+  api_update_email_template,
+  api_get_email_template,
+  api_get_email_templates,
   get_student_data,
   set_tutor_status,
   get_new_sub_count,

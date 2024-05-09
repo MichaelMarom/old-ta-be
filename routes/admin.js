@@ -13,6 +13,10 @@ const {
   get_users_list,
   get_new_sub_count,
   get_role_count_by_status,
+  api_save_email_template,
+  api_get_email_templates,
+  api_get_email_template,
+  api_update_email_template,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
@@ -68,6 +72,10 @@ ADMIN_ROUTES.post("/admin/store-terms", parser, verifyToken, postTerms);
 ADMIN_ROUTES.post("/send-message", parser, verifyToken, sendingSMS);
 ADMIN_ROUTES.post("/send-email", parser, verifyToken, sendMultipleEmails);
 
+ADMIN_ROUTES.post("/admin/email-template", parser, verifyToken, api_save_email_template);
+ADMIN_ROUTES.get("/admin/email-template/list", verifyToken, api_get_email_templates);
+ADMIN_ROUTES.get("/admin/email-template/:id", verifyToken, api_get_email_template);
+ADMIN_ROUTES.put("/admin/email-template/:id", parser, verifyToken, api_update_email_template);
 
 module.exports = {
   ADMIN_ROUTES,

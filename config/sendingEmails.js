@@ -19,27 +19,37 @@ async function sendEmail(email, message, subject) {
     });
     const templatePath = path.join(__dirname, '../templates/student-marketing/new-template.html');
     const imagesPath = path.join(__dirname, '../templates/student-marketing/images');
+    const generalImagesPath = path.join(__dirname, '../templates/general/images');
 
+    const prefixedMessageWithLogo = `<div style="text-align:center">
+    <img src="cid:logo" alt="Trulli" width="400" height="100" >
+    </div> ${message}`
     // Read HTML file
     const emailHtml = fs.readFileSync(templatePath, 'utf8');
 
     // Get all image files from the images directory
-    const imageFiles = fs.readdirSync(imagesPath);
+    // const imageFiles = fs.readdirSync(imagesPath);
 
-    // Prepare attachments array
-    const attachments = imageFiles.map(file => ({
-        filename: file,
-        path: path.join(imagesPath, file),
-        cid: file.replace(/\..+$/, '') // Use filename without extension as CID
-    }));
-    console.log(attachments)
+    // // Prepare attachments array
+    // const attachments = imageFiles.map(file => ({
+    //     filename: file,
+    //     path: path.join(imagesPath, file),
+    //     cid: file.replace(/\..+$/, '') // Use filename without extension as CID
+    // }));
+
+
+    console.log(message)
     // Email options
     let mailOptions = {
         from: process.env.ADMIN_EMAIL_SENDER_USER,
         to: email,
         subject,
-        html: emailHtml,
-        attachments
+        html: prefixedMessageWithLogo,
+        attachments: [{
+            filename: 'logo1',
+            path: path.join(generalImagesPath, 'logo1.png'),
+            cid: 'logo'
+        }]
     };
 
     // Send email
