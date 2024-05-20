@@ -179,7 +179,7 @@ const get_recomendation = async (req, res) => {
 
             if (poolConnection) {
                 const data = await poolConnection.request().query(
-                    findByAnyIdColumn('Education', { AcademyId: req.params.id },
+                    findByAnyIdColumn('Education1', { AcademyId: req.params.id },
                         "varchar")
                 );
                 const formattedData = {

@@ -20,14 +20,14 @@ const { express, parser } = require('../modules');
 const STUDENT_ROUTES = express.Router();
 
 STUDENT_ROUTES.get('/student/setup', verifyToken, get_student_setup)
-STUDENT_ROUTES.get('/student/grade', verifyToken, get_student_grade)
+// STUDENT_ROUTES.get('/student/grade', verifyToken, get_student_grade)
 STUDENT_ROUTES.get('/student/tutor-subject', verifyToken, get_tutor_subject)
-STUDENT_ROUTES.post('/student/short-list', parser, verifyToken, upload_student_short_list)
-STUDENT_ROUTES.get('/student/my-data', verifyToken, get_my_data)
-STUDENT_ROUTES.get('/student/short-list/:student', verifyToken, get_student_short_list)
-STUDENT_ROUTES.put('/student/short-list/:AcademyId/:Student/:Subject', parser, verifyToken, update_shortlist)
+// STUDENT_ROUTES.post('/student/short-list', parser, verifyToken, upload_student_short_list)
+// STUDENT_ROUTES.get('/student/my-data', verifyToken, get_my_data)
+// STUDENT_ROUTES.get('/student/short-list/:student', verifyToken, get_student_short_list)
+// STUDENT_ROUTES.put('/student/short-list/:AcademyId/:Student/:Subject', parser, verifyToken, update_shortlist)
 
-STUDENT_ROUTES.get('/student/short-list-data', verifyToken, get_student_short_list_data)
+// STUDENT_ROUTES.get('/student/short-list-data', verifyToken, get_student_short_list_data)
 STUDENT_ROUTES.get('/student/market-data', verifyToken, get_student_market_data)
 STUDENT_ROUTES.post('/student/ad', parser, verifyToken, post_student_ad)
 STUDENT_ROUTES.get('/student/ad/:id/list', verifyToken, get_student_ads)
@@ -51,7 +51,7 @@ STUDENT_ROUTES.post('/student/feedback', parser, verifyToken, post_student_feedb
 STUDENT_ROUTES.get('/student/feedback/:ShortlistId', get_student_feedback)
 STUDENT_ROUTES.get('/student/booked-slot', verifyToken, getBookedSlot)
 
-STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
+// STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
 STUDENT_ROUTES.get('/questions/list/:isStudentLoggedIn', verifyToken, get_feedback_questions)
 STUDENT_ROUTES.get('/questions/:StudentId/:TutorId/:SessionId/:isstudentgiver', verifyToken, get_feedback_of_questions)
 STUDENT_ROUTES.post('/questions', parser, verifyToken, post_feedback_questions);
@@ -63,7 +63,7 @@ STUDENT_ROUTES.delete('/student/ads/shortlist/:adId/:studentId', verifyToken, pa
 
 
 //faculty+subjs
-STUDENT_ROUTES.get('/student/:studentId/subject/:subjectName/faculty/:facultyId', verifyToken, get_tutor_by_subject_faculty)
+// STUDENT_ROUTES.get('/student/:studentId/subject/:subjectName/faculty/:facultyId', verifyToken, get_tutor_by_subject_faculty)
 
 module.exports = {
     STUDENT_ROUTES

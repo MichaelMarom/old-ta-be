@@ -413,149 +413,149 @@ let post_tutor_rates_form = (req, res) => {
   });
 };
 
-let get_countries = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_countries = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT Country FROM Countries
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT Country FROM Countries
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_state = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_state = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM States
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM States
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_gmt = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_gmt = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM GMT
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM GMT
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_experience = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_experience = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM Experience
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM Experience
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_level = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_level = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM EducationalLevel
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM EducationalLevel
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_degree = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_degree = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM Degree
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM Degree
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_certificates = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_certificates = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM CertificateTypes
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM CertificateTypes
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
-let get_response = (req, res) => {
-  marom_db(async (config) => {
-    const sql = require("mssql");
+// let get_response = (req, res) => {
+//   marom_db(async (config) => {
+//     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
-    // console.log(poolConnection._connected)
-    if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
-        `
-                    SELECT * FROM ResponseTime
-                `
-      );
+//     var poolConnection = await sql.connect(config);
+//     // console.log(poolConnection._connected)
+//     if (poolConnection) {
+//       var resultSet = await poolConnection.request().query(
+//         `
+//                     SELECT * FROM ResponseTime
+//                 `
+//       );
 
-      res.send(resultSet);
-    }
-  });
-};
+//       res.send(resultSet);
+//     }
+//   });
+// };
 
 let get_user_data = (req, res) => {
   let { user_id } = req.query;
@@ -1322,12 +1322,13 @@ let get_tutor_students = async (req, res) => {
   marom_db(async (config) => {
     try {
       const { academyId } = req.params;
-      const sql = require("mssql");
 
       const poolConnection = await sql.connect(config);
       const students = await poolConnection.request().query(`
-            SELECT * FROM StudentShortList as ss join StudentSetup as st on
-            cast(st.AcademyId as varchar(max)) = cast(ss.Student as varchar(max)) join StudentBookings as sb
+            SELECT * FROM StudentShortList as ss 
+            join StudentSetup as st on
+            cast(st.AcademyId as varchar(max)) = cast(ss.Student as varchar(max)) 
+            join StudentBookings as sb
             on cast(sb.studentId as varchar)= cast(ss.Student  as varchar) and 
             sb.tutorId = cast( ss.AcademyId  as varchar) and 
             sb.subjectName=cast(ss.Subject as varchar)
@@ -1371,8 +1372,7 @@ let get_tutor_students = async (req, res) => {
       });
       res.status(200).json(formattedResult);
     } catch (error) {
-      console.error("Error fetching tutor students:", error);
-      res.status(400).json({ error: error.message });
+      sendErrors(error, res);
     }
   });
 };
@@ -2246,18 +2246,18 @@ module.exports = {
   faculties,
   post_form_one,
   post_tutor_rates_form,
-  get_countries,
-  get_gmt,
+  // get_countries,
+  // get_gmt,
   post_new_subject,
-  get_state,
+  // get_state,
   get_shortlist_ads,
-  get_experience,
-  get_degree,
-  get_level,
-  get_certificates,
+  // get_experience,
+  // get_degree,
+  // get_level,
+  // get_certificates,
   delete_ad_from_shortlist,
   get_user_data,
-  get_response,
+  // get_response,
   upload_tutor_rates,
   get_my_data,
   get_my_edu,

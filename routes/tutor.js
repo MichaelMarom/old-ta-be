@@ -6,7 +6,7 @@ const { subjects,
     post_form_one,
     get_countries,
     get_gmt,
-    get_state,
+    // get_state,
     get_experience,
     get_level,
     get_degree,
@@ -67,15 +67,15 @@ TUTOR_ROUTES.get('/tutor/tutor-status', verifyToken, get_tutor_status)
 TUTOR_ROUTES.get('/tutor/subjects', verifyToken, subjects)
 TUTOR_ROUTES.get('/tutor/newsubject/:subject', verifyToken, subject_already_exist)
 TUTOR_ROUTES.get('/tutor/faculties', verifyToken, faculties)
-TUTOR_ROUTES.get('/tutor/countries', verifyToken, get_countries)
-TUTOR_ROUTES.get('/tutor/state', verifyToken, get_state)
-TUTOR_ROUTES.get('/tutor/gmt', verifyToken, get_gmt)
-TUTOR_ROUTES.get('/tutor/experience', verifyToken, get_experience)
-TUTOR_ROUTES.get('/tutor/level', verifyToken, get_level)
-TUTOR_ROUTES.get('/tutor/degree', verifyToken, get_degree)
-TUTOR_ROUTES.get('/tutor/certificates', verifyToken, get_certificates)
+// TUTOR_ROUTES.get('/tutor/countries', verifyToken, get_countries)
+// // TUTOR_ROUTES.get('/tutor/state', verifyToken, get_state)
+// TUTOR_ROUTES.get('/tutor/gmt', verifyToken, get_gmt)
+// TUTOR_ROUTES.get('/tutor/experience', verifyToken, get_experience)
+// TUTOR_ROUTES.get('/tutor/level', verifyToken, get_level)
+// TUTOR_ROUTES.get('/tutor/degree', verifyToken, get_degree)
+// TUTOR_ROUTES.get('/tutor/certificates', verifyToken, get_certificates)
 TUTOR_ROUTES.get('/tutor/education', verifyToken, get_user_data)
-TUTOR_ROUTES.get('/tutor/response', verifyToken, get_response)
+// TUTOR_ROUTES.get('/tutor/response', verifyToken, get_response)
 TUTOR_ROUTES.get('/tutor/my-data', verifyToken, get_my_data)
 TUTOR_ROUTES.get('/tutor/my-rate', verifyToken, get_rates)
 TUTOR_ROUTES.get('/subject/:facultyId', verifyToken, get_faculty_subjects)
