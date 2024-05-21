@@ -23,7 +23,7 @@ STUDENT_ROUTES.get('/student/setup', verifyToken, get_student_setup)
 // STUDENT_ROUTES.get('/student/grade', verifyToken, get_student_grade)
 STUDENT_ROUTES.get('/student/tutor-subject', verifyToken, get_tutor_subject)
 // STUDENT_ROUTES.post('/student/short-list', parser, verifyToken, upload_student_short_list)
-// STUDENT_ROUTES.get('/student/my-data', verifyToken, get_my_data)
+STUDENT_ROUTES.get('/student/my-data', verifyToken, get_my_data)
 // STUDENT_ROUTES.get('/student/short-list/:student', verifyToken, get_student_short_list)
 // STUDENT_ROUTES.put('/student/short-list/:AcademyId/:Student/:Subject', parser, verifyToken, update_shortlist)
 
@@ -63,7 +63,7 @@ STUDENT_ROUTES.delete('/student/ads/shortlist/:adId/:studentId', verifyToken, pa
 
 
 //faculty+subjs
-// STUDENT_ROUTES.get('/student/:studentId/subject/:subjectName/faculty/:facultyId', verifyToken, get_tutor_by_subject_faculty)
+STUDENT_ROUTES.get('/student/:studentId/subject/:subjectName/faculty/:facultyId', verifyToken, get_tutor_by_subject_faculty)
 
 module.exports = {
     STUDENT_ROUTES
