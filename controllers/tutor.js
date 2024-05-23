@@ -2144,7 +2144,7 @@ const recordVideoController = async (req, res) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(error);
-        return res.status(500).send({ message: "Failed to flip video" });
+        return res.status(500).send({ message: "Failed to upload", reason:error.message });
       }
 
       //delete the non-flipped video
@@ -2154,7 +2154,7 @@ const recordVideoController = async (req, res) => {
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);
-          return res.status(500).send({ message: "Failed to delete video" });
+          return res.status(500).send({ reason: error.message });
         }
 
         const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);

@@ -22,10 +22,22 @@ let get_tutor_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT TS.Status,TS.GMT, TS.AcademyId,TS.Photo,TS.FirstName, TS.LastName, TS.CellPhone, TS.TutorScreenname, US.email as Email
+          `SELECT 
+          TS.Status, 
+          TS.GMT, 
+          TS.Photo, 
+          TS.FirstName, 
+          TS.LastName, 
+          TS.CellPhone, 
+          TS.AcademyId,
+          TS.TutorScreenname, 
+          US.email as Email
+
           From TutorSetup TS
+          
           left join Users1 US on US.SID = TS.userId
           where TS.Status='${status}'
+          order by TS.CreatedAT desc
           `
         )
         .then((result) => {

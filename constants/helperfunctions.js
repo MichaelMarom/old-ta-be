@@ -35,5 +35,5 @@ const deleteFolderContents = (folderPath) => {
 
 module.exports = {
     capitalizeFirstLetter,
-    deleteFolderContents
+    deleteFolderContents,
 };
