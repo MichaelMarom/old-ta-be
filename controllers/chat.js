@@ -1,5 +1,6 @@
 const { marom_db } = require('../db');
 const { getAll, insert, find, update, parameterizedInsertQuery, findByAnyIdColumn } = require('../helperfunctions/crud_queries');
+const Message = require('../schema/common/Message');
 
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -78,7 +79,9 @@ const fetch_chat_messages = async (req, res) => {
                     date: record.Date,
                     senderId: record.Sender,
                     photo: record.Photo,
-                    screenName: record.screenName
+                    screenName: record.screenName,
+                    fileName: record.FileName,
+                    fileUrl: record.FileUrl
                 }))
                 formatedResult.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -100,10 +103,9 @@ const post_message = async (req, res) => {
             if (poolConnection) {
                 const request = poolConnection.request();
 
-                request.input('Text', sql.NVarChar(sql.MAX), req.body.Text);
-                request.input('Date', sql.NVarChar(sql.MAX), req.body.Date);
-                request.input('Sender', sql.NVarChar(sql.MAX), req.body.Sender);
-                request.input('ChatID', sql.Int, req.body.ChatID);
+               Object.keys(req.body).forEach(key => {
+                 request.input(key,Message[key], req.body[key]);
+               })
 
                 const result = await request.query(
                     parameterizedInsertQuery("Message", req.body).query

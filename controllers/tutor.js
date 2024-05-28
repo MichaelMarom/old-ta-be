@@ -26,6 +26,7 @@ const { sendErrors } = require("../helperfunctions/handleReqErrors");
 const {
   checkSessionStatus,
 } = require("../helperfunctions/generalHelperFunctions");
+const TutorSetup = require("../schema/tutor/Setup");
 const blobServiceClient = new BlobServiceClient(
   `https://${account}.blob.core.windows.net/?${process.env.AZURE_BLOB_SAS_TOKEN}`
 );
@@ -1190,22 +1191,9 @@ const post_tutor_setup = (req, res) => {
             findtutorSetup.recordset[0].AcademyId
           );
 
+
           Object.keys(req.body).map((key) => {
-            if (key === "VacationMode")
-              return request.input(
-                "VacationMode",
-                sql.Bit,
-                req.body.VacationMode
-              );
-            if (key === "StartVacation" || key === "EndVacation")
-              return request.input(
-                key,
-                sql.NVarChar(sql.MAX),
-                `${req.body[key]}`
-              );
-            if (key === "Step")
-              return request.input(key, sql.Int, req.body.Step);
-            request.input(key, sql.NVarChar(sql.MAX), req.body[key]);
+            request.input(key, TutorSetup[key], req.body[key]);
           });
 
           const { query } = parameteriedUpdateQuery("TutorSetup", req.body, {
@@ -1240,21 +1228,7 @@ const post_tutor_setup = (req, res) => {
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
-            if (key === "VacationMode")
-              return request.input(
-                "VacationMode",
-                sql.Bit,
-                req.body.VacationMode
-              );
-            if (key === "StartVacation" || key === "EndVacation")
-              return request.input(
-                key,
-                sql.NVarChar(sql.MAX),
-                `${req.body[key]}`
-              );
-            if (key === "Step")
-              return request.input(key, sql.Int, req.body.Step);
-            request.input(key, sql.NVarChar(sql.MAX), req.body[key]);
+            request.input(key, TutorSetup[key], req.body[key]);
           });
 
           const { query } = parameterizedInsertQuery("TutorSetup", req.body);
@@ -1262,10 +1236,9 @@ const post_tutor_setup = (req, res) => {
 
           res.status(200).send(result.recordset);
         }
-      }
+      }else throw new Error("Facing trouble with Connection!")
     } catch (err) {
-      console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res)
     }
   });
 };
