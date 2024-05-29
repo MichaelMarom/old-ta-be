@@ -1,22 +1,35 @@
 const nodemailer = require('nodemailer');
 const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const hbs = require('express-handlebars');
+
 const fs = require('fs');
 const path = require('path');
 
+const handlebarOptions = {
+    viewEngine: {
+        extName: '.hbs',
+        partialsDir: path.resolve('../templates/chat'),
+        defaultLayout: false,
+    },
+    viewPath: path.resolve('../templates/chat'),
+    extName: '.hbs',
+};
 
-// Function to send email
+
 async function sendEmail(email, message, subject) {
-    // Create a Nodemailer transporter
     let transporter = nodemailer.createTransport({
-        // Specify your email service provider and authentication details
         host: 'smtp.ionos.com',
         port: 587,
-        secure: false, // true for 465, false for other ports
+        secure: false,
+        
         auth: {
             user: process.env.ADMIN_EMAIL_SENDER_USER,
-            pass: process.env.ADMIN_EMAIL_SENDER_PASS
+            pass: process.env.ADMIN_EMAIL_SENDER_PAS
         }
     });
+
+    transporter.use('compile',  hbs(handlebarOptions))
+
     const templatePath = path.join(__dirname, '../templates/student-marketing/new-template.html');
     const imagesPath = path.join(__dirname, '../templates/student-marketing/images');
     const generalImagesPath = path.join(__dirname, '../templates/general/images');

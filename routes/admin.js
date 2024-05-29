@@ -1,3 +1,4 @@
+const sendTemplatedEmail = require("../config/sendTemplateEmail");
 const sendMultipleEmails = require("../config/sendingEmails");
 const { sendingSMS } = require("../config/sendingMessages");
 const {
@@ -71,6 +72,7 @@ ADMIN_ROUTES.post(
 ADMIN_ROUTES.post("/admin/store-terms", parser, verifyToken, postTerms);
 ADMIN_ROUTES.post("/send-message", parser, verifyToken, sendingSMS);
 ADMIN_ROUTES.post("/send-email", parser, verifyToken, sendMultipleEmails);
+ADMIN_ROUTES.post("/send-email/chat", parser, verifyToken, sendTemplatedEmail);
 
 ADMIN_ROUTES.post("/admin/email-template", parser, verifyToken, api_save_email_template);
 ADMIN_ROUTES.get("/admin/email-template/list", verifyToken, api_get_email_templates);

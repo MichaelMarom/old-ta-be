@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Box Email</title>
+  <style>
+    /* Customize the chat box styles as desired */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 600px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    .message {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #eee;
+    }
+
+    .message-sender {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .message-content {
+      white-space: pre-wrap;
+    }
+
+    .message-image {
+      width: 200px;
+      height: auto;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    {{#each messages}}
+      <div class="message">
+        <p class="message-sender">{{this.sender}}</p>
+        <p class="message-content">{{this.content}}</p>
+        {{#if this.imageUrl}}
+          <img src="{{this.imageUrl}}" alt="{{this.imageAlt}}" class="message-image">
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+</body>
+</html>
