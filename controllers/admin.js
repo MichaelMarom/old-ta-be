@@ -182,7 +182,9 @@ let get_tutor_new_subject = async (req, res) => {
       if (poolConnection) {
         const result = await poolConnection.request().query(
           `SELECT * From NewTutorSubject as ts 
-                        join TutorSetup as t on t.AcademyId = CAST(ts.AcademyId as varchar(max)) `
+            join TutorSetup as t on t.AcademyId = CAST(ts.AcademyId as varchar(max))
+            order by ts.date desc
+            `
         );
         res.status(200).send(result.recordset);
       }

@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,17 +38,31 @@
     }
   </style>
 </head>
+
 <body>
   <div class="chat-container">
     {{#each messages}}
-      <div class="message">
-        <p class="message-sender">{{this.sender}}</p>
-        <p class="message-content">{{this.content}}</p>
-        {{#if this.imageUrl}}
-          <img src="{{this.imageUrl}}" alt="{{this.imageAlt}}" class="message-image">
+    <div class="message">
+      <p class="message-sender">{{this.screenName}}</p>
+      <p class="message-content">{{this.text}}</p>
+      {{!-- {{#if this.photo}}
+      <img src="{{this.photo}}" alt="senderImage" class="message-image" />
+      {{/if}} --}}
+
+      {{!-- {{#if this.fileName}}
+      <div className='border border-secondary p-2 rounded float-end mb-2'
+        style="box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); width: fit-content">
+        <div>{{this.fileName}}</div>
+        {{#if this.fileUrl}}
+        <div className='mt-2'>
+          <img src="{{this.fileUrl}}" alt="{{this.file}}" style="max-width: 100px ; max-height: 100px" />
+        </div>
         {{/if}}
       </div>
+      {{/if}} --}}
+    </div>
     {{/each}}
   </div>
 </body>
+
 </html>

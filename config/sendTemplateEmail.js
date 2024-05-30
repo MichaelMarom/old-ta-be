@@ -2,24 +2,21 @@ const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path');
 const { sendErrors } = require('../helperfunctions/handleReqErrors');
-// const hbs = require('express-handlebars');
 require('dotenv').config()
-
 
 // Send email function
 const sendEmail = async (to, subject, template, context) => {
-    // Create transporter
+
     let transporter = nodemailer.createTransport({
         host: 'smtp.ionos.com',
         port: 587,
         secure: false,
         auth: {
             user: process.env.ADMIN_EMAIL_SENDER_USER,
-            pass: process.env.ADMIN_EMAIL_SENDER_PAS
+            pass: process.env.ADMIN_EMAIL_SENDER_PASS
         }
     });
 
-    
     const handlebarOptions = {
         viewEngine: {
             extName: '.hbs',
@@ -32,7 +29,6 @@ const sendEmail = async (to, subject, template, context) => {
     
     // Use a template with nodemailer
     transporter.use('compile', hbs(handlebarOptions));
-    console.log(transporter, process.env.ADMIN_EMAIL_SENDER_PAS)
 
     const mailOptions = {
         from: process.env.ADMIN_EMAIL_SENDER_USER,
@@ -61,16 +57,9 @@ const sendEmail = async (to, subject, template, context) => {
 
 async function sendTemplatedEmail(req, res) {
     try {
-        let { email, messages, subject, templateName } = req.body
-        let data = await sendEmail("asiya.batool987@gmail.com", "New Message From Asiya", 'newMessage', {
-            messages: [{
-                sender: "asiya",
-                content: "new message"
-            }, {
-                sender: "asiya",
-                content: "new message"
-
-            }]
+        let { email, messages, files, subject } = req.body
+        let data = await sendEmail(email, "New Message From Asiya", 'newMessage', {
+            messages
         });
         res.status(200).send(data)
     }

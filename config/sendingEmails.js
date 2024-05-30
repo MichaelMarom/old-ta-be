@@ -1,19 +1,8 @@
 const nodemailer = require('nodemailer');
 const { sendErrors } = require('../helperfunctions/handleReqErrors');
-const hbs = require('express-handlebars');
-
 const fs = require('fs');
 const path = require('path');
 
-const handlebarOptions = {
-    viewEngine: {
-        extName: '.hbs',
-        partialsDir: path.resolve('../templates/chat'),
-        defaultLayout: false,
-    },
-    viewPath: path.resolve('../templates/chat'),
-    extName: '.hbs',
-};
 
 
 async function sendEmail(email, message, subject) {
@@ -24,11 +13,9 @@ async function sendEmail(email, message, subject) {
         
         auth: {
             user: process.env.ADMIN_EMAIL_SENDER_USER,
-            pass: process.env.ADMIN_EMAIL_SENDER_PAS
+            pass: process.env.ADMIN_EMAIL_SENDER_PASS
         }
     });
-
-    transporter.use('compile',  hbs(handlebarOptions))
 
     const templatePath = path.join(__dirname, '../templates/student-marketing/new-template.html');
     const imagesPath = path.join(__dirname, '../templates/student-marketing/images');
