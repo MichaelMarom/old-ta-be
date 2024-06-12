@@ -2117,7 +2117,7 @@ const recordVideoController = async (req, res) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(error);
-        return res.status(500).send({ message: "Failed to upload", reason:error.message });
+        return res.status(500).send({ message: "Failed to upload the video. The video may be corrupted.", reason:error.message });
       }
 
       //delete the non-flipped video
