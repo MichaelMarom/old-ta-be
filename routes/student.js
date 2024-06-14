@@ -51,7 +51,7 @@ STUDENT_ROUTES.post('/student/feedback', parser, verifyToken, post_student_feedb
 STUDENT_ROUTES.get('/student/feedback/:ShortlistId', get_student_feedback)
 STUDENT_ROUTES.get('/student/booked-slot', verifyToken, getBookedSlot)
 
-// STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
+STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
 STUDENT_ROUTES.get('/questions/list/:isStudentLoggedIn', verifyToken, get_feedback_questions)
 STUDENT_ROUTES.get('/questions/:StudentId/:TutorId/:SessionId/:isstudentgiver', verifyToken, get_feedback_of_questions)
 STUDENT_ROUTES.post('/questions', parser, verifyToken, post_feedback_questions);

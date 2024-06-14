@@ -287,7 +287,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
             WHERE 
                 CONVERT(VARCHAR, SR.faculty) = '${facultyId}' 
                 AND TS.Status = 'active' 
-                AND CONVERT(VARCHAR, SR.subject) = '${subjectName}'   ` )
+                AND CONVERT(VARCHAR, SR.subject) = '${subjectName}'   `)
 
 
                 // edu.EducationalLevelExperience,
@@ -744,41 +744,41 @@ const post_student_feedback = async (req, res) => {
     })
 }
 
-// const payment_report = async (req, res) => {
-//     const { studentId } = req.params;
-//     marom_db(async (config) => {
-//         try {
-//             const sql = require('mssql');
-//             const poolConnection = await sql.connect(config);
+const payment_report = async (req, res) => {
+    const { studentId } = req.params;
+    marom_db(async (config) => {
+        try {
+            const sql = require('mssql');
+            const poolConnection = await sql.connect(config);
 
-//             if (poolConnection) {
-//                 const result = await poolConnection.request().query(
-//                     `SELECT 
-//                     b.studentId AS studentId,
-//                     b.tutorId AS tutorId,
-//                     b.reservedSlots AS reservedSlots,
-//                     b.bookedSlots AS bookedSlots,
-//                     r.rate AS rate,
-//                     ts.Photo
-//                      FROM StudentBookings AS b
-//                      JOIN StudentShortList AS r ON
-//                      b.studentId  = CAST( r.Student as varchar(max)) AND 
-//                      b.tutorId =  CAST(r.AcademyId as varchar(max))
-//                      inner join TutorSetup AS ts On
-//                      ts.AcademyId = CAST(r.AcademyId as varchar(max))
-//                     WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
-//                 );
+            if (poolConnection) {
+                const result = await poolConnection.request().query(
+                    `SELECT 
+                    b.studentId AS studentId,
+                    b.tutorId AS tutorId,
+                    b.reservedSlots AS reservedSlots,
+                    b.bookedSlots AS bookedSlots,
+                    r.rate AS rate,
+                    ts.Photo
+                     FROM StudentBookings AS b
+                     JOIN StudentShortList AS r ON
+                     b.studentId  = CAST( r.Student as varchar(max)) AND 
+                     b.tutorId =  CAST(r.AcademyId as varchar(max))
+                     inner join TutorSetup AS ts On
+                     ts.AcademyId = CAST(r.AcademyId as varchar(max))
+                    WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
+                );
 
 
 
-//                 res.status(200).send(result.recordset);
-//             }
-//         } catch (err) {
-//             console.log(err);
-//             res.status(400).send({ message: err.message });
-//         }
-//     })
-// }
+                res.status(200).send(result.recordset);
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(400).send({ message: err.message });
+        }
+    })
+}
 
 const get_feedback_questions = async (req, res) => {
     marom_db(async (config) => {
@@ -1140,7 +1140,7 @@ module.exports = {
     post_student_bank_details,
     get_student_feedback,
     post_student_feedback,
-    // payment_report,
+    payment_report,
     ad_to_shortlist,
     get_ad,
     put_ad
