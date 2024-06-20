@@ -185,7 +185,7 @@ const get_recomendation = async (req, res) => {
                         "varchar")
                 );
                 const formattedData = {
-                    recomendation: data.recordset[0].ThingsReferences
+                    recomendation: data.recordset?.[0]?.ThingsReferences || ''
                 }
                 res.status(200).send(formattedData)
             }

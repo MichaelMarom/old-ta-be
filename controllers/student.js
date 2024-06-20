@@ -8,6 +8,7 @@ const { capitalizeFirstLetter } = require('../constants/helperfunctions.js')
 const studentAd = require('../schema/student/studentAd.js');
 const { sendErrors } = require('../helperfunctions/handleReqErrors.js');
 const { resolveHostname } = require('nodemailer/lib/shared/index.js');
+const StudentSetup = require('../schema/student/StudentSetup.js');
 
 const executeQuery = async (query, res) => {
     try {
@@ -141,6 +142,38 @@ let upload_setup_info = (req, res) => {
         let result = await records.rowsAffected[0] === 1 ? true : false
         return (result);
     }
+}
+
+const upload_student_by_field = (req, res) => {
+    marom_db(async (config) => {
+        try {
+            const { id } = req.params
+            const poolConnection = await sql.connect(config);
+            const request = poolConnection.request();
+            const { recordset } = await request.query(`SELECT * FROM "StudentSetup" WHERE CONVERT(VARCHAR, AcademyId) 
+                = '${id}'`)
+            if (!recordset.length) throw new Error('Student does not exist');
+
+            Object.keys({ ...req.body, AcademyId: id }).map(key => {
+                request.input(key, StudentSetup[key], req.body[key])
+            })
+            let casting = {};
+            Object.keys({...req.body,AcademyId:id}).map(key => {
+                casting = { ...casting, [key]: "varchar" }
+                return;
+            })
+
+            const result = await request.query(`UPDATE StudentSetup
+         SET Address1 = CAST(@Address1 AS varchar(max)),
+          Address2 = CAST(@Address2 AS varchar(max))
+         WHERE CAST(AcademyId AS varchar(max)) = @AcademyId;
+         `)
+            res.status(200).send(result.recordset);
+        }
+        catch (e) {
+            sendErrors(e, res)
+        }
+    })
 }
 
 let get_student_setup = (req, res) => {
@@ -1112,6 +1145,7 @@ module.exports = {
     post_feedback_questions,
     delete_ad_from_shortlist,
     post_student_ad,
+    upload_student_by_field,
     set_code_applied,
     // update_shortlist,
     get_all_students_sessions_formatted,
