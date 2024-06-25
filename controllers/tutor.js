@@ -134,7 +134,7 @@ const subject_already_exist = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -326,7 +326,7 @@ const dynamically_post_edu_info = (req, res) => {
         );
         update.rowsAffected
           ? res.status(200).send({ message: "Updated Sucesfully" })
-          : res.status(400).send({ message: "Failed to update the record" });
+          : sendErrors({ message: "Failed to update the record" }, res);
       } else {
         const insert = await request.query(
           parameterizedInsertQuery("Education1", req.body).query
@@ -334,7 +334,7 @@ const dynamically_post_edu_info = (req, res) => {
         res.status(200).send(insert.recordset);
       }
     } catch (err) {
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -642,7 +642,7 @@ let upload_tutor_rates = (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -664,7 +664,7 @@ let remove_subject_rates = (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -906,7 +906,7 @@ let get_rates = (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -930,7 +930,7 @@ const get_tutor_offered_subjects = (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          res.status(400).send({ message: err.message });
+          sendErrors(err, res);
         });
     }
   });
@@ -1025,7 +1025,7 @@ let get_tutor_setup = (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1049,7 +1049,7 @@ const get_tutor_photos = async (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          res.status(400).send(err);
+          sendErrors(err, res)
         });
     }
   });
@@ -1069,7 +1069,7 @@ let get_my_edu = (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          res.status(400).send(err);
+          sendErrors(err, res)
         });
     }
   });
@@ -1163,13 +1163,13 @@ let fetchStudentsBookings = (req, res) => {
             res.status(200).send(result.recordset);
           })
           .catch((err) => {
-            res.status(400).json({ message: err.message });
+            sendErrors(err, res)
           });
       }
     });
-  } catch (error) {
-    console.error("Error storing Events:", error);
-    res.status(400).json({ message: error.message });
+  } catch (err) {
+    console.error("Error storing Events:", err);
+    sendErrors(err, res)
   }
 };
 
@@ -1255,7 +1255,7 @@ const set_agreements_date_null_for_all = (req, res) => {
         res.status(200).send(result.rowsAffected ? true : false);
       }
     } catch (err) {
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1282,11 +1282,7 @@ let get_tutor_market_data = async (req, res) => {
         Subjects: Subjects.recordset,
       });
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -1484,7 +1480,7 @@ let getSessionsDetails = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1567,7 +1563,7 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1607,7 +1603,7 @@ let last_pay_day = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1761,7 +1757,7 @@ const get_tutor_profile_data = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1782,8 +1778,8 @@ const post_tutor_ad = async (req, res) => {
         .request()
         .query(insert("TutorAds", req.body));
       res.status(200).send(result.recordset[0]);
-    } catch (e) {
-      res.status(400).send({ message: e.message });
+    } catch (err) {
+      sendErrors(err, res)
     }
   });
 };
@@ -1799,8 +1795,8 @@ const get_tutor_ads = async (req, res) => {
         (a, b) => new Date(b.Published_At) - new Date(a.Published_At)
       );
       res.status(200).send(recordset);
-    } catch (e) {
-      res.status(400).send({ message: e.message });
+    } catch (err) {
+      sendErrors(err, res)
     }
   });
 };
@@ -1813,8 +1809,8 @@ const get_ad = async (req, res) => {
         .request()
         .query(findByAnyIdColumn("TutorAds", req.params));
       res.status(200).send(result.recordset[0]);
-    } catch (e) {
-      res.status(400).send({ message: e.message });
+    } catch (err) {
+      sendErrors(err, res)
     }
   });
 };
@@ -1850,9 +1846,8 @@ const put_ad = async (req, res) => {
       );
 
       res.status(200).send(result.recordset);
-    } catch (e) {
-      console.error(e.message);
-      res.status(400).send({ message: e.message });
+    } catch (err) {
+      sendErrors(err, res)
     }
   });
 };
@@ -1871,10 +1866,10 @@ const get_tutor_against_code = async (req, res) => {
 
         result.recordset.length
           ? res.status(200).send(result.recordset[0])
-          : res.status(400).send({ message: "Code Does not Exist!" });
+          : sendErrors({ message: "Code Does not Exist!" }, res);
       }
     } catch (err) {
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -1932,11 +1927,7 @@ const get_feedback_data = async (req, res) => {
       });
       res.status(200).send(sessionsWithPhotos);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -1950,11 +1941,7 @@ const get_tutor_feedback_questions = async (req, res) => {
         .query(find("FeedbackQuestions", { ForStudents: 0 }));
       res.status(200).send(recordset);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -1968,11 +1955,7 @@ const delete_ad = async (req, res) => {
         .query(`Delete from TutorAds where Id = ${req.params.Id}`);
       res.status(200).send(recordset);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -1997,7 +1980,7 @@ const get_student_published_ads = async (req, res) => {
       }
     } catch (err) {
       console.log(err);
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res);
     }
   });
 };
@@ -2012,11 +1995,7 @@ const delete_ad_from_shortlist = async (req, res) => {
       );
       res.status(200).send(data);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -2036,11 +2015,7 @@ const ad_to_shortlist = async (req, res) => {
       }
       res.status(200).send(recordset);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -2065,11 +2040,7 @@ const get_shortlist_ads = async (req, res) => {
 
       res.status(200).send(recordset);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -2090,11 +2061,7 @@ const get_student_public_profile_data = async (req, res) => {
 
       res.status(200).send(recordset[0]);
     } catch (err) {
-      res.status(400).send({
-        message:
-          "Backend server is down, please wait for administrator to run it again.",
-        reason: err.message,
-      });
+      sendErrors(err, res)
     }
   });
 };
@@ -2103,11 +2070,11 @@ const recordVideoController = async (req, res) => {
   try {
     const { user_id } = req.body;
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
-      return res.status(400).send({ message: "Please upload a video file" });
+      return sendErrors({ message: "Please upload a video file" }, res);
     }
 
     if (!user_id) {
-      return res.status(400).send({ message: "Please provide a user id" });
+      return sendErrors({ message: "Please provide a user id" }, res);
     }
 
     // Mirror the video horizontally using ffmpeg

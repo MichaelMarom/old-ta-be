@@ -1,5 +1,6 @@
 const { marom_db } = require('../db');
 const { getAll, insert, find, update, parameterizedInsertQuery, findByAnyIdColumn } = require('../helperfunctions/crud_queries');
+const { sendErrors } = require('../helperfunctions/handleReqErrors');
 const Message = require('../schema/common/Message');
 
 function capitalizeFirstLetter(str) {
@@ -43,8 +44,7 @@ const fetch_chats = async (req, res) => {
                 res.status(200).send(formatedResult);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 };
@@ -88,8 +88,7 @@ const fetch_chat_messages = async (req, res) => {
                 res.status(200).send(formatedResult);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 };
@@ -114,8 +113,7 @@ const post_message = async (req, res) => {
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 };
@@ -146,8 +144,7 @@ const create_chat = async (req, res) => {
                 res.status(200).send([])
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -167,8 +164,7 @@ const set_status = async (req, res) => {
                 res.status(200).send(data)
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -190,8 +186,7 @@ const get_recomendation = async (req, res) => {
                 res.status(200).send(formattedData)
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }

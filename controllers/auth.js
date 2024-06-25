@@ -81,9 +81,8 @@ const signup = async (req, res) => {
         } catch (err) {
             console.log(err);
             if (err.message.includes('UNIQUE KEY constraint')) {
-                res.status(400).send({ message: "Email already exist" });
-            }
-            else res.status(400).send({ message: "Failed to Register User" });
+sendErrors({message:"Email Already Exists"}, res)            }
+            else sendErrors({message:"Failed to Register User"}, res)
         }
     })
 };
@@ -115,8 +114,7 @@ const login = async (req, res) => {
             }
         } catch (err) {
             console.log(err.message);
-            res.status(400).send({ message: err.message });
-        }
+sendErrors(err, res)        }
     })
 };
 
@@ -144,8 +142,7 @@ const get_token = async (req, res) => {
         const token = generateToken(req.params);
         res.status(200).send(token);
     } catch (err) {
-        res.status(400).send({ message: err.message })
-    }
+sendErrors(err, res)    }
 }
 
 const get_setup_detail = async (req, res) => {
@@ -170,8 +167,7 @@ const get_setup_detail = async (req, res) => {
                 res.status(200).send(result.recordset[0]);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -196,8 +192,7 @@ const forget_password = async (req, res) => {
                 res.status(200).send(updateData.recordset[0]);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }

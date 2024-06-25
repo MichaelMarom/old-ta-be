@@ -24,8 +24,7 @@ const executeQuery = async (query, res) => {
                 }
             }
             catch (err) {
-                console.log(err);
-                res.status(400).send(err)
+                sendErrors(err, res)
             }
         })
     } catch (error) {
@@ -75,7 +74,8 @@ let upload_setup_info = (req, res) => {
                         res.status(200).send({ user: UserId, screen_name: screenName, bool: true, mssg: 'Data Was Saved Successfully', type: 'save' })
                     })
                     .catch((err) => {
-                        res.status(400).send({ user: UserId, screen_name: screenName, bool: false, mssg: 'Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.' })
+                        res.status(400).send({ user: UserId, screen_name: screenName, bool: false,
+                            mssg: 'Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.' })
                         console.log(err)
 
                     })
@@ -261,8 +261,7 @@ let get_tutor_subject = async (req, res) => {
                 }
             }
             catch (err) {
-                console.log(err)
-                res.status(400).send({ message: err.message })
+                sendErrors(err, res)
             }
         })
     } catch (err) {
@@ -360,55 +359,54 @@ let upload_student_short_list = async (req, res) => {
             }
             res.status(200).send(result.recordset)
         } catch (err) {
-            res.status(400).send({ message: "Failed To Add the Record", reason: err.message })
+            sendErrors(err, res)
         }
     })
 }
 
-const get_student_short_list = async (req, res) => {
-    try {
-        marom_db(async (config) => {
-            let poolConnection = await sql.connect(config);
-            let result = await poolConnection.request().query(
-                `SELECT SSL.*, TR.*, SR.rate as rate, TS.*
-                FROM StudentShortList SSL
-                left JOIN TutorRates TR ON 
-                    CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TR.AcademyId)   
-                join TutorSetup as TS ON
-                    CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TS.AcademyId)   
-                inner join SubjectRates as SR ON
-                    cast(SR.AcademyId as VARCHAR(MAX)) =  cast( TR.AcademyId as VARCHAR(MAX)) and      
-                    cast(SR.subject as VARCHAR(MAX)) =  cast( SSL.Subject as VARCHAR(MAX))   
-                WHERE cast( SSL.Student as varchar) = cast('${req.params.student}' as varchar) AND
-                TS.Status = 'active'
-                `
-            );
+// const get_student_short_list = async (req, res) => {
+//     try {
+//         marom_db(async (config) => {
+//             let poolConnection = await sql.connect(config);
+//             let result = await poolConnection.request().query(
+//                 `SELECT SSL.*, TR.*, SR.rate as rate, TS.*
+//                 FROM StudentShortList SSL
+//                 left JOIN TutorRates TR ON 
+//                     CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TR.AcademyId)   
+//                 join TutorSetup as TS ON
+//                     CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TS.AcademyId)   
+//                 inner join SubjectRates as SR ON
+//                     cast(SR.AcademyId as VARCHAR(MAX)) =  cast( TR.AcademyId as VARCHAR(MAX)) and      
+//                     cast(SR.subject as VARCHAR(MAX)) =  cast( SSL.Subject as VARCHAR(MAX))   
+//                 WHERE cast( SSL.Student as varchar) = cast('${req.params.student}' as varchar) AND
+//                 TS.Status = 'active'
+//                 `
+//             );
 
-            res.status(200).send(result.recordset);
-        })
-    } catch (err) {
-        console.log(err);
-        res.status(400).send({ message: err.message })
-    }
-};
+//             res.status(200).send(result.recordset);
+//         })
+//     } catch (err) {
+//         sendErrors(err, res)
+//     }
+// };
 
-const update_shortlist = async (req, res) => {
-    try {
-        const query = update("StudentShortList", req.body, req.params, {
-            AcademyId: "varchar",
-            Student: "varchar", Subject: "varchar"
-        })
-        const result = await executeQuery(query, res);
-        if (result?.recordset?.length === 0) {
-            throw new Error('Update failed: Record not found');
-        }
-        // res.status(200).send(result?.recordset)
-    } catch (error) {
-        console.error('Error in updateRecord:', error.message);
-        res.status(400).send(error)
+// const update_shortlist = async (req, res) => {
+//     try {
+//         const query = update("StudentShortList", req.body, req.params, {
+//             AcademyId: "varchar",
+//             Student: "varchar", Subject: "varchar"
+//         })
+//         const result = await executeQuery(query, res);
+//         if (result?.recordset?.length === 0) {
+//             throw new Error('Update failed: Record not found');
+//         }
+//         // res.status(200).send(result?.recordset)
+//     } catch (error) {
+//         console.error('Error in updateRecord:', error.message);
+//         res.status(400).send(error)
 
-    }
-}
+//     }
+// }
 
 let get_my_data = async (req, res) => {
     let { AcademyId } = req.query;
@@ -452,7 +450,7 @@ let get_student_short_list_data = (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
+                sendErrors(err, res)
             })
     })
 }
@@ -473,18 +471,12 @@ const post_student_ad = async (req, res) => {
 
                 res.status(200).send(result.recordset[0])
             } catch (err) {
-                res.status(400).send({
-                    message: "Backend server is down, please wait for administrator to run it again.",
-                    reason: err.message
-                })
+                sendErrors(err, res)
             }
         })
     }
     catch (err) {
-        res.status(400).send({
-            message: "Backend server is down, please wait for administrator to run it again.",
-            reason: err.message
-        })
+        sendErrors(err, res)
     }
 }
 
@@ -502,18 +494,12 @@ const get_student_ads = async (req, res) => {
 
                 res.status(200).send(recordset)
             } catch (err) {
-                res.status(400).send({
-                    message: "Backend server is down, please wait for administrator to run it again.",
-                    reason: err.message
-                })
+                sendErrors(err, res)
             }
         })
     }
     catch (err) {
-        res.status(400).send({
-            message: "Backend server is down, please wait for administrator to run it again.",
-            reason: err.message
-        })
+        sendErrors(err, res)
     }
 }
 
@@ -532,18 +518,12 @@ let get_student_market_data = async (req, res) => {
 
                 res.status(200).send(recordset)
             } catch (err) {
-                res.status(400).send({
-                    message: "Backend server is down, please wait for administrator to run it again.",
-                    reason: err.message
-                })
+                sendErrors(err, res)
             }
         })
     }
     catch (err) {
-        res.status(400).send({
-            message: "Backend server is down, please wait for administrator to run it again.",
-            reason: err.message
-        })
+        sendErrors(err, res)
     }
 }
 
@@ -556,7 +536,7 @@ const get_ad = async (req, res) => {
             res.status(200).send(result.recordset[0]);
         }
         catch (e) {
-            res.status(400).send({ message: e.message })
+            sendErrors(err, res)
         }
     })
 }
@@ -577,8 +557,7 @@ const put_ad = async (req, res) => {
             res.status(200).send(result.recordset);
         }
         catch (e) {
-            console.error(e.message)
-            res.status(400).send({ message: e.message })
+            sendErrors(err, res)
         }
     })
 }
@@ -610,14 +589,12 @@ const post_student_bookings = async (req, res) => {
                                     res.status(200).send(result.recordset);
                                 })
                                 .catch(err => {
-                                    res.status(400).send({
-                                        message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message
-                                    });
+                                    sendErrors(err, res)
                                 })
                         }
                     })
                     .catch(err => {
-                        res.status(400).send({ message: 'Backend server is down, please wait for administrator to run it again.', reason: err.message })
+                        sendErrors(err, res)
                     })
             }
             else {
@@ -657,7 +634,7 @@ const get_student_bookings = async (req, res) => {
                 res.status(200).send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
+                sendErrors(err, res)
             })
     })
 }
@@ -673,8 +650,7 @@ const get_tutor_bookings = async (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                res.status(400).send({ message: "Backend server is down, please wait for administrator to run it again.", reason: err.message })
-            })
+                sendErrors(err, res)})
     })
 }
 
@@ -692,8 +668,7 @@ const get_student_bank_details = async (req, res) => {
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -722,8 +697,7 @@ const post_student_bank_details = async (req, res) => {
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -741,8 +715,7 @@ const get_student_feedback = async (req, res) => {
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -771,8 +744,7 @@ const post_student_feedback = async (req, res) => {
                 res.status(200).send(result.recordset);
             }
         } catch (err) {
-            console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res)
         }
     })
 }
@@ -808,7 +780,7 @@ const payment_report = async (req, res) => {
             }
         } catch (err) {
             console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res);
         }
     })
 }
@@ -828,7 +800,7 @@ const get_feedback_questions = async (req, res) => {
             }
         } catch (err) {
             console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res);
         }
     })
 }
@@ -854,7 +826,7 @@ const get_feedback_of_questions = async (req, res) => {
             }
         } catch (err) {
             console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res);
         }
     })
 }
@@ -889,7 +861,7 @@ const post_feedback_questions = async (req, res) => {
             }
         } catch (err) {
             console.log(err);
-            res.status(400).send({ message: err.message });
+            sendErrors(err, res);
         }
     })
 }
@@ -913,8 +885,7 @@ function getBookedSlot(req, res) {
             }
         }
         catch (err) {
-            console.log(err)
-            res.status(400).send(err)
+            sendErrors(err, res);
         }
 
     })
@@ -934,7 +905,7 @@ const post_student_agreement = async (req, res) => {
         }
         catch (err) {
             console.log(err)
-            res.status(400).send({ message: err.message })
+            sendErrors(err, res)
         }
     })
 }
@@ -980,7 +951,7 @@ const set_code_applied = async (req, res) => {
             }
         }
         catch (err) {
-            res.status(400).send({ message: err.message })
+            sendErrors(err, res)
         }
     })
 }
@@ -1004,7 +975,7 @@ const get_published_ads = async (req, res) => {
         }
         catch (err) {
             console.log(err)
-            res.status(400).send({ message: err.message })
+            sendErrors(err, res)
         }
     })
 }
@@ -1025,10 +996,7 @@ const ad_to_shortlist = async (req, res) => {
             res.status(200).send(recordset)
         }
         catch (err) {
-            res.status(400).send({
-                message: "Backend server is down, please wait for administrator to run it again.",
-                reason: err.message
-            })
+            sendErrors(err, res)
         }
     })
 }
@@ -1050,10 +1018,7 @@ const get_shortlist_ads = async (req, res) => {
             res.status(200).send(recordset)
         }
         catch (err) {
-            res.status(400).send({
-                message: "Backend server is down, please wait for administrator to run it again.",
-                reason: err.message
-            })
+            sendErrors(err, res)
         }
     })
 }
@@ -1068,10 +1033,7 @@ const delete_ad_from_shortlist = async (req, res) => {
             res.status(200).send(data)
         }
         catch (err) {
-            res.status(400).send({
-                message: "Backend server is down, please wait for administrator to run it again.",
-                reason: err.message
-            })
+            sendErrors(err, res)
         }
     })
 }
@@ -1136,7 +1098,7 @@ const get_all_students_sessions_formatted = async (req, res) => {
         }
         catch (err) {
             console.log(err)
-            res.status(400).send({ message: err.message })
+            sendErrors(err, res)
         }
     })
 }

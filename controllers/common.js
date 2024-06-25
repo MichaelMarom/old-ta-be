@@ -37,8 +37,7 @@ const updateRecord = async (req, res) => {
         }
         res.status(200).send(result?.recordSet)
     } catch (error) {
-        console.error('Error in updateRecord:', error.message);
-        res.status(400).send(error)
+        sendErrors(error, res)
 
     }
 };
@@ -51,8 +50,7 @@ const getAllRecords = async (req, res) => {
         return await executeQuery(query);
 
     } catch (error) {
-        console.error('Error in getAllRecords:', error.message);
-        res.status(400).send(error)
+        sendErrors(error, res)
     }
 };
 

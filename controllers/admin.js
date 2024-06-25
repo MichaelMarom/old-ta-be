@@ -80,7 +80,7 @@ const get_users_list = async (req, res) => {
   }
 
   catch (err) {
-    res.status(400).send({ reason: err.errors[0].message, message: "Failed" })
+    sendErrors(err, res);
   }
 }
 
@@ -189,7 +189,7 @@ let get_tutor_new_subject = async (req, res) => {
         res.status(200).send(result.recordset);
       }
     } catch (err) {
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res)
     }
   });
 };
@@ -244,7 +244,7 @@ let accept_new_subject = async (req, res) => {
         }
       }
     } catch (err) {
-      res.status(400).send({ mssage: err.message });
+      sendErrors(err, res)
     }
   });
 };
@@ -261,7 +261,7 @@ let decline_new_subject = (req, res) => {
 
       res.status(200).send({ message: "Subject Declined succesfully" });
     } catch (err) {
-      res.status(400).send({ message: err.message });
+      sendErrors(err, res)
     }
   });
 };
@@ -327,8 +327,7 @@ const postTerms = async (req, res) => {
       }
     } catch (error) {
       console.error("Error storing terms:", error.message);
-      res.status(400).json({ success: false, message: error.message });
-    }
+sendErrors(err, res)    }
   });
 };
 
@@ -361,7 +360,7 @@ const api_save_email_template = async (req, res) => {
         const { recordset } = await poolConnection
           .request()
           .query(
-           insert('EmailTemplates', req.body)
+            insert('EmailTemplates', req.body)
           )
         res.status(200).send(recordset);
       }
@@ -380,7 +379,7 @@ const api_update_email_template = async (req, res) => {
         const { recordset } = await poolConnection
           .request()
           .query(
-            update('EmailTemplates', req.body, {id:req.params.id})
+            update('EmailTemplates', req.body, { id: req.params.id })
           )
         res.status(200).send(recordset);
       }
