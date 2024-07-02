@@ -14,7 +14,7 @@ require('dotenv').config();
 
 var { PeerServer } = require("peer");
 const { sendErrors } = require('./helperfunctions/handleReqErrors');
-var myPeerServer = PeerServer({ port: 8080 });
+var myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
 
 const app = express();
 app.use(cors({ origin: process.env.Remote_Base }))

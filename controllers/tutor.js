@@ -64,9 +64,9 @@ let post_new_subject = (req, res) => {
           result.rowsAffected[0] === 1
             ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
             : res.send({
-              bool: false,
-              mssg: "Data Was Not Successfully Saved",
-            });
+                bool: false,
+                mssg: "Data Was Not Successfully Saved",
+              });
         })
         .catch((err) => {
           console.log(err);
@@ -393,9 +393,11 @@ let post_tutor_rates_form = (req, res) => {
                             VALUES ( '${MutiStudentHourlyRate}', 
                             '${CancellationPolicy}','${FreeDemoLesson}',
                             '${ConsentRecordingLesson}','${ActivateSubscriptionOption}',
-                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${MultiStudent ? 1 : 0
+                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${
+              MultiStudent ? 1 : 0
             },
-                            ${CodeShareable ? 1 : 0},${IntroSessionDiscount ? 1 : 0
+                            ${CodeShareable ? 1 : 0},${
+              IntroSessionDiscount ? 1 : 0
             },
                             '${CodeStatus}')  `
           );
@@ -692,10 +694,10 @@ let upload_tutor_bank = (req, res) => {
       var poolConnection = await sql.connect(config);
       let response = poolConnection
         ? await poolConnection
-          .request()
-          .query(
-            `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
-          )
+            .request()
+            .query(
+              `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
+            )
         : "err conneecting to db";
 
       cb(response.rowsAffected[0]);
@@ -1003,14 +1005,47 @@ let get_tutor_setup = (req, res) => {
     try {
       var poolConnection = await sql.connect(config);
       if (poolConnection) {
-        const result = await poolConnection
-          .request()
-          .query(findByAnyIdColumn("TutorSetup", req.query, "varchar(max)"));
+        const request = poolConnection.request();
+        const result = await request.query(
+          `SELECT
+            FirstName,
+            MiddleName,
+            LastName,
+            Address1,
+            Address2,
+            CityTown,
+            StateProvince,
+            ZipCode,
+            Country,
+            CellPhone,
+            GMT,
+            ResponseHrs,
+            TutorScreenname,
+            HeadLine,
+            Introduction,
+            Motivate,
+            IdVerified,
+            BackgroundVerified,
+            AcademyId,
+            Grades,
+            userId,
+            Online,
+            AgreementDate,
+            VacationMode,
+            StartVacation,
+            EndVacation,
+            Step,
+            Status,
+            CreatedAT
+      
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]}'`
+          // findByAnyIdColumn("TutorSetup", req.query, "varchar(max)")
+        );
         let record = result.recordset?.[0] || {};
         if (record.userId) {
-          const { recordset } = await poolConnection
-            .request()
-            .query(findByAnyIdColumn("Users1", { SID: record.userId }));
+          const { recordset } = await request.query(
+            findByAnyIdColumn("Users1", { SID: record.userId })
+          );
           record = { ...record, Email: recordset?.[0]?.email || "" };
         }
         const offset = parseInt(record.GMT, 10);
@@ -1024,7 +1059,6 @@ let get_tutor_setup = (req, res) => {
         res.status(200).send(formattedResult);
       }
     } catch (err) {
-      console.log(err);
       sendErrors(err, res);
     }
   });
@@ -1049,7 +1083,7 @@ const get_tutor_photos = async (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          sendErrors(err, res)
+          sendErrors(err, res);
         });
     }
   });
@@ -1069,7 +1103,7 @@ let get_my_edu = (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          sendErrors(err, res)
+          sendErrors(err, res);
         });
     }
   });
@@ -1163,13 +1197,13 @@ let fetchStudentsBookings = (req, res) => {
             res.status(200).send(result.recordset);
           })
           .catch((err) => {
-            sendErrors(err, res)
+            sendErrors(err, res);
           });
       }
     });
   } catch (err) {
     console.error("Error storing Events:", err);
-    sendErrors(err, res)
+    sendErrors(err, res);
   }
 };
 
@@ -1190,7 +1224,6 @@ const post_tutor_setup = (req, res) => {
             sql.NVarChar(sql.MAX),
             findtutorSetup.recordset[0].AcademyId
           );
-
 
           Object.keys(req.body).map((key) => {
             request.input(key, TutorSetup[key], req.body[key]);
@@ -1213,18 +1246,18 @@ const post_tutor_setup = (req, res) => {
           req.body.AcademyId =
             req.body.MiddleName.length > 0
               ? req.body.FirstName +
-              "." +
-              " " +
-              req.body.MiddleName[0] +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate()
+                "." +
+                " " +
+                req.body.MiddleName[0] +
+                "." +
+                " " +
+                req.body.LastName[0] +
+                shortId.generate()
               : req.body.FirstName +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate();
+                "." +
+                " " +
+                req.body.LastName[0] +
+                shortId.generate();
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
@@ -1236,9 +1269,9 @@ const post_tutor_setup = (req, res) => {
 
           res.status(200).send(result.recordset);
         }
-      }else throw new Error("Facing trouble with Connection!")
+      } else throw new Error("Facing trouble with Connection!");
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1282,7 +1315,7 @@ let get_tutor_market_data = async (req, res) => {
         Subjects: Subjects.recordset,
       });
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1779,7 +1812,7 @@ const post_tutor_ad = async (req, res) => {
         .query(insert("TutorAds", req.body));
       res.status(200).send(result.recordset[0]);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1796,7 +1829,7 @@ const get_tutor_ads = async (req, res) => {
       );
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1810,7 +1843,7 @@ const get_ad = async (req, res) => {
         .query(findByAnyIdColumn("TutorAds", req.params));
       res.status(200).send(result.recordset[0]);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1847,7 +1880,7 @@ const put_ad = async (req, res) => {
 
       res.status(200).send(result.recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1927,7 +1960,7 @@ const get_feedback_data = async (req, res) => {
       });
       res.status(200).send(sessionsWithPhotos);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1941,7 +1974,7 @@ const get_tutor_feedback_questions = async (req, res) => {
         .query(find("FeedbackQuestions", { ForStudents: 0 }));
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1955,7 +1988,7 @@ const delete_ad = async (req, res) => {
         .query(`Delete from TutorAds where Id = ${req.params.Id}`);
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -1995,7 +2028,7 @@ const delete_ad_from_shortlist = async (req, res) => {
       );
       res.status(200).send(data);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -2015,7 +2048,7 @@ const ad_to_shortlist = async (req, res) => {
       }
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -2040,7 +2073,7 @@ const get_shortlist_ads = async (req, res) => {
 
       res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -2061,7 +2094,7 @@ const get_student_public_profile_data = async (req, res) => {
 
       res.status(200).send(recordset[0]);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -2084,7 +2117,10 @@ const recordVideoController = async (req, res) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(error);
-        return res.status(500).send({ message: "Failed to upload the video. The video may be corrupted.", reason:error.message });
+        return res.status(500).send({
+          message: "Failed to upload the video. The video may be corrupted.",
+          reason: error.message,
+        });
       }
 
       //delete the non-flipped video
@@ -2104,7 +2140,7 @@ const recordVideoController = async (req, res) => {
       });
     });
   } catch (err) {
-    sendErrors(err, res)
+    sendErrors(err, res);
   }
 };
 
@@ -2140,8 +2176,8 @@ const getSessionDetailById = async (req, res) => {
 
       const session = result.recordset[0]?.sessions
         ? JSON.parse(result.recordset[0]?.sessions)?.filter(
-          (session) => session.id === sessionId
-        )?.[0]
+            (session) => session.id === sessionId
+          )?.[0]
         : {};
 
       const sessionTime = session.id
