@@ -57,7 +57,6 @@ const update = (tableName, values, where, casting = {}, returnUpdated = true) =>
 
 const parameteriedUpdateQuery = (tableName, values, where, casting = {}, returnUpdated = true) => {
     const updateFieldsArray = Object.keys(values);
-    console.log(values, )
     const setClause = updateFieldsArray.map((field) => {
         const fieldCasting = casting[field] ? `CAST(@${field} AS ${casting[field]})` : `@${field}`;
         return `${field} = ${fieldCasting}`;
@@ -68,7 +67,6 @@ const parameteriedUpdateQuery = (tableName, values, where, casting = {}, returnU
         const fieldCasting = casting[field] ? `CAST(@${field} AS ${casting[field]})` : `@${field}`;
         return `${field} = ${fieldCasting}`;
     }).join(' AND ');
-    console.log(whereClause);
 
     const parameterizedValues = { ...values, ...where };
 

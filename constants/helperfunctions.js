@@ -1,4 +1,5 @@
 const { fs, path } = require("../modules");
+const fsPromises = fs.promises;
 
 const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -33,7 +34,36 @@ const deleteFolderContents = (folderPath) => {
     });
 }
 
+const deleteFolder = async (folderPath) => {
+    try {
+        console.log(folderPath + ' deleted')
+      const files = await fsPromises.readdir(folderPath);
+      await Promise.all(files.map(async (file) => {
+        const filePath = path.join(folderPath, file);
+        const stat = await fsPromises.stat(filePath);
+  
+        if (stat.isDirectory()) {
+          await deleteFolder(filePath);
+        } else {
+          await fsPromises.unlink(filePath);
+        }
+      }));
+      await fsPromises.rmdir(folderPath);
+    } catch (err) {
+      console.error(`Error while deleting ${folderPath}.`, err);
+    }
+  };
+
+  const deleteBlobsWithPrefix = async (containerClient, prefix) => {
+    for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+      const blockBlobClient = containerClient.getBlockBlobClient(blob.name);
+      await blockBlobClient.delete();
+    }
+  };
+  
 module.exports = {
+    deleteBlobsWithPrefix,
     capitalizeFirstLetter,
+    deleteFolder,
     deleteFolderContents,
 };

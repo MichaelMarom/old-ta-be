@@ -11,36 +11,25 @@ const {
   parameteriedUpdateQuery,
   parameterizedInsertQuery,
 } = require("../helperfunctions/crud_queries");
-const { deleteFolderContents } = require("../constants/helperfunctions");
+const { deleteFolderContents,deleteFolder } = require("../constants/helperfunctions");
 const { exec } = require("child_process");
 const sql = require("mssql");
 const COMMISSION_DATA = require("../constants/tutor");
 const educationSchema = require("../schema/tutor/education");
-
-const { DefaultAzureCredential } = require("@azure/identity");
-const { QueueServiceClient } = require("@azure/storage-queue");
-const account = process.env.AZURE_ACCOUNT_NAME;
-const credential = new DefaultAzureCredential();
-const { BlobServiceClient } = require("@azure/storage-blob");
-const { sendErrors } = require("../helperfunctions/handleReqErrors");
 const {
   checkSessionStatus,
 } = require("../helperfunctions/generalHelperFunctions");
 const TutorSetup = require("../schema/tutor/Setup");
+const { sendErrors } = require("../helperfunctions/handleReqErrors");
+
+const account = process.env.AZURE_ACCOUNT_NAME;
+const { BlobServiceClient } = require("@azure/storage-blob");
 const blobServiceClient = new BlobServiceClient(
   `https://${account}.blob.core.windows.net/?${process.env.AZURE_BLOB_SAS_TOKEN}`
 );
 const containerClient = blobServiceClient.getContainerClient(
   process.env.AZURE_BLOB_CONT_NAME
 );
-
-const queueServiceClient = new QueueServiceClient(
-  `https://${account}.queue.core.windows.net`,
-  credential
-);
-// const queueConnectionString = process.env.AzureWebJobsStorage;
-// const queueServiceClient = QueueServiceClient.fromConnectionString(queueConnectionString);
-// const queueClient = queueServiceClient.getQueueClient("adsqueue");
 
 let post_new_subject = (req, res) => {
   let { faculty, subject, reason, AcademyId, facultyId } = req.body;
@@ -121,7 +110,6 @@ const subject_already_exist = async (req, res) => {
                         s.FacultyId = f.id
                         WHERE LOWER(cast(SubjectName as varchar)) = LOWER('${req.params.subject}');`
           );
-          console.log(result.recordset);
           if (result.recordset.length) {
             return res.status(200).send({
               message: "subject exist",
@@ -562,7 +550,6 @@ let post_tutor_rates_form = (req, res) => {
 
 let get_user_data = (req, res) => {
   let { user_id } = req.query;
-  console.log(user_id);
   marom_db(async (config) => {
     const sql = require("mssql");
 
@@ -1008,6 +995,7 @@ let get_tutor_setup = (req, res) => {
         const request = poolConnection.request();
         const result = await request.query(
           `SELECT
+            Photo,
             FirstName,
             MiddleName,
             LastName,
@@ -1129,7 +1117,7 @@ let storeEvents = (req, res) => {
           .then((result) => {
             res.status(200).send(result);
           })
-          .catch((err) => console.log(err, "ERR!23"));
+          .catch((err) => console.log(err));
       }
     });
   } catch (error) {
@@ -1798,13 +1786,6 @@ const get_tutor_profile_data = async (req, res) => {
 const post_tutor_ad = async (req, res) => {
   marom_db(async (config) => {
     try {
-      // const queueName = "rsfunctionapp9740";
-      // const queueClient = queueServiceClient.getQueueClient(queueName);
-      // // Send a message into the queue using the sendMessage method.
-      // const sendMessageResponse = await queueClient.sendMessage("Hello World!");
-      // console.log(
-      //     `Sent message successfully, service assigned message Id: ${sendMessageResponse.messageId}, service assigned request Id: ${sendMessageResponse.requestId}`
-      // );
 
       const poolConnection = await sql.connect(config);
       const result = await poolConnection
@@ -1853,7 +1834,6 @@ const put_ad = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       const request = poolConnection.request();
-      console.log(req.params, req.body);
       request.input("AcademyId", sql.NVarChar(sql.MAX), req.body.AcademyId);
       request.input("AdText", sql.NVarChar(sql.MAX), req.body.AdText);
       request.input("Subject", sql.NVarChar(sql.MAX), req.body.Subject);
@@ -2082,7 +2062,6 @@ const get_student_public_profile_data = async (req, res) => {
   marom_db(async (config) => {
     try {
       const { studentId, tutorId } = req.params;
-      console.log(req.params);
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(
         `SELECT SS.*, ch.ChatID From 
@@ -2135,7 +2114,8 @@ const recordVideoController = async (req, res) => {
 
         const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
         const url = await blobClient.uploadFile(outputFileName);
-        deleteFolderContents("interviews/");
+        const folderPath = path.join(__dirname, '../interviews');
+        await deleteFolder(folderPath);
         res.send({ message: "Video flipped successfully", url });
       });
     });
@@ -2159,7 +2139,6 @@ const getSessionDetailById = async (req, res) => {
     try {
       const { sessionId } = req.params;
       const { timezone } = req.query;
-      console.log(req.query, req.params);
       const poolConnection = await sql.connect(config);
       const result = await poolConnection.request().query(`
                 SELECT sessions

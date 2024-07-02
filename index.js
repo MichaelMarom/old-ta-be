@@ -17,16 +17,18 @@ const { sendErrors } = require('./helperfunctions/handleReqErrors');
 var myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
 
 const app = express();
-app.use(cors({ origin: process.env.Remote_Base }))
+app.use(cors({ origin: process.env.FE_URL }))
 app.use(morgan('tiny'));
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     next();
 });
-app.get('/', (req, res) => res.send({ message: 'Hello world!', base: process.env.Remote_Base }))
+app.get('/', (req, res) => res.send({ message: 'Hello world!', base: process.env.FE_URL }))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/interviews', express.static(path.join(__dirname, '/interviews')));
+
+// mark tutor and student ads expired after 7 days from azure function
 app.put('/api/update-expire-ads', parser, (req, res) => {
     marom_db(async (config) => {
         try {
@@ -68,7 +70,7 @@ var server = app.listen(process.env.PORT, () =>
 
 const io = socket(server, {
     cors: {
-        origin: process.env.Remote_Base,
+        origin: process.env.FE_URL,
         credentials: true,
     },
 });
@@ -166,9 +168,6 @@ myPeerServer.on("connection", function ({ id }) {
 myPeerServer.on("disconnect", function ({ id }) {
     console.log(id + " has disconnected from the PeerServer");
 });
-
-
-
 
 process.on('unhandledRejection', (reason, promise) => {
     try {
