@@ -6,13 +6,12 @@ async function sendingSMS(req, res) {
         const numbers = req.body.numbers
         const message = req.body.message
         // ["+15163308032", '+15166088464', '+923343165003'],
+
         const sendResults = await smsClient.send({
-                from: "+18667769103",
-                to: ["+15166088464"],
-                message: `HI from Azure`
-        }, {
-            enableDeliveryReport: true,
-        });
+            from: "+18667769103",
+            to: ["+15166088464"],
+            message: `Hello World 👋🏻 via SMS`
+          });
 
         res.status(200).send(sendResults)
     }

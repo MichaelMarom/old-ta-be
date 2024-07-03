@@ -442,18 +442,18 @@ let get_my_data = async (req, res) => {
 
 }
 
-let get_student_short_list_data = (req, res) => {
-    marom_db(async (config) => {
-        const poolConnection = await sql.connect(config)
-        poolConnection.request().query(`SELECT * From StudentShortList WHERE CONVERT(VARCHAR, Student) = '${req.query.id}'`)
-            .then((result) => {
-                res.send(result.recordset);
-            })
-            .catch(err => {
-                sendErrors(err, res)
-            })
-    })
-}
+// let get_student_short_list_data = (req, res) => {
+//     marom_db(async (config) => {
+//         const poolConnection = await sql.connect(config)
+//         poolConnection.request().query(`SELECT * From StudentShortList WHERE CONVERT(VARCHAR, Student) = '${req.query.id}'`)
+//             .then((result) => {
+//                 res.send(result.recordset);
+//             })
+//             .catch(err => {
+//                 sendErrors(err, res)
+//             })
+//     })
+// }
 
 const post_student_ad = async (req, res) => {
     try {
