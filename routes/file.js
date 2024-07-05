@@ -10,20 +10,10 @@ const handleFileUpload = (req, res) => {
     res.json({ filePath });
 };
 
-const handleAzureFileUpload = async (req, res) => {
-    try {
-        console.log('hi')
-        const file = req.file;
-        const tutorId = req.params.tutorId;
-        const fileUrl = await uploadImageController(req, res);
-    } catch (error) {
-        console.error(error);
-    }
-};
 
 // Route for /upload
 FILE_ROUTER.post('/upload', multerUpload.single('file'), handleFileUpload);
-FILE_ROUTER.post('/upload-image-azure/:tutorId', upload.single('file'), handleAzureFileUpload);
+FILE_ROUTER.post('/upload-image-azure/:tutorId', upload.single('file'), uploadImageController);
 FILE_ROUTER.delete('/delete-file/:id', handleFileDeletion);
 
 module.exports = FILE_ROUTER;

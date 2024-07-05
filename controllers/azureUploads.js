@@ -33,23 +33,10 @@ const uploadImageController = async (req, res) => {
         const filePath = path.join(__dirname, `../${req.file.path}`);
         console.log(filePath)
 
-        const response = await blockBlobClient.uploadFile(filePath);
-        await marom_db(async (config) => {
-            try {
-                const poolCon = await sql.connect(config);
-                const reqs = await poolCon.request().query(update('TutorSetup',
-                    { Photo: `https://${account}.blob.core.windows.net/${process.env.AZURE_BLOB_TUTOR_IMG_CONT_NAME}/${blobName}` },
-                    { AcademyId: 'Naomi. K054188' }
-                ))
-            }
-            catch (err) { console.log(err) }
-        })
-
-        const url = blockBlobClient.url;
+        await blockBlobClient.uploadFile(filePath);
         const folderPath = path.join(__dirname, '../tutorImgs');
         deleteFolderContents(folderPath);
-
-        res.status(200).send({ message: "Image uploaded successfully", url });
+        res.status(200).send({ message: "Image uploaded successfully", url: `https://${account}.blob.core.windows.net/${process.env.AZURE_BLOB_TUTOR_IMG_CONT_NAME}/${blobName}`});
     } catch (err) {
         console.error(err);
         res.status(500).send({ message: "Failed to upload the image", reason: err.message });

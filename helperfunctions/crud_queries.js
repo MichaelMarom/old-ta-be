@@ -74,7 +74,7 @@ const parameteriedUpdateQuery = (tableName, values, where, casting = {}, returnU
         UPDATE ${tableName} SET ${setClause} WHERE ${whereClause};
         ${returnUpdated ? `SELECT * FROM ${tableName} WHERE ${whereClause};` : ``}
     `;
-
+console.log(parameterizedQuery)
     return { query: parameterizedQuery, values: parameterizedValues };
 };
 
