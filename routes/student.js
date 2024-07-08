@@ -36,7 +36,8 @@ STUDENT_ROUTES.put('/student/ad/:id', parser, verifyToken, put_ad)
 STUDENT_ROUTES.get('/student/ad/:id', verifyToken, get_ad)
 
 STUDENT_ROUTES.post('/student/setup', parser, verifyToken, upload_setup_info)
-STUDENT_ROUTES.put('/student/setup/by-field/:id', parser, verifyToken, upload_student_by_field)
+STUDENT_ROUTES.put('/student/setup/by-field/:id', parser, verifyToken, upload_student_by_field) //update student setup
+
 STUDENT_ROUTES.put('/student/setup/agreement/:userId', parser, verifyToken, post_student_agreement)
 
 //bookings

@@ -11,6 +11,7 @@ const sql = require("mssql");
 const pkg = require('@clerk/clerk-sdk-node');
 const clerkClient = pkg.default;
 const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const SMS_MMS_Temp = require("../schema/admin/SMS_MMS_Temp");
 
 let get_tutor_data = (req, res) => {
   marom_db(async (config) => {
@@ -428,7 +429,97 @@ const api_get_email_templates = async (req, res) => {
   });
 }
 
+
+
+const api_save_sms_mms_temp= async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const request = poolConnection.request();
+
+        Object.keys(req.body).map(key => {
+          request.input(key, SMS_MMS_Temp[key], req.body[key]);
+        })
+        const { recordset } = request
+          .query(
+            parameterizedInsertQuery('SMS_MMS_Temps', req.body).query
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_update_sms_mms_temp= async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const request = poolConnection.request();
+
+        Object.keys({...req.body, ...req.params}).map(key => {
+          request.input(key, SMS_MMS_Temp[key], {...req.body, ...req.params}[key]);
+        })
+        const { recordset } = request
+          .query(
+            parameteriedUpdateQuery('SMS_MMS_Temps', req.body, { id: req.params.id }, {}, false).query
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_get_sms_mms_temp= async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+            ` SELECT * From SMS_MMS_Temps where id = '${req.params.id}'  `
+          )
+        res.status(200).send(recordset[0]);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
+const api_get_sms_mms_temps = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(
+            ` SELECT * From SMS_MMS_Temps `
+          )
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
 module.exports = {
+  api_save_sms_mms_temp,
+  api_update_sms_mms_temp,
+  api_get_sms_mms_temp,
+  api_get_sms_mms_temps,
   postTerms,
   get_Constants,
   get_tutor_data,

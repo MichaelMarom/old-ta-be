@@ -74,8 +74,10 @@ let upload_setup_info = (req, res) => {
                         res.status(200).send({ user: UserId, screen_name: screenName, bool: true, mssg: 'Data Was Saved Successfully', type: 'save' })
                     })
                     .catch((err) => {
-                        res.status(400).send({ user: UserId, screen_name: screenName, bool: false,
-                            mssg: 'Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.' })
+                        res.status(400).send({
+                            user: UserId, screen_name: screenName, bool: false,
+                            mssg: 'Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.'
+                        })
                         console.log(err)
 
                     })
@@ -144,6 +146,7 @@ let upload_setup_info = (req, res) => {
     }
 }
 
+
 const upload_student_by_field = (req, res) => {
     marom_db(async (config) => {
         try {
@@ -158,16 +161,22 @@ const upload_student_by_field = (req, res) => {
                 request.input(key, StudentSetup[key], req.body[key])
             })
             let casting = {};
-            Object.keys({...req.body,AcademyId:id}).map(key => {
-                casting = { ...casting, [key]: "varchar" }
+            Object.keys({ ...req.body, AcademyId: id }).map(key => {
+                casting = { ...casting, [key]: "varchar(max)" }
                 return;
             })
 
-            const result = await request.query(`UPDATE StudentSetup
-         SET Address1 = CAST(@Address1 AS varchar(max)),
-          Address2 = CAST(@Address2 AS varchar(max))
-         WHERE CAST(AcademyId AS varchar(max)) = @AcademyId;
-         `)
+            // TODO: api not working type issue
+console.log(casting)
+            const result = await request.query(
+                parameteriedUpdateQuery('StudentSetup', req.body, { AcademyId: id },casting, false).query
+                // `UPDATE StudentSetup
+                //  SET Address1 = CAST(@Address1 AS varchar(max)),
+                //  Address2 = CAST(@Address2 AS varchar(max))
+                //  WHERE 
+                //  CAST(AcademyId AS varchar(max)) = @AcademyId;
+                //  `
+            )
             res.status(200).send(result.recordset);
         }
         catch (e) {
@@ -650,7 +659,8 @@ const get_tutor_bookings = async (req, res) => {
                 res.send(result.recordset);
             })
             .catch(err => {
-                sendErrors(err, res)})
+                sendErrors(err, res)
+            })
     })
 }
 

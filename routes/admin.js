@@ -18,6 +18,10 @@ const {
   api_get_email_templates,
   api_get_email_template,
   api_update_email_template,
+  api_save_sms_mms_temp,
+  api_get_sms_mms_temps,
+  api_get_sms_mms_temp,
+  api_update_sms_mms_temp,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
@@ -78,6 +82,13 @@ ADMIN_ROUTES.post("/admin/email-template", parser, verifyToken, api_save_email_t
 ADMIN_ROUTES.get("/admin/email-template/list", verifyToken, api_get_email_templates);
 ADMIN_ROUTES.get("/admin/email-template/:id", verifyToken, api_get_email_template);
 ADMIN_ROUTES.put("/admin/email-template/:id", parser, verifyToken, api_update_email_template);
+
+
+ADMIN_ROUTES.post("/admin/sms-mms-temp", parser, verifyToken, api_save_sms_mms_temp);
+ADMIN_ROUTES.get("/admin/sms-mms-temp/list", verifyToken, api_get_sms_mms_temps);
+ADMIN_ROUTES.get("/admin/sms-mms-temp/:id", verifyToken, api_get_sms_mms_temp);
+ADMIN_ROUTES.put("/admin/sms-mms-temp/:id", parser, verifyToken, api_update_sms_mms_temp);
+
 
 module.exports = {
   ADMIN_ROUTES,

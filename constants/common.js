@@ -1,0 +1,10 @@
+const AZURE_CONT_BLOB_CODES = {
+    'tutor-profile-image': process.env.AZURE_BLOB_TUTOR_IMG_CONT_NAME,
+    'student-profile-image': process.env.AZURE_BLOB_STUDENT_IMG_CONT_NAME,
+    'tutor_intro-video': process.env.AZURE_BLOB_CONT_NAME
+}
+
+
+module.exports = {
+    AZURE_CONT_BLOB_CODES
+}
