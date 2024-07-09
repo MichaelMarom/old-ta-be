@@ -8,7 +8,7 @@ const { capitalizeFirstLetter } = require('../constants/helperfunctions.js')
 const studentAd = require('../schema/student/studentAd.js');
 const { sendErrors } = require('../helperfunctions/handleReqErrors.js');
 const { resolveHostname } = require('nodemailer/lib/shared/index.js');
-const StudentSetup = require('../schema/student/StudentSetup.js');
+const StudentSetup1 = require('../schema/student/StudentSetup.js');
 
 const executeQuery = async (query, res) => {
     try {
@@ -104,7 +104,7 @@ let upload_setup_info = (req, res) => {
     })
 
     let get_action = async (poolConnection) => {
-        let records = await poolConnection.request().query(`SELECT * FROM "StudentSetup" 
+        let records = await poolConnection.request().query(`SELECT * FROM "StudentSetup1" 
         WHERE CONVERT(VARCHAR, Email) = '${email.length > 8 ? email : null}'`)
         let get_duplicate = await records.recordset;
 
@@ -113,7 +113,7 @@ let upload_setup_info = (req, res) => {
     }
 
     let insert_student_data = async (poolConnection) => {
-        let records = await poolConnection.request().query(`INSERT INTO StudentSetup(FirstName,
+        let records = await poolConnection.request().query(`INSERT INTO StudentSetup1(FirstName,
              MiddleName, LastName, Email, Cell, Language, SecLan, ParentAEmail, ParentBEmail, 
              ParentAName, ParentBName,
              AgeGrade, Grade, Address1, Address2, City, State, ZipCode, Country,  GMT,
@@ -131,7 +131,7 @@ let upload_setup_info = (req, res) => {
     }
 
     let update_student_data = async (poolConnection) => {
-        let records = await poolConnection.request().query(`UPDATE "StudentSetup" 
+        let records = await poolConnection.request().query(`UPDATE "StudentSetup1" 
         set Photo = '${photo}', Address1 = '${add1}', Address2 = '${add2}', City = '${city}',
          State = '${state}', ZipCode = '${zipCode}', Country = '${country}', 
           Email = '${email}', Cell = '${cell}', FirstName='${fname}',LastName='${sname}',
@@ -146,6 +146,37 @@ let upload_setup_info = (req, res) => {
     }
 }
 
+const post_student_setup = (req, res) => {
+    marom_db(async (config) => {
+        try {
+
+            let AcademyId = req.body["MiddleName"]?.length > 0 ?
+                `${req.body["FirstName"]}${req.body["MiddleName"][0]}${req.body["LastName"][0]}${shortId.generate()}` :
+                `${req.body["FirstName"]}${req.body["LastName"][0]}${shortId.generate()}`;
+
+            let ScreenName = req.body["MiddleName"]?.length > 0 ?
+                `${capitalizeFirstLetter(req.body["FirstName"])} ${capitalizeFirstLetter(req.body["MiddleName"][0])}. ${capitalizeFirstLetter(req.body["LastName"][0])}` :
+                `${capitalizeFirstLetter(req.body["FirstName"])}. ${capitalizeFirstLetter(req.body["LastName"][0])}`;
+
+                const updatedBody = {...req.body, AcademyId, ScreenName}
+
+            const poolConnection = await sql.connect(config);
+            const request = poolConnection.request();
+
+            Object.keys(updatedBody).map(key => {
+                request.input(key, StudentSetup1[key], updatedBody[key])
+            })
+            const result = await request.query(
+                parameterizedInsertQuery('StudentSetup1', updatedBody).query
+            )
+
+            res.status(200).send(result.recordset);
+        }
+        catch (e) {
+            sendErrors(e, res)
+        }
+    })
+}
 
 const upload_student_by_field = (req, res) => {
     marom_db(async (config) => {
@@ -153,31 +184,18 @@ const upload_student_by_field = (req, res) => {
             const { id } = req.params
             const poolConnection = await sql.connect(config);
             const request = poolConnection.request();
-            const { recordset } = await request.query(`SELECT * FROM "StudentSetup" WHERE CONVERT(VARCHAR, AcademyId) 
+            const { recordset } = await request.query(`SELECT * FROM "StudentSetup1" WHERE AcademyId
                 = '${id}'`)
             if (!recordset.length) throw new Error('Student does not exist');
 
             Object.keys({ ...req.body, AcademyId: id }).map(key => {
-                request.input(key, StudentSetup[key], req.body[key])
+                request.input(key, StudentSetup1[key], { ...req.body, AcademyId: id }[key])
             })
-            let casting = {};
-            Object.keys({ ...req.body, AcademyId: id }).map(key => {
-                casting = { ...casting, [key]: "varchar(max)" }
-                return;
-            })
-
-            // TODO: api not working type issue
-console.log(casting)
             const result = await request.query(
-                parameteriedUpdateQuery('StudentSetup', req.body, { AcademyId: id },casting, false).query
-                // `UPDATE StudentSetup
-                //  SET Address1 = CAST(@Address1 AS varchar(max)),
-                //  Address2 = CAST(@Address2 AS varchar(max))
-                //  WHERE 
-                //  CAST(AcademyId AS varchar(max)) = @AcademyId;
-                //  `
+                parameteriedUpdateQuery('StudentSetup1', req.body, { AcademyId: id }, {}, false).query
             )
-            res.status(200).send(result.recordset);
+
+            res.status(200).send({ message: result.rowsAffected[0] ? "Updated Sucessfully" : "No Record Found" });
         }
         catch (e) {
             sendErrors(e, res)
@@ -192,7 +210,7 @@ let get_student_setup = (req, res) => {
         var poolConnection = await sql.connect(config);
         if (poolConnection) {
             poolConnection.request().query(
-                findByAnyIdColumn('StudentSetup', req.query)
+                findByAnyIdColumn('StudentSetup1', req.query)
             )
                 .then((result) => {
                     const { recordset } = result;
@@ -216,6 +234,8 @@ let get_student_setup = (req, res) => {
 
     })
 }
+
+
 
 // let get_student_grade = (req, res) => {
 //     marom_db(async (config) => {
@@ -423,7 +443,7 @@ let get_my_data = async (req, res) => {
         try {
             let poolConnection = await sql.connect(config);
 
-            const result = await poolConnection.request().query(`SELECT * from StudentSetup 
+            const result = await poolConnection.request().query(`SELECT * from StudentSetup1 
             WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `)
             let record = result.recordset[0] || {}
             if (record.userId) {
@@ -908,7 +928,7 @@ const post_student_agreement = async (req, res) => {
             const poolConnection = await sql.connect(config);
             if (poolConnection) {
                 const result = await poolConnection.request().query(
-                    update('StudentSetup', req.body, req.params)
+                    update('StudentSetup1', req.body, req.params)
                 )
                 res.status(200).send(result.recordset)
             }
@@ -1057,7 +1077,7 @@ const get_all_students_sessions_formatted = async (req, res) => {
                 const { recordset } = await poolConnection.request().query(
                     `select sb.*, ss.GMT
                     from StudentBookings as sb
-                    join StudentSetup as ss on
+                    join StudentSetup1 as ss on
                     cast(ss.AcademyId as varchar) = sb.studentId
                     where sb.studentId = '${req.params.studentId}'
                     `
@@ -1148,6 +1168,7 @@ module.exports = {
     post_student_feedback,
     payment_report,
     ad_to_shortlist,
+    post_student_setup,
     get_ad,
     put_ad
 }

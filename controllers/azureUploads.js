@@ -12,7 +12,6 @@ const blobServiceClient = new BlobServiceClient(
 
 const uploadImageController = async (req, res) => {
     try {
-        console.log(AZURE_CONT_BLOB_CODES)
         const containerClient = blobServiceClient.getContainerClient(
             AZURE_CONT_BLOB_CODES[req.body.container]
         );

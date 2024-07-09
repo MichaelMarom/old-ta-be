@@ -1381,7 +1381,7 @@ let get_tutor_students = async (req, res) => {
       const poolConnection = await sql.connect(config);
       const students = await poolConnection.request().query(`
             SELECT * FROM StudentShortList as ss 
-            join StudentSetup as st on
+            join StudentSetup1 as st on
             cast(st.AcademyId as varchar(max)) = cast(ss.Student as varchar(max)) 
             join StudentBookings as sb
             on cast(sb.studentId as varchar)= cast(ss.Student  as varchar) and 
@@ -1965,7 +1965,7 @@ const get_feedback_data = async (req, res) => {
             SB.reservedSlots AS reservedSlots,
             SB.bookedSlots AS bookedSlots
              FROM StudentBookings AS SB
-             inner join StudentSetup AS ST On
+             inner join StudentSetup1 AS ST On
              cast( ST.AcademyId as varchar) = CAST(SB.studentId as varchar(max))
              WHERE SB.tutorId = CAST('${tutorId}' as varchar(max));`);
 
@@ -2045,7 +2045,7 @@ const get_student_published_ads = async (req, res) => {
       if (poolConnection) {
         const { recordset } = await poolConnection.request().query(
           `select SA.*, SS.Photo from StudentAds as SA join
-                  StudentSetup as SS on cast(SS.AcademyId as varchar) = SA.AcademyId
+                  StudentSetup1 as SS on cast(SS.AcademyId as varchar) = SA.AcademyId
                   where  SA.Published_At is not null   `
         );
         // SS.Status = 'active' and
@@ -2107,7 +2107,7 @@ const get_shortlist_ads = async (req, res) => {
                 TutorShortlistAd as TSA join 
                 StudentAds as SA on
                 SA.Id = TSA.StudentAdId join
-                StudentSetup as SS on 
+                StudentSetup1 as SS on 
                 cast(SS.AcademyId as varchar) = SA.AcademyId
                 where TSA.TutorId = '${req.params.tutorId}'`
       );
@@ -2129,7 +2129,7 @@ const get_student_public_profile_data = async (req, res) => {
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(
         `SELECT SS.*, ch.ChatID From 
-                StudentSetup as SS 
+                StudentSetup1 as SS 
                 left join Chat as ch on
                 ch.User1ID = cast(SS.AcademyId as varchar)
                 where cast(SS.AcademyId as varchar) = '${studentId}' and ch.User2ID = '${tutorId}'`

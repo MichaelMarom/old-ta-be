@@ -26,7 +26,7 @@ const fetch_chats = async (req, res) => {
                         `Select ch.ChatID, ch.LastSeen, ts.AcademyId,ch.User1ID,ch.UnRead, ts.ScreenName as screenName,
                         ch.User2ID, ts.Photo, 
                         ts.FirstName, ts.LastName,ts.Online from 
-                        Chat as ch join StudentSetup as ts on 
+                        Chat as ch join StudentSetup1 as ts on 
                         cast(ts.AcademyId as varchar)= ch.User1ID
                       WHERE User1ID = '${req.params.userId}' OR User2ID = '${req.params.userId}'`
                 );
@@ -62,7 +62,7 @@ const fetch_chat_messages = async (req, res) => {
                     SELECT * FROM Message AS ms JOIN (
                       SELECT CAST(AcademyId AS VARCHAR(MAX)) AS AcademyId, CAST(Photo AS VARCHAR(MAX))
                     AS Photo, CAST(ScreenName AS VARCHAR(MAX)) AS screenName
-                    FROM StudentSetup
+                    FROM StudentSetup1
                     UNION
                         SELECT CAST(AcademyId AS VARCHAR(MAX)) AS AcademyId, CAST(Photo AS VARCHAR(MAX))
                         AS Photo, CAST(TutorScreenname AS VARCHAR(MAX)) AS screenName
@@ -132,7 +132,7 @@ const create_chat = async (req, res) => {
                     find("TutorSetup", { AcademyId: req.body.User2ID })
                 );
                 const student = await poolConnection.request().query(
-                    find("StudentSetup", { AcademyId: req.body.User1ID }, 'AND', { AcademyId: 'varchar' })
+                    find("StudentSetup1", { AcademyId: req.body.User1ID }, 'AND', { AcademyId: 'varchar' })
                 );
                 if (!data.recordset.length && student.recordset.length && tutor.recordset.length) {
                     const result = await poolConnection.request().query(
@@ -155,7 +155,7 @@ const set_status = async (req, res) => {
         try {
             const sql = require('mssql');
             const poolConnection = await sql.connect(config);
-            const tableName = req.params.role === 'tutor' ? "TutorSetup" : 'StudentSetup'
+            const tableName = req.params.role === 'tutor' ? "TutorSetup" : 'StudentSetup1'
 
             if (poolConnection) {
                 const data = await poolConnection.request().query(

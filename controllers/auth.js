@@ -161,7 +161,7 @@ const get_setup_detail = async (req, res) => {
                 }
                 else {
                     result = await poolConnection.request().query(
-                        find('StudentSetup', { userId }, 'AND', { userId: 'varchar(max)' })
+                        find('StudentSetup1', { userId }, 'AND', { userId: 'varchar(max)' })
                     )
                 }
                 res.status(200).send(result.recordset[0]);

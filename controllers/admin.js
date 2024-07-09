@@ -61,7 +61,7 @@ let get_role_count_by_status = (req, res) => {
         .query(
           `
           SELECT count(*) as count, cast(Status as varchar) as Status
-              From ${role === 'student' ? 'StudentSetup' : 'TutorSetup'} as TS
+              From ${role === 'student' ? 'StudentSetup1' : 'TutorSetup'} as TS
              group by cast(Status as varchar) `
         )
         .then((result) => {
@@ -132,7 +132,7 @@ let get_student_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT * From StudentSetup  where cast(Status as varchar) = '${status}' `
+          `SELECT * From StudentSetup1  where cast(Status as varchar) = '${status}' `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
@@ -152,7 +152,7 @@ let set_student_status = (req, res) => {
       poolConnection
         .request()
         .query(
-          ` UPDATE StudentSetup SET Status = '${Status}'
+          ` UPDATE StudentSetup1 SET Status = '${Status}'
            WHERE CONVERT(VARCHAR, AcademyId) = '${Id}'
                 `
         )

@@ -15,7 +15,8 @@ const { upload_setup_info, get_student_setup, get_student_grade, get_tutor_subje
     post_feedback_questions,
     update_shortlist, get_student_bookings, getBookedSlot, get_tutor_bookings, get_student_or_tutor_bookings, post_student_agreement, set_code_applied, get_published_ads, get_all_students_sessions_formatted, ad_to_shortlist, get_shortlist_ads, delete_ad_from_shortlist, post_student_ad, get_student_ads, put_ad, get_ad,
     get_tutor_by_subject_faculty, 
-    upload_student_by_field} = require('../controllers/student');
+    upload_student_by_field,
+    post_student_setup} = require('../controllers/student');
 const { express, parser } = require('../modules');
 
 const STUDENT_ROUTES = express.Router();
@@ -35,7 +36,7 @@ STUDENT_ROUTES.get('/student/ad/:id/list', verifyToken, get_student_ads)
 STUDENT_ROUTES.put('/student/ad/:id', parser, verifyToken, put_ad)
 STUDENT_ROUTES.get('/student/ad/:id', verifyToken, get_ad)
 
-STUDENT_ROUTES.post('/student/setup', parser, verifyToken, upload_setup_info)
+STUDENT_ROUTES.post('/student/setup', parser, verifyToken, post_student_setup)
 STUDENT_ROUTES.put('/student/setup/by-field/:id', parser, verifyToken, upload_student_by_field) //update student setup
 
 STUDENT_ROUTES.put('/student/setup/agreement/:userId', parser, verifyToken, post_student_agreement)
