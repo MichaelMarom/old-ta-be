@@ -1229,6 +1229,27 @@ let fetchStudentsBookings = (req, res) => {
   }
 };
 
+let getAllTutorLesson = (req, res) => {
+  try {
+    const { tutorId } = req.query;
+    marom_db(async (config) => {
+      try {
+        var poolConnection = await sql.connect(config);
+        if (poolConnection) {
+          const result = await poolConnection
+            .request()
+            .query(find("Lessons", { tutorId }));
+          res.status(200).send(result.recordset);
+        }
+      } catch (err) {
+        sendErrors(err, res);
+      }
+    });
+  } catch (err) {
+    sendErrors(err, res);
+  }
+};
+
 const post_tutor_setup = (req, res) => {
   marom_db(async (config) => {
     try {
@@ -1313,7 +1334,8 @@ const update_tutor_setup = (req, res) => {
         });
 
         const result = await request.query(
-          parameteriedUpdateQuery("TutorSetup", req.body, req.params, {}, false).query
+          parameteriedUpdateQuery("TutorSetup", req.body, req.params, {}, false)
+            .query
         );
         res
           .status(200)
@@ -2291,6 +2313,7 @@ module.exports = {
   fetchStudentsBookings,
   storeCalenderTutorRecord,
   get_tutor_status,
+  getAllTutorLesson,
   get_faculty_subjects,
   get_tutor_photos,
 };

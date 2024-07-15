@@ -16,7 +16,11 @@ const { upload_setup_info, get_student_setup, get_student_grade, get_tutor_subje
     update_shortlist, get_student_bookings, getBookedSlot, get_tutor_bookings, get_student_or_tutor_bookings, post_student_agreement, set_code_applied, get_published_ads, get_all_students_sessions_formatted, ad_to_shortlist, get_shortlist_ads, delete_ad_from_shortlist, post_student_ad, get_student_ads, put_ad, get_ad,
     get_tutor_by_subject_faculty, 
     upload_student_by_field,
-    post_student_setup} = require('../controllers/student');
+    post_student_setup,
+    post_student_lesson,
+    get_student_lessons,
+    update_student_lesson,
+    delete_student_lesson} = require('../controllers/student');
 const { express, parser } = require('../modules');
 
 const STUDENT_ROUTES = express.Router();
@@ -48,6 +52,12 @@ STUDENT_ROUTES.get('/student/sessions/formatted/:studentId', verifyToken, get_al
 STUDENT_ROUTES.get('/student/booking/:studentId/:tutorId', parser, verifyToken, get_student_or_tutor_bookings)
 
 STUDENT_ROUTES.get('/student/booking/:studentId', verifyToken, get_student_bookings)
+//lesson
+STUDENT_ROUTES.post('/student/lesson',parser, verifyToken, post_student_lesson)
+STUDENT_ROUTES.get('/student/lesson', verifyToken, get_student_lessons)
+STUDENT_ROUTES.put('/student/lesson/:id', parser,verifyToken, update_student_lesson)
+STUDENT_ROUTES.delete('/student/lesson/:id', parser,verifyToken, delete_student_lesson)
+
 
 STUDENT_ROUTES.get('/student/bank/:AcademyId', verifyToken, get_student_bank_details)
 STUDENT_ROUTES.post('/student/bank', parser, verifyToken, post_student_bank_details)

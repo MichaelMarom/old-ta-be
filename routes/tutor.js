@@ -56,7 +56,8 @@ const { subjects,
     get_student_public_profile_data, recordVideoController, getVideo, getSessionDetailById, 
     get_tutor_photos,
     get_tutor_calender_details,
-    update_tutor_setup} = require('../controllers/tutor');
+    update_tutor_setup,
+    getAllTutorLesson} = require('../controllers/tutor');
 
 const { express, path, fs, parser, cookieParser, mocha, morgan, cors, shortId, jwt } = require('../modules');
 
@@ -106,6 +107,8 @@ TUTOR_ROUTES.get('/p-payment/last_payday', verifyToken, last_pay_day);
 
 TUTOR_ROUTES.post("/api/store-event", parser, verifyToken, storeEvents);
 TUTOR_ROUTES.get("/api/bookings/:tutorId", verifyToken, fetchStudentsBookings)
+TUTOR_ROUTES.get("/tutor/lesson", verifyToken, getAllTutorLesson)
+
 TUTOR_ROUTES.put("/tutor/update/:id", parser, verifyToken, storeCalenderTutorRecord);
 TUTOR_ROUTES.post('/tutor/setup', parser, verifyToken, post_tutor_setup)
 TUTOR_ROUTES.put('/tutor/setup/:AcademyId', parser, verifyToken, update_tutor_setup)
