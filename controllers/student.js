@@ -989,7 +989,6 @@ const get_feedback_questions = async (req, res) => {
         res.status(200).send(result.recordset);
       }
     } catch (err) {
-      console.log(err);
       sendErrors(err, res);
     }
   });
@@ -1015,7 +1014,6 @@ const get_feedback_of_questions = async (req, res) => {
         res.status(200).send(result.recordset);
       }
     } catch (err) {
-      console.log(err);
       sendErrors(err, res);
     }
   });
@@ -1243,84 +1241,77 @@ const delete_ad_from_shortlist = async (req, res) => {
 const get_all_students_sessions_formatted = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
+      const { studentId } = req.params;
       const poolConnection = await sql.connect(config);
-      if (poolConnection) {
-        const { recordset } = await poolConnection.request().query(
-          `select sb.*, ss.GMT
-                    from StudentBookings as sb
-                    join StudentSetup1 as ss on
-                    cast(ss.AcademyId as varchar) = sb.studentId
-                    where sb.studentId = '${req.params.studentId}'
-                    `
+      const { recordset } = await poolConnection.request()
+        .query(`select ls.*, ss.GMT
+        from Lessons as ls
+        join StudentSetup1 as ss on
+        cast(ss.AcademyId as varchar) = ls.studentId
+        where ls.studentId = '${studentId}'`);
+      if (recordset.length) {
+        //timeZone
+        const offset = parseInt(recordset[0].GMT, 10);
+        let timezones = moment.tz
+          .names()
+          .filter((name) => moment.tz(name).utcOffset() === offset * 60);
+        const timeZone = timezones[0] || null;
+
+        const currentTime = moment().tz(timeZone);
+
+        const removedGMTLessons = recordset.map((record) => {
+          delete record.GMT;
+          return record;
+        });
+        //sortedLessons
+        const sortedEvents = removedGMTLessons.sort((a, b) =>
+          moment(a.start).diff(moment(b.start))
         );
+        //upcomingLesson
+        const upcomingSession =
+          sortedEvents.find((event) =>
+            moment(event.start).isAfter(currentTime)
+          ) || {};
+        //currentLesson
+        const currentSession =
+          sortedEvents.find((session) => {
+            const startTime = moment(session.start);
+            const endTime = moment(session.end);
+            return currentTime.isBetween(startTime, endTime);
+          }) || {};
 
-        if (recordset[0]) {
-          const offset = parseInt(recordset[0].GMT, 10);
-          let timezones = moment.tz
-            .names()
-            .filter((name) => moment.tz(name).utcOffset() === offset * 60);
-          const timeZone = timezones[0] || null;
+        //nextLecturein-what-time
+        const timeUntilStart = upcomingSession.id
+          ? moment(upcomingSession.start).tz(timeZone).to(currentTime, true)
+          : "";
 
-          let reservedSlots = [];
-          let bookedSlots = [];
-          recordset.map((record) => {
-            reservedSlots.push(JSON.parse(record.reservedSlots));
-            bookedSlots.push(JSON.parse(record.bookedSlots));
-            return;
-          });
-
-          // const allSessions
-
-          const allSessions = reservedSlots.concat(bookedSlots).flat();
-
-          const currentTime = moment().tz(timeZone);
-          const sortedEvents = allSessions.sort((a, b) =>
-            moment(a.start).diff(moment(b.start))
-          );
-          const upcomingSession =
-            sortedEvents.find((event) =>
-              moment(event.start).isAfter(currentTime)
-            ) || {};
-
-          const currentSession =
-            allSessions.find((session) => {
-              const startTime = moment(session.start);
-              const endTime = moment(session.end);
-              return currentTime.isBetween(startTime, endTime);
-            }) || {};
-
-          const timeUntilStart = upcomingSession.id
-            ? moment(upcomingSession.start).tz(timeZone).to(currentTime, true)
-            : "";
-          let inMins = false;
-          if (
-            timeUntilStart.includes("minutes") ||
-            timeUntilStart.includes("minute") ||
-            timeUntilStart.includes("seconds")
-          ) {
-            inMins = true;
-          }
-
-          res.status(200).send({
-            sessions: allSessions,
-            currentSession,
-            upcomingSession,
-            inMins,
-            upcomingSessionFromNow: timeUntilStart,
-          });
-        } else {
-          res.status(200).send({
-            sessions: [],
-            currentSession: {},
-            upcomingSession: {},
-            inMins: false,
-            upcomingSessionFromNow: "",
-          });
+        //is-it in-minutes
+        let inMins = false;
+        if (
+          timeUntilStart.includes("minutes") ||
+          timeUntilStart.includes("minute") ||
+          timeUntilStart.includes("seconds")
+        ) {
+          inMins = true;
         }
+
+        res.status(200).send({
+          sessions: sortedEvents,
+          currentSession,
+          upcomingSession,
+          inMins,
+          upcomingSessionFromNow: timeUntilStart,
+        });
+      } else {
+        res.status(200).send({
+          sessions: [],
+          currentSession: {},
+          upcomingSession: {},
+          inMins: false,
+          upcomingSessionFromNow: "",
+        });
       }
     } catch (err) {
-      console.log(err);
       sendErrors(err, res);
     }
   });

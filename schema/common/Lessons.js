@@ -13,10 +13,13 @@ const Lessons = {
     tutorId: sql.NVarChar(200),
     rate: sql.Decimal(10, 2), 
     feedbackEligible: sql.Bit,
-    rating: sql.Decimal(3, 2),  
-    comment: sql.NVarChar(sql.MAX),
     invoiceNum: sql.VarChar(100),
-    request: sql.VarChar(100)
+    request: sql.VarChar(100),
+    ratingByStudent: sql.Decimal(3, 2),  
+    commentByStudent: sql.NVarChar(sql.MAX),
+    ratingByTutor: sql.Decimal(3, 2),  
+    commentByTutor: sql.NVarChar(sql.MAX),
+    tutorFeedbackEligible: sql.Bit
 };
 
 module.exports = Lessons;

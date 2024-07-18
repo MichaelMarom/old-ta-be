@@ -1600,32 +1600,28 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection.request().query(
-          `select sb.*, TS.GMT
-                    from StudentBookings as sb
-                    join TutorSetup as TS on
-                    cast(TS.AcademyId as varchar) = sb.tutorId
-                    where sb.tutorId = '${req.params.tutorId}'`
+          `select ls.*, TS.GMT
+            from Lessons as ls
+            join TutorSetup as TS on
+            cast(TS.AcademyId as varchar) = ls.tutorId
+            where ls.tutorId = '${req.params.tutorId}'`
         );
 
-        if (recordset[0]) {
+        if (recordset) {
           const offset = parseInt(recordset[0].GMT, 10);
           let timezones = moment.tz
             .names()
             .filter((name) => moment.tz(name).utcOffset() === offset * 60);
           const timeZone = timezones[0] || null;
 
-          let reservedSlots = [];
-          let bookedSlots = [];
-          recordset.map((record) => {
-            reservedSlots.push(JSON.parse(record.reservedSlots));
-            bookedSlots.push(JSON.parse(record.bookedSlots));
-            return;
+          const currentTime = moment().tz(timeZone);
+
+          let removedGMTLessons = recordset.map((record) => {
+            delete record.GMT;
+            return record;
           });
 
-          const allSessions = reservedSlots.concat(bookedSlots).flat();
-
-          const currentTime = moment().tz(timeZone);
-          const sortedEvents = allSessions.sort((a, b) =>
+          const sortedEvents = removedGMTLessons.sort((a, b) =>
             moment(a.start).diff(moment(b.start))
           );
           const upcomingSession =
@@ -1634,7 +1630,7 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
             ) || {};
 
           const currentSession =
-            allSessions.find((session) => {
+            sortedEvents.find((session) => {
               const startTime = moment(session.start);
               const endTime = moment(session.end);
               return currentTime.isBetween(startTime, endTime);
@@ -1653,7 +1649,7 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
           }
 
           res.status(200).send({
-            sessions: allSessions,
+            sessions: sortedEvents,
             currentSession,
             upcomingSession,
             inMins,
@@ -1670,7 +1666,6 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
         }
       }
     } catch (err) {
-      console.log(err);
       sendErrors(err, res);
     }
   });
