@@ -91,7 +91,6 @@ TUTOR_ROUTES.get('/tutor/tutor-setup', parser, verifyToken, get_tutor_setup);
 TUTOR_ROUTES.get('/tutor/tutor-setup/calender', verifyToken, get_tutor_calender_details);
 
 TUTOR_ROUTES.get('/tutor/photos', verifyToken, get_tutor_photos);
-TUTOR_ROUTES.get('/tutor/feedbacks/:tutorId', parser, verifyToken, get_feedback_data);
 TUTOR_ROUTES.get('/tutor/feedback/questions', verifyToken, get_tutor_feedback_questions)
 
 TUTOR_ROUTES.post('/tutor/payment', parser, verifyToken, upload_tutor_bank);
@@ -106,12 +105,15 @@ TUTOR_ROUTES.post('/tutor/new-subject', parser, verifyToken, post_new_subject);
 TUTOR_ROUTES.get('/p-payment/last_payday', verifyToken, last_pay_day);
 
 TUTOR_ROUTES.post("/api/store-event", parser, verifyToken, storeEvents);
-TUTOR_ROUTES.get("/api/bookings/:tutorId", verifyToken, fetchStudentsBookings)
 TUTOR_ROUTES.get("/tutor/lesson", verifyToken, getAllTutorLesson)
 
 TUTOR_ROUTES.put("/tutor/update/:id", parser, verifyToken, storeCalenderTutorRecord);
 TUTOR_ROUTES.post('/tutor/setup', parser, verifyToken, post_tutor_setup)
 TUTOR_ROUTES.put('/tutor/setup/:AcademyId', parser, verifyToken, update_tutor_setup)
+// TUTOR_ROUTES.get("/api/bookings/:tutorId", verifyToken, fetchStudentsBookings)
+// TUTOR_ROUTES.get('/tutor/feedbacks/:tutorId', parser, verifyToken, get_feedback_data);
+// TUTOR_ROUTES.get('/tutor/session/:tutorId', verifyToken, getSessionsDetails)
+// TUTOR_ROUTES.get('/collab/:sessionId', verifyToken, getSessionDetailById)
 
 TUTOR_ROUTES.post('/tutor/setup/record', upload.single('file'), verifyToken, recordVideoController)
 TUTOR_ROUTES.get('/tutor/setup/intro', verifyToken, getVideo)
@@ -120,7 +122,6 @@ TUTOR_ROUTES.put('/tutor/agreement-updated', parser, verifyToken, set_agreements
 TUTOR_ROUTES.get('/tutor/market-data', verifyToken, get_tutor_market_data)
 
 TUTOR_ROUTES.get('/tutor/get_students/:academyId', verifyToken, get_tutor_students)
-TUTOR_ROUTES.get('/tutor/session/:tutorId', verifyToken, getSessionsDetails)
 TUTOR_ROUTES.get('/tutor/sessions/formatted/:tutorId', verifyToken, get_all_tutor_sessions_formatted)
 
 TUTOR_ROUTES.get('/profile/:tutorId/:studentId', verifyToken, get_tutor_profile_data)
@@ -136,7 +137,6 @@ TUTOR_ROUTES.delete('/tutor/:tutorId/market-place/shortlist/:Id', verifyToken, d
 TUTOR_ROUTES.get('/tutor/rate/:code', verifyToken, get_tutor_against_code)
 TUTOR_ROUTES.get('/tutor/:tutorId/profile/:studentId', verifyToken, get_student_public_profile_data)
 
-TUTOR_ROUTES.get('/collab/:sessionId', verifyToken, getSessionDetailById)
 
 
 module.exports = {

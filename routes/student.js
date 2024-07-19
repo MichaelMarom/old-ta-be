@@ -20,7 +20,8 @@ const { upload_setup_info, get_student_setup, get_student_grade, get_tutor_subje
     post_student_lesson,
     get_student_lessons,
     update_student_lesson,
-    delete_student_lesson} = require('../controllers/student');
+    delete_student_lesson,
+    get_student_photos} = require('../controllers/student');
 const { express, parser } = require('../modules');
 
 const STUDENT_ROUTES = express.Router();
@@ -44,14 +45,16 @@ STUDENT_ROUTES.post('/student/setup', parser, verifyToken, post_student_setup)
 STUDENT_ROUTES.put('/student/setup/by-field/:id', parser, verifyToken, upload_student_by_field) //update student setup
 
 STUDENT_ROUTES.put('/student/setup/agreement/:userId', parser, verifyToken, post_student_agreement)
+STUDENT_ROUTES.get('/student/setup/photos', verifyToken, get_student_photos)
+
 
 //bookings
-STUDENT_ROUTES.post('/student/booking', parser, verifyToken, post_student_bookings)
-STUDENT_ROUTES.get('/student/tutor/bookings/:tutorId', verifyToken, get_tutor_bookings)
-STUDENT_ROUTES.get('/student/sessions/formatted/:studentId', verifyToken, get_all_students_sessions_formatted)
-STUDENT_ROUTES.get('/student/booking/:studentId/:tutorId', parser, verifyToken, get_student_or_tutor_bookings)
+// STUDENT_ROUTES.post('/student/booking', parser, verifyToken, post_student_bookings)
+// STUDENT_ROUTES.get('/student/tutor/bookings/:tutorId', verifyToken, get_tutor_bookings)
+// STUDENT_ROUTES.get('/student/booking/:studentId/:tutorId', parser, verifyToken, get_student_or_tutor_bookings)
 
-STUDENT_ROUTES.get('/student/booking/:studentId', verifyToken, get_student_bookings)
+// STUDENT_ROUTES.get('/student/booking/:studentId', verifyToken, get_student_bookings)
+STUDENT_ROUTES.get('/student/sessions/formatted/:studentId', verifyToken, get_all_students_sessions_formatted)
 //lesson
 STUDENT_ROUTES.post('/student/lesson',parser, verifyToken, post_student_lesson)
 STUDENT_ROUTES.get('/student/lesson', verifyToken, get_student_lessons)
@@ -63,9 +66,9 @@ STUDENT_ROUTES.get('/student/bank/:AcademyId', verifyToken, get_student_bank_det
 STUDENT_ROUTES.post('/student/bank', parser, verifyToken, post_student_bank_details)
 STUDENT_ROUTES.post('/student/feedback', parser, verifyToken, post_student_feedback)
 STUDENT_ROUTES.get('/student/feedback/:ShortlistId', get_student_feedback)
-STUDENT_ROUTES.get('/student/booked-slot', verifyToken, getBookedSlot)
+// STUDENT_ROUTES.get('/student/booked-slot', verifyToken, getBookedSlot)
 
-STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
+// STUDENT_ROUTES.get('/student/payment-report/:studentId', verifyToken, payment_report)
 STUDENT_ROUTES.get('/questions/list/:isStudentLoggedIn', verifyToken, get_feedback_questions)
 STUDENT_ROUTES.get('/questions/:StudentId/:TutorId/:SessionId/:isstudentgiver', verifyToken, get_feedback_of_questions)
 STUDENT_ROUTES.post('/questions', parser, verifyToken, post_feedback_questions);

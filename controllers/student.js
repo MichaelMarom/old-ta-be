@@ -75,10 +75,10 @@ let upload_setup_info = (req, res) => {
   let screenName =
     mname?.length > 0
       ? capitalizeFirstLetter(fname) +
-        " " +
-        capitalizeFirstLetter(mname[0]) +
-        ". " +
-        capitalizeFirstLetter(sname[0])
+      " " +
+      capitalizeFirstLetter(mname[0]) +
+      ". " +
+      capitalizeFirstLetter(sname[0])
       : capitalizeFirstLetter(fname) + ". " + capitalizeFirstLetter(sname[0]);
 
   let action = (cb) => {
@@ -197,23 +197,21 @@ const post_student_setup = (req, res) => {
     try {
       let AcademyId =
         req.body["MiddleName"]?.length > 0
-          ? `${req.body["FirstName"]}${req.body["MiddleName"][0]}${
-              req.body["LastName"][0]
-            }${shortId.generate()}`
-          : `${req.body["FirstName"]}${
-              req.body["LastName"][0]
-            }${shortId.generate()}`;
+          ? `${req.body["FirstName"]}${req.body["MiddleName"][0]}${req.body["LastName"][0]
+          }${shortId.generate()}`
+          : `${req.body["FirstName"]}${req.body["LastName"][0]
+          }${shortId.generate()}`;
 
       let ScreenName =
         req.body["MiddleName"]?.length > 0
           ? `${capitalizeFirstLetter(
-              req.body["FirstName"]
-            )} ${capitalizeFirstLetter(
-              req.body["MiddleName"][0]
-            )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`
+            req.body["FirstName"]
+          )} ${capitalizeFirstLetter(
+            req.body["MiddleName"][0]
+          )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`
           : `${capitalizeFirstLetter(
-              req.body["FirstName"]
-            )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`;
+            req.body["FirstName"]
+          )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`;
 
       const updatedBody = { ...req.body, AcademyId, ScreenName };
 
@@ -390,7 +388,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TR.IntroSessionDiscount,
                 TR.ActivateSubscriptionOption,
                 
-                SB.DiscountHours,
+                5 as  DiscountHours,
                 
                 CAL.CodeApplied,
                 CAL.tutorMotivateId
@@ -408,7 +406,6 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                     cast(CAL.tutorId as varchar(max)) = cast(TS.AcademyId as varchar(max)) and
                     TR.SID = CAL.tutorMotivateId and
                     cast(CAL.studentId as varchar)= '${studentId}' 
-            LEFT JOIN StudentBookings as SB ON SB.tutorId  = cast(TS.AcademyId as varchar(max)) and SB.studentId = '${studentId}'
 
             WHERE 
                 CONVERT(VARCHAR, SR.faculty) = '${facultyId}' 
@@ -660,82 +657,82 @@ const put_ad = async (req, res) => {
   });
 };
 
-const post_student_bookings = async (req, res) => {
-  const { tutorId, studentId } = req.body;
-  marom_db(async (config) => {
-    try {
-      const poolConnection = await sql.connect(config);
-      if (tutorId && studentId) {
-        poolConnection
-          .request()
-          .query(find("StudentBookings", { studentId, tutorId }))
-          .then((result) => {
-            if (result.recordset.length) {
-              poolConnection
-                .request()
-                .query(
-                  update("StudentBookings", req.body, {
-                    studentId: req.body.studentId,
-                    tutorId: req.body.tutorId,
-                  })
-                )
-                .then((result) => res.send(result.recordset))
-                .catch((err) => console.log(err));
-            } else {
-              poolConnection
-                .request()
-                .query(insert("StudentBookings", req.body))
-                .then((result) => {
-                  res.status(200).send(result.recordset);
-                })
-                .catch((err) => {
-                  sendErrors(err, res);
-                });
-            }
-          })
-          .catch((err) => {
-            sendErrors(err, res);
-          });
-      } else {
-        throw new Error("Missing tutorId/studentId");
-      }
-    } catch (err) {
-      sendErrors(err, res);
-    }
-  });
-};
+// const post_student_bookings = async (req, res) => {
+//   const { tutorId, studentId } = req.body;
+//   marom_db(async (config) => {
+//     try {
+//       const poolConnection = await sql.connect(config);
+//       if (tutorId && studentId) {
+//         poolConnection
+//           .request()
+//           .query(find("StudentBookings", { studentId, tutorId }))
+//           .then((result) => {
+//             if (result.recordset.length) {
+//               poolConnection
+//                 .request()
+//                 .query(
+//                   update("StudentBookings", req.body, {
+//                     studentId: req.body.studentId,
+//                     tutorId: req.body.tutorId,
+//                   })
+//                 )
+//                 .then((result) => res.send(result.recordset))
+//                 .catch((err) => console.log(err));
+//             } else {
+//               poolConnection
+//                 .request()
+//                 .query(insert("StudentBookings", req.body))
+//                 .then((result) => {
+//                   res.status(200).send(result.recordset);
+//                 })
+//                 .catch((err) => {
+//                   sendErrors(err, res);
+//                 });
+//             }
+//           })
+//           .catch((err) => {
+//             sendErrors(err, res);
+//           });
+//       } else {
+//         throw new Error("Missing tutorId/studentId");
+//       }
+//     } catch (err) {
+//       sendErrors(err, res);
+//     }
+//   });
+// };
 
-const get_student_or_tutor_bookings = async (req, res) => {
-  marom_db(async (config) => {
-    const { tutorId, studentId } = req.params;
-    const poolConnection = await sql.connect(config);
-    poolConnection
-      .request()
-      .query(find("StudentBookings", { studentId, tutorId }, "OR"))
-      .then((result) => {
-        res.send(result.recordset);
-      })
-      .catch((err) => {
-        sendErrors(err, res);
-      });
-  });
-};
+// const get_student_or_tutor_bookings = async (req, res) => {
+//   marom_db(async (config) => {
+//     const { tutorId, studentId } = req.params;
+//     const poolConnection = await sql.connect(config);
+//     poolConnection
+//       .request()
+//       .query(find("StudentBookings", { studentId, tutorId }, "OR"))
+//       .then((result) => {
+//         res.send(result.recordset);
+//       })
+//       .catch((err) => {
+//         sendErrors(err, res);
+//       });
+//   });
+// };
 
-const get_student_bookings = async (req, res) => {
-  marom_db(async (config) => {
-    const { studentId } = req.params;
-    const poolConnection = await sql.connect(config);
-    poolConnection
-      .request()
-      .query(find("StudentBookings", { studentId }))
-      .then((result) => {
-        res.status(200).send(result.recordset);
-      })
-      .catch((err) => {
-        sendErrors(err, res);
-      });
-  });
-};
+// const get_student_bookings = async (req, res) => {
+//   marom_db(async (config) => {
+//     const { studentId } = req.params;
+//     const poolConnection = await sql.connect(config);
+//     poolConnection
+//       .request()
+//       .query(find("StudentBookings", { studentId }))
+//       .then((result) => {
+//         res.status(200).send(result.recordset);
+//       })
+//       .catch((err) => {
+//         sendErrors(err, res);
+//       });
+//   });
+// };
 
 //lesson
 const post_student_lesson = async (req, res) => {
@@ -818,21 +815,21 @@ const get_student_lessons = async (req, res) => {
   });
 };
 
-const get_tutor_bookings = async (req, res) => {
-  marom_db(async (config) => {
-    const { tutorId } = req.params;
-    const poolConnection = await sql.connect(config);
-    poolConnection
-      .request()
-      .query(find("StudentBookings", { tutorId }))
-      .then((result) => {
-        res.send(result.recordset);
-      })
-      .catch((err) => {
-        sendErrors(err, res);
-      });
-  });
-};
+// const get_tutor_bookings = async (req, res) => {
+//   marom_db(async (config) => {
+//     const { tutorId } = req.params;
+//     const poolConnection = await sql.connect(config);
+//     poolConnection
+//       .request()
+//       .query(find("StudentBookings", { tutorId }))
+//       .then((result) => {
+//         res.send(result.recordset);
+//       })
+//       .catch((err) => {
+//         sendErrors(err, res);
+//       });
+//   });
+// };
 
 const get_student_bank_details = async (req, res) => {
   marom_db(async (config) => {
@@ -939,39 +936,39 @@ const post_student_feedback = async (req, res) => {
   });
 };
 
-const payment_report = async (req, res) => {
-  const { studentId } = req.params;
-  marom_db(async (config) => {
-    try {
-      const sql = require("mssql");
-      const poolConnection = await sql.connect(config);
+// const payment_report = async (req, res) => {
+//   const { studentId } = req.params;
+//   marom_db(async (config) => {
+//     try {
+//       const sql = require("mssql");
+//       const poolConnection = await sql.connect(config);
 
-      if (poolConnection) {
-        const result = await poolConnection.request().query(
-          `SELECT 
-                    b.studentId AS studentId,
-                    b.tutorId AS tutorId,
-                    b.reservedSlots AS reservedSlots,
-                    b.bookedSlots AS bookedSlots,
-                    r.rate AS rate,
-                    ts.Photo
-                     FROM StudentBookings AS b
-                     JOIN StudentShortList AS r ON
-                     b.studentId  = CAST( r.Student as varchar(max)) AND 
-                     b.tutorId =  CAST(r.AcademyId as varchar(max))
-                     inner join TutorSetup AS ts On
-                     ts.AcademyId = CAST(r.AcademyId as varchar(max))
-                    WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
-        );
+//       if (poolConnection) {
+//         const result = await poolConnection.request().query(
+//           `SELECT 
+//                     b.studentId AS studentId,
+//                     b.tutorId AS tutorId,
+//                     b.reservedSlots AS reservedSlots,
+//                     b.bookedSlots AS bookedSlots,
+//                     r.rate AS rate,
+//                     ts.Photo
+//                      FROM StudentBookings AS b
+//                      JOIN StudentShortList AS r ON
+//                      b.studentId  = CAST( r.Student as varchar(max)) AND 
+//                      b.tutorId =  CAST(r.AcademyId as varchar(max))
+//                      inner join TutorSetup AS ts On
+//                      ts.AcademyId = CAST(r.AcademyId as varchar(max))
+//                     WHERE b.studentId = CAST('${studentId}' as varchar(max)); `
+//         );
 
-        res.status(200).send(result.recordset);
-      }
-    } catch (err) {
-      console.log(err);
-      sendErrors(err, res);
-    }
-  });
-};
+//         res.status(200).send(result.recordset);
+//       }
+//     } catch (err) {
+//       console.log(err);
+//       sendErrors(err, res);
+//     }
+//   });
+// };
 
 const get_feedback_questions = async (req, res) => {
   marom_db(async (config) => {
@@ -1053,27 +1050,27 @@ const post_feedback_questions = async (req, res) => {
   });
 };
 
-function getBookedSlot(req, res) {
-  let { AcademyId } = req.query;
-  marom_db(async (config) => {
-    try {
-      const sql = require("mssql");
+// function getBookedSlot(req, res) {
+//   let { AcademyId } = req.query;
+//   marom_db(async (config) => {
+//     try {
+//       const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
-      if (poolConnection) {
-        const result = await poolConnection.request().query(
-          `
-                    SELECT bookedSlots From StudentBookings 
-                    WHERE CONVERT(VARCHAR, studentId) = '${AcademyId}'
-                `
-        );
-        res.status(200).send(result.recordset);
-      }
-    } catch (err) {
-      sendErrors(err, res);
-    }
-  });
-}
+//       var poolConnection = await sql.connect(config);
+//       if (poolConnection) {
+//         const result = await poolConnection.request().query(
+//           `
+//                     SELECT bookedSlots From StudentBookings 
+//                     WHERE CONVERT(VARCHAR, studentId) = '${AcademyId}'
+//                 `
+//         );
+//         res.status(200).send(result.recordset);
+//       }
+//     } catch (err) {
+//       sendErrors(err, res);
+//     }
+//   });
+// }
 
 const post_student_agreement = async (req, res) => {
   marom_db(async (config) => {
@@ -1085,6 +1082,25 @@ const post_student_agreement = async (req, res) => {
           .request()
           .query(update("StudentSetup1", req.body, req.params));
         res.status(200).send(result.recordset);
+      }
+    } catch (err) {
+      console.log(err);
+      sendErrors(err, res);
+    }
+  });
+};
+
+const get_student_photos = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const { AcademyIds } = req.query
+      const poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection
+          .request()
+          .query(`SELECT Photo, AcademyId FROM  StudentSetup1 WHERE AcademyId in (${AcademyIds.map(id=>`'${id}'`)})`);
+
+        res.status(200).send(recordset);
       }
     } catch (err) {
       console.log(err);
@@ -1332,7 +1348,6 @@ module.exports = {
   get_student_setup,
   // get_student_grade,
   get_published_ads,
-  getBookedSlot,
   update_student_lesson,
   get_student_lessons,
   post_student_lesson,
@@ -1343,20 +1358,22 @@ module.exports = {
   get_student_market_data,
   get_tutor_by_subject_faculty,
   get_my_data,
-  get_student_bookings,
-  post_student_bookings,
-  get_student_or_tutor_bookings,
-  get_tutor_bookings,
+  // post_student_bookings,
+  // get_student_bookings,
+  // get_student_or_tutor_bookings,
+  // get_tutor_bookings,
+  // payment_report,
+  // getBookedSlot,
   get_student_bank_details,
   get_student_ads,
   get_shortlist_ads,
   post_student_bank_details,
   get_student_feedback,
   post_student_feedback,
-  payment_report,
   delete_student_lesson,
   ad_to_shortlist,
   post_student_setup,
   get_ad,
+  get_student_photos,
   put_ad,
 };
