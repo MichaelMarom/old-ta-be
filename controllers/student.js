@@ -815,21 +815,21 @@ const get_student_lessons = async (req, res) => {
   });
 };
 
-// const get_tutor_bookings = async (req, res) => {
-//   marom_db(async (config) => {
-//     const { tutorId } = req.params;
-//     const poolConnection = await sql.connect(config);
-//     poolConnection
-//       .request()
-//       .query(find("StudentBookings", { tutorId }))
-//       .then((result) => {
-//         res.send(result.recordset);
-//       })
-//       .catch((err) => {
-//         sendErrors(err, res);
-//       });
-//   });
-// };
+const get_tutor_bookings = async (req, res) => {
+  marom_db(async (config) => {
+    const { tutorId } = req.params;
+    const poolConnection = await sql.connect(config);
+    poolConnection
+      .request()
+      .query(find("Lessons", { tutorId }))
+      .then((result) => {
+        res.send(result.recordset);
+      })
+      .catch((err) => {
+        sendErrors(err, res);
+      });
+  });
+};
 
 const get_student_bank_details = async (req, res) => {
   marom_db(async (config) => {
@@ -1358,10 +1358,10 @@ module.exports = {
   get_student_market_data,
   get_tutor_by_subject_faculty,
   get_my_data,
+  get_tutor_bookings,
   // post_student_bookings,
   // get_student_bookings,
   // get_student_or_tutor_bookings,
-  // get_tutor_bookings,
   // payment_report,
   // getBookedSlot,
   get_student_bank_details,

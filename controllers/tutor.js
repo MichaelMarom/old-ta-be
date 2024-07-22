@@ -1038,7 +1038,7 @@ let get_tutor_setup = (req, res) => {
           );
           record = { ...record, Email: recordset?.[0]?.email || "" };
         }
-        const offset = parseInt(record.GMT, 10);
+        const offset = parseInt(record?.GMT, 10);
         let timezones = moment.tz
           .names()
           .filter((name) => moment.tz(name).utcOffset() === offset * 60);
@@ -1588,7 +1588,7 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
         );
 
         if (recordset) {
-          const offset = parseInt(recordset[0].GMT, 10);
+          const offset = parseInt(recordset[0]?.GMT, 10);
           let timezones = moment.tz
             .names()
             .filter((name) => moment.tz(name).utcOffset() === offset * 60);
@@ -1597,7 +1597,7 @@ const get_all_tutor_sessions_formatted = async (req, res) => {
           const currentTime = moment().tz(timeZone);
 
           let removedGMTLessons = recordset.map((record) => {
-            delete record.GMT;
+            delete record?.GMT;
             return record;
           });
 

@@ -46,11 +46,11 @@ STUDENT_ROUTES.put('/student/setup/by-field/:id', parser, verifyToken, upload_st
 
 STUDENT_ROUTES.put('/student/setup/agreement/:userId', parser, verifyToken, post_student_agreement)
 STUDENT_ROUTES.get('/student/setup/photos', verifyToken, get_student_photos)
+STUDENT_ROUTES.get('/student/tutor/bookings/:tutorId', verifyToken, get_tutor_bookings)
 
 
 //bookings
 // STUDENT_ROUTES.post('/student/booking', parser, verifyToken, post_student_bookings)
-// STUDENT_ROUTES.get('/student/tutor/bookings/:tutorId', verifyToken, get_tutor_bookings)
 // STUDENT_ROUTES.get('/student/booking/:studentId/:tutorId', parser, verifyToken, get_student_or_tutor_bookings)
 
 // STUDENT_ROUTES.get('/student/booking/:studentId', verifyToken, get_student_bookings)
