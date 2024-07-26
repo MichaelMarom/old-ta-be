@@ -57,7 +57,9 @@ const { subjects,
     get_tutor_photos,
     get_tutor_calender_details,
     update_tutor_setup,
-    getAllTutorLesson} = require('../controllers/tutor');
+    getAllTutorLesson,
+    update_tutor_bank,
+    update_motivate_form} = require('../controllers/tutor');
 
 const { express, path, fs, parser, cookieParser, mocha, morgan, cors, shortId, jwt } = require('../modules');
 
@@ -94,13 +96,20 @@ TUTOR_ROUTES.get('/tutor/photos', verifyToken, get_tutor_photos);
 TUTOR_ROUTES.get('/tutor/feedback/questions', verifyToken, get_tutor_feedback_questions)
 
 TUTOR_ROUTES.post('/tutor/payment', parser, verifyToken, upload_tutor_bank);
-TUTOR_ROUTES.post('/tutor/rates/:faculty/:subject/:id', parser, verifyToken, upload_tutor_rates);
+TUTOR_ROUTES.put('/tutor/payment/:id', parser, verifyToken, update_tutor_bank);
+
+TUTOR_ROUTES.post('/tutor/rates/:faculty/:subject/:id', parser, verifyToken, upload_tutor_rates);   
 TUTOR_ROUTES.delete('/subject-rate/:id', parser, verifyToken, remove_subject_rates);
 
-TUTOR_ROUTES.post('/tutor/form-one', parser, verifyToken, post_form_one);
+// TUTOR_ROUTES.post('/tutor/form-one', parser, verifyToken, post_form_one);
 TUTOR_ROUTES.post('/tutor/edu', parser, verifyToken, dynamically_post_edu_info);
+// TUTOR_ROUTES.put('/tutor/edu', parser, verifyToken, dynamically_post_edu_info);
+
 
 TUTOR_ROUTES.post('/tutor/tutor-rates', parser, verifyToken, post_tutor_rates_form);
+TUTOR_ROUTES.put('/tutor/tutor-rates/:id', parser, verifyToken, update_motivate_form);
+
+
 TUTOR_ROUTES.post('/tutor/new-subject', parser, verifyToken, post_new_subject);
 TUTOR_ROUTES.get('/p-payment/last_payday', verifyToken, last_pay_day);
 

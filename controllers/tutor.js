@@ -23,10 +23,13 @@ const {
   checkSessionStatus,
 } = require("../helperfunctions/generalHelperFunctions");
 const TutorSetup = require("../schema/tutor/Setup");
+const Accounting = require("../schema/tutor/Accounting");
+
 const { sendErrors } = require("../helperfunctions/handleReqErrors");
 
 const account = process.env.AZURE_ACCOUNT_NAME;
 const { BlobServiceClient } = require("@azure/storage-blob");
+const Discounts = require("../schema/tutor/Discounts");
 const blobServiceClient = new BlobServiceClient(
   `https://${account}.blob.core.windows.net/?${process.env.AZURE_BLOB_SAS_TOKEN}`
 );
@@ -130,165 +133,165 @@ const subject_already_exist = async (req, res) => {
   });
 };
 
-let post_form_one = (req, res) => {
-  let {
-    fname,
-    mname,
-    sname,
-    email,
-    pwd,
-    acadId,
-    cell,
-    add1,
-    add2,
-    city,
-    state,
-    zipCode,
-    country,
-    timeZone,
-    response_zone,
-    intro,
-    motivation,
-    headline,
-    photo,
-    video,
-    grades,
-    userId,
-  } = req.body;
+// let post_form_one = (req, res) => {
+//   let {
+//     fname,
+//     mname,
+//     sname,
+//     email,
+//     pwd,
+//     acadId,
+//     cell,
+//     add1,
+//     add2,
+//     city,
+//     state,
+//     zipCode,
+//     country,
+//     timeZone,
+//     response_zone,
+//     intro,
+//     motivation,
+//     headline,
+//     photo,
+//     video,
+//     grades,
+//     userId,
+//   } = req.body;
 
-  let UserId =
-    mname.length > 0
-      ? fname + "." + " " + mname[0] + "." + " " + sname[0] + shortId.generate()
-      : fname + "." + " " + sname[0] + shortId.generate();
-  let screenName =
-    mname.length > 0
-      ? fname + "." + " " + mname[0] + "." + " " + sname[0]
-      : fname + "." + " " + sname[0];
+//   let UserId =
+//     mname.length > 0
+//       ? fname + "." + " " + mname[0] + "." + " " + sname[0] + shortId.generate()
+//       : fname + "." + " " + sname[0] + shortId.generate();
+//   let screenName =
+//     mname.length > 0
+//       ? fname + "." + " " + mname[0] + "." + " " + sname[0]
+//       : fname + "." + " " + sname[0];
 
-  let action = (cb) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
+//   let action = (cb) => {
+//     marom_db(async (config) => {
+//       const sql = require("mssql");
+//       var poolConnection = await sql.connect(config);
 
-      let result = poolConnection
-        ? await get_action(poolConnection)
-        : "connection error";
-      cb(result);
-    });
-  };
+//       let result = poolConnection
+//         ? await get_action(poolConnection)
+//         : "connection error";
+//       cb(result);
+//     });
+//   };
 
-  action((result) => {
-    if (result) {
-      let db = marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
+//   action((result) => {
+//     if (result) {
+//       let db = marom_db(async (config) => {
+//         const sql = require("mssql");
+//         var poolConnection = await sql.connect(config);
 
-        insert_rates(poolConnection)
-          .then((result) => {
-            res.send({
-              user: UserId,
-              screen_name: screenName,
-              bool: true,
-              mssg: "Data Was Saved Successfully",
-              type: "save",
-            });
-          })
-          .catch((err) => {
-            res.send({
-              user: UserId,
-              screen_name: screenName,
-              bool: false,
-              mssg: "Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.",
-            });
-          });
-      });
-    } else {
-      let db = marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
+//         insert_rates(poolConnection)
+//           .then((result) => {
+//             res.send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: true,
+//               mssg: "Data Was Saved Successfully",
+//               type: "save",
+//             });
+//           })
+//           .catch((err) => {
+//             res.send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: false,
+//               mssg: "Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.",
+//             });
+//           });
+//       });
+//     } else {
+//       let db = marom_db(async (config) => {
+//         const sql = require("mssql");
+//         var poolConnection = await sql.connect(config);
 
-        update_rates(poolConnection)
-          .then((result) => {
-            res.send({
-              user: UserId,
-              screen_name: screenName,
-              bool: true,
-              mssg: "Data Was Updated Successfully",
-              type: "update",
-            });
-          })
-          .catch((err) => {
-            res.send({
-              user: UserId,
-              screen_name: screenName,
-              bool: false,
-              mssg: "Data Was Not Updated Successfully Due To Database Malfunction, Please Try Again.",
-            });
-          });
-        //res.send({user: UserId, screen_name: screenName, bool: true, mssg: 'Data Was Updated Successfully'})
-      });
-    }
-  });
+//         update_rates(poolConnection)
+//           .then((result) => {
+//             res.send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: true,
+//               mssg: "Data Was Updated Successfully",
+//               type: "update",
+//             });
+//           })
+//           .catch((err) => {
+//             res.send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: false,
+//               mssg: "Data Was Not Updated Successfully Due To Database Malfunction, Please Try Again.",
+//             });
+//           });
+//         //res.send({user: UserId, screen_name: screenName, bool: true, mssg: 'Data Was Updated Successfully'})
+//       });
+//     }
+//   });
 
-  let get_action = async (poolConnection) => {
-    let records = await poolConnection
-      .request()
-      .query(
-        `SELECT * FROM "TutorSetup" WHERE CONVERT(VARCHAR, Email) = '${email}'`
-      );
-    let get_duplicate = await records.recordset;
+//   let get_action = async (poolConnection) => {
+//     let records = await poolConnection
+//       .request()
+//       .query(
+//         `SELECT * FROM "TutorSetup" WHERE CONVERT(VARCHAR, Email) = '${email}'`
+//       );
+//     let get_duplicate = await records.recordset;
 
-    let result = get_duplicate.length > 0 ? false : true;
-    return result;
-  };
+//     let result = get_duplicate.length > 0 ? false : true;
+//     return result;
+//   };
 
-  let insert_rates = async (poolConnection) => {
-    const dataObject = {
-      Photo: photo || null,
-      Video: video || null,
-      FirstName: fname || null,
-      MiddleName: mname || null,
-      LastName: sname || null,
-      Address1: add1 || null,
-      Address2: add2 || null,
-      CityTown: city || null,
-      StateProvince: state || null,
-      ZipCode: zipCode || null,
-      Country: country || null,
-      Email: email || null,
-      CellPhone: cell || null,
-      GMT: timeZone || null,
-      ResponseHrs: response_zone || null,
-      TutorScreenname: screenName || null,
-      HeadLine: headline || null,
-      Introduction: intro || null,
-      Motivate: motivation || null,
-      IdVerified: null || null,
-      BackgroundVerified: null || null,
-      AcademyId: UserId || null,
-      Status: "Pending" || null,
-      Grades: grades || null,
-      userId,
-    };
-    let records = await poolConnection
-      .request()
-      .query(insert("TutorSetup", dataObject));
+//   let insert_rates = async (poolConnection) => {
+//     const dataObject = {
+//       Photo: photo || null,
+//       Video: video || null,
+//       FirstName: fname || null,
+//       MiddleName: mname || null,
+//       LastName: sname || null,
+//       Address1: add1 || null,
+//       Address2: add2 || null,
+//       CityTown: city || null,
+//       StateProvince: state || null,
+//       ZipCode: zipCode || null,
+//       Country: country || null,
+//       Email: email || null,
+//       CellPhone: cell || null,
+//       GMT: timeZone || null,
+//       ResponseHrs: response_zone || null,
+//       TutorScreenname: screenName || null,
+//       HeadLine: headline || null,
+//       Introduction: intro || null,
+//       Motivate: motivation || null,
+//       IdVerified: null || null,
+//       BackgroundVerified: null || null,
+//       AcademyId: UserId || null,
+//       Status: "Pending" || null,
+//       Grades: grades || null,
+//       userId,
+//     };
+//     let records = await poolConnection
+//       .request()
+//       .query(insert("TutorSetup", dataObject));
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    return result;
-  };
+//     let result = (await records.rowsAffected[0]) === 1 ? true : false;
+//     return result;
+//   };
 
-  let update_rates = async (poolConnection) => {
-    let records = await poolConnection
-      .request()
-      .query(
-        `UPDATE "TutorSetup" set Photo = '${photo}', Video = '${video}',  Grades = '${grades}', Address1 = '${add1}', Address2 = '${add2}', CityTown = '${city}', StateProvince = '${state}', ZipCode = '${zipCode}', Country = '${country}', Email = '${email}', CellPhone = '${cell}', GMT = '${timeZone}', ResponseHrs = '${response_zone}', TutorScreenname = '${screenName}', HeadLine = '${headline}', Introduction = '${intro}', Motivate = '${motivation}', Password = '${pwd}', IdVerified = '${null}', BackgroundVerified = '${null}' WHERE CONVERT(VARCHAR, AcademyId) = '${acadId}'`
-      );
+//   let update_rates = async (poolConnection) => {
+//     let records = await poolConnection
+//       .request()
+//       .query(
+//         `UPDATE "TutorSetup" set Photo = '${photo}', Video = '${video}',  Grades = '${grades}', Address1 = '${add1}', Address2 = '${add2}', CityTown = '${city}', StateProvince = '${state}', ZipCode = '${zipCode}', Country = '${country}', Email = '${email}', CellPhone = '${cell}', GMT = '${timeZone}', ResponseHrs = '${response_zone}', TutorScreenname = '${screenName}', HeadLine = '${headline}', Introduction = '${intro}', Motivate = '${motivation}', Password = '${pwd}', IdVerified = '${null}', BackgroundVerified = '${null}' WHERE CONVERT(VARCHAR, AcademyId) = '${acadId}'`
+//       );
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    return result;
-  };
-};
+//     let result = (await records.rowsAffected[0]) === 1 ? true : false;
+//     return result;
+//   };
+// };
 
 const dynamically_post_edu_info = (req, res) => {
   marom_db(async (config) => {
@@ -330,6 +333,22 @@ const dynamically_post_edu_info = (req, res) => {
   });
 };
 
+// const update_tutor_edu = (req, res) => {
+//   marom_db(async (config) => {
+//     try {
+//       const poolConnection = await sql.connect(config);
+//       const request = poolConnection.request();
+//       Object.keys(req.body).map((column) => {
+//         request.input(column, educationSchema[column], req.body[column]);
+//       });
+
+//      const {recordset} = await request.query()
+//     } catch (err) {
+//       sendErrors(err, res);
+//     }
+//   });
+// };
+
 let post_tutor_rates_form = (req, res) => {
   let {
     MutiStudentHourlyRate,
@@ -355,10 +374,10 @@ let post_tutor_rates_form = (req, res) => {
       if (poolConnection) {
         let recordExisted = await poolConnection
           .request()
-          .query(findByAnyIdColumn("TutorRates", { AcademyId }, "varchar"));
+          .query(findByAnyIdColumn("Discounts", { AcademyId }, "varchar"));
         if (recordExisted.recordset.length) {
           result = await poolConnection.request().query(
-            `UPDATE TutorRates 
+            `UPDATE Discounts 
                         SET MutiStudentHourlyRate = '${MutiStudentHourlyRate}', 
                         CancellationPolicy = '${CancellationPolicy}', 
                         FreeDemoLesson = '${FreeDemoLesson}',
@@ -375,7 +394,7 @@ let post_tutor_rates_form = (req, res) => {
           );
         } else {
           result = await poolConnection.request().query(
-            ` INSERT INTO "TutorRates"
+            ` INSERT INTO "Discounts"
                             (MutiStudentHourlyRate,CancellationPolicy,FreeDemoLesson,
                                 ConsentRecordingLesson,ActivateSubscriptionOption,
                                 SubscriptionPlan,AcademyId, DiscountCode, CodeSubject,
@@ -404,6 +423,25 @@ let post_tutor_rates_form = (req, res) => {
     }
   });
 };
+let update_motivate_form = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      var poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+      const { id } = req.params;
+      Object.keys({ ...req.body, id }).map(key => request.input(key, Discounts[key], { ...req.body, id }[key]))
+      const { recordset } = request.query(parameteriedUpdateQuery("Discounts", { ...req.body, id }).query)
+
+      res
+        .status(200)
+        .send(recordset);
+
+    } catch (err) {
+      sendErrors(err, res)
+    }
+  });
+};
+
 
 // let get_countries = (req, res) => {
 //   marom_db(async (config) => {
@@ -660,98 +698,52 @@ let remove_subject_rates = (req, res) => {
 };
 
 let upload_tutor_bank = (req, res) => {
-  let {
-    start_day,
-    acct_name,
-    acct_type,
-    bank_name,
-    acct,
-    routing,
-    ssh,
-    accumulated_hrs,
-    commission,
-    total_earning,
-    payment_option,
-    AcademyId,
-    email,
-  } = req.body;
 
-  let checker = (cb) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
-      let response = poolConnection
-        ? await poolConnection
-          .request()
-          .query(
-            `SELECT * FROM "TutorBank" WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'`
-          )
-        : "err conneecting to db";
+  marom_db(async (config) => {
+    let body = {
+      AccountName: req.body.acct_name,
+      AccountType: req.body.acct_type,
+      BankName: req.body.bank_name,
+      Account: req.body.acct,
+      Routing: req.body.routing,
+      SSH: req.body.ssh,
+      PaymentOption: req.body.payment_option,
+      AcademyId: req.body.AcademyId,
+      Email: req.body.email,
+    }
+    try {
+      const poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
 
-      cb(response.rowsAffected[0]);
-    });
-  };
+      Object.keys(body).map((key) =>
+        request.input(key, Accounting[key], body[key])
+      );
 
-  checker((data) => {
-    if (data < 1) {
-      marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
-
-        let result = poolConnection
-          ? await insert_bank_details(poolConnection)
-          : "connection error";
-
-        if (result) {
-          res.send(true);
-        } else {
-          res.send(false);
-        }
-      });
-    } else {
-      let db = marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
-
-        let result = poolConnection
-          ? await update_bank_details(poolConnection)
-          : "connection error";
-
-        if (result) {
-          res.send(true);
-        } else {
-          res.send(false);
-        }
-      });
+      const { recordset } = await request.query(parameterizedInsertQuery("TutorBank", body).query);
+      res.status(200).send(recordset);
+    } catch (err) {
+      sendErrors(err, res);
     }
   });
 
-  let insert_bank_details = async (poolConnection) => {
-    let records = await poolConnection.request().query(`INSERT INTO "TutorBank"
-        (AccountName,AccountType,BankName,Account,Routing,SSH,AccumulatedHrs,Commission,
-            TotalEarning,PaymentOption,TutorStartDay,AcademyId, Email)
-        VALUES ('${acct_name}', '${acct_type}','${bank_name}','${acct}','${routing}',
-        '${ssh}','${accumulated_hrs}','${commission}', '${total_earning}','${payment_option}',
-         '${start_day}', '${AcademyId}', '${email}')`);
+};
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    return result;
-  };
+let update_tutor_bank = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config)
+      const request = poolConnection.request();
+      const { id } = request.params;
 
-  let update_bank_details = async (poolConnection) => {
-    let records = await poolConnection.request().query(
-      `
-                UPDATE "TutorBank" set AccountName = '${acct_name}', AccountType = '${acct_type}',
-                 BankName = '${bank_name}', Account = '${acct}', Routing = '${routing}', SSH = '${ssh}',
-                  AccumulatedHrs = '${accumulated_hrs}', Commission = '${commission}',
-                   TotalEarning = '${total_earning}', PaymentOption = '${payment_option}'  , Email='${email}'
-                    WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}'
-            `
-    );
+      Object.keys({ ...req.body, id }).map(key => request.input(key, Accounting[key], { ...req.body, id }[key]))
+      const { recordset } = await request.query(parameterizedInsertQuery("TutorBank", req.body).query)
+      res.status(200).send(recordset)
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  })
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    return result;
-  };
 };
 
 let get_my_data = async (req, res) => {
@@ -802,7 +794,7 @@ let get_my_data = async (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT * from TutorRates WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
+          `SELECT * from Discounts WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
         )
         .then((result) => {
           books.push(result.recordsets);
@@ -937,7 +929,7 @@ let get_tutor_rates = (req, res) => {
         .request()
         .query(
           `
-                    SELECT * From TutorRates WHERE 
+                    SELECT * From Discounts WHERE 
                     CONVERT(VARCHAR, AcademyId) = '${AcademyId}' 
                 `
         )
@@ -1771,7 +1763,7 @@ const get_tutor_profile_data = async (req, res) => {
                         Chat AS tc ON CAST(ts.AcademyId AS VARCHAR) = tc.User2ID 
                         AND CAST(tc.User1ID AS VARCHAR) = '${req.params.studentId}'
                     LEFT JOIN
-                        TutorRates AS tr ON CAST(tr.AcademyId AS VARCHAR) = ts.AcademyId
+                        Discounts AS tr ON CAST(tr.AcademyId AS VARCHAR) = ts.AcademyId
                         
                     WHERE
                         CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST('${req.params.tutorId}' AS VARCHAR(MAX))
@@ -1935,7 +1927,7 @@ const get_tutor_against_code = async (req, res) => {
         const result = await poolConnection
           .request()
           .query(
-            findByAnyIdColumn("TutorRates", { DiscountCode: req.params.code })
+            findByAnyIdColumn("Discounts", { DiscountCode: req.params.code })
           );
 
         result.recordset.length
@@ -2238,6 +2230,7 @@ module.exports = {
   get_tutor_against_code,
   get_tutor_calender_details,
   delete_ad,
+  update_tutor_bank,
   get_tutor_offered_subjects,
   // fetchStudentsBookings,
   // getSessionDetailById,
@@ -2255,6 +2248,7 @@ module.exports = {
   dynamically_post_edu_info,
   remove_subject_rates,
   subject_already_exist,
+  update_motivate_form,
   last_pay_day,
   ad_to_shortlist,
   subjects,
@@ -2263,7 +2257,7 @@ module.exports = {
   get_tutor_students,
   post_tutor_setup,
   faculties,
-  post_form_one,
+  // post_form_one,
   post_tutor_rates_form,
   // get_countries,
   // get_gmt,

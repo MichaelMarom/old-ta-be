@@ -338,11 +338,11 @@ let get_tutor_subject = async (req, res) => {
                     edu.*,
                     TutorSetup.ResponseHrs as responseTime, 
                     TutorSetup.Status as status,
-                    TutorRates.CancellationPolicy as cancPolicy
+                    Discounts.CancellationPolicy as cancPolicy
                     FROM SubjectRates
                     JOIN TutorSetup ON cast(TutorSetup.AcademyId as varchar(max)) = 
                     cast(SubjectRates.AcademyId as varchar(max))
-                    JOIN TutorRates ON cast(TutorRates.AcademyId as varchar(max)) = 
+                    JOIN Discounts ON cast(Discounts.AcademyId as varchar(max)) = 
                     cast(SubjectRates.AcademyId as varchar(max))
                     JOIN Education1 as edu ON
                     cast(TutorSetup.AcademyId as varchar(max)) =  cast(edu.AcademyId as varchar(max))
@@ -397,7 +397,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
             JOIN 
                 TutorSetup as TS ON cast(TS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
             LEFT JOIN 
-                TutorRates as TR ON cast(TR.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
+                Discounts as TR ON cast(TR.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
                 AND TR.CodeSubject = '${subjectName}'
             JOIN 
                 Education1 as edu ON cast(TS.AcademyId as varchar(max)) = cast(edu.AcademyId as varchar(max))
@@ -461,7 +461,7 @@ let upload_student_short_list = async (req, res) => {
 //             let result = await poolConnection.request().query(
 //                 `SELECT SSL.*, TR.*, SR.rate as rate, TS.*
 //                 FROM StudentShortList SSL
-//                 left JOIN TutorRates TR ON
+//                 left JOIN Discounts TR ON
 //                     CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TR.AcademyId)
 //                 join TutorSetup as TS ON
 //                     CONVERT(VARCHAR(MAX), SSL.AcademyId) = CONVERT(VARCHAR(MAX), TS.AcademyId)
@@ -1117,7 +1117,7 @@ const set_code_applied = async (req, res) => {
         const { recordset: tutorRateRecord } = await poolConnection
           .request()
           .query(
-            find("TutorRates", { AcademyId: req.params.tutorId }, "AND", {
+            find("Discounts", { AcademyId: req.params.tutorId }, "AND", {
               AcademyId: "varchar",
             })
           );
@@ -1128,7 +1128,7 @@ const set_code_applied = async (req, res) => {
           .request()
           .query(
             update(
-              "TutorRates",
+              "Discounts",
               { CodeStatus: "used" },
               { AcademyId: req.params.tutorId },
               { AcademyId: "varchar" }
