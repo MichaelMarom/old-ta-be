@@ -121,7 +121,7 @@ TUTOR_ROUTES.post('/tutor/setup', parser, verifyToken, post_tutor_setup)
 TUTOR_ROUTES.put('/tutor/setup/:AcademyId', parser, verifyToken, update_tutor_setup)
 // TUTOR_ROUTES.get("/api/bookings/:tutorId", verifyToken, fetchStudentsBookings)
 // TUTOR_ROUTES.get('/tutor/feedbacks/:tutorId', parser, verifyToken, get_feedback_data);
-// TUTOR_ROUTES.get('/tutor/session/:tutorId', verifyToken, getSessionsDetails)
+TUTOR_ROUTES.get('/tutor/session/:tutorId', verifyToken, getSessionsDetails)
 // TUTOR_ROUTES.get('/collab/:sessionId', verifyToken, getSessionDetailById)
 
 TUTOR_ROUTES.post('/tutor/setup/record', upload.single('file'), verifyToken, recordVideoController)

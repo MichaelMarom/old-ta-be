@@ -14,6 +14,8 @@ const {
 const {
   deleteFolderContents,
   deleteFolder,
+  commissionAccordingtoNumOfSession,
+  calcNet,
 } = require("../constants/helperfunctions");
 const { exec } = require("child_process");
 const sql = require("mssql");
@@ -59,9 +61,9 @@ let post_new_subject = (req, res) => {
           result.rowsAffected[0] === 1
             ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
             : res.send({
-              bool: false,
-              mssg: "Data Was Not Successfully Saved",
-            });
+                bool: false,
+                mssg: "Data Was Not Successfully Saved",
+              });
         })
         .catch((err) => {
           console.log(err);
@@ -354,15 +356,17 @@ let post_tutor_rates_form = (req, res) => {
     try {
       var poolConnection = await sql.connect(config);
       const request = await poolConnection.request();
-      Object.keys(req.body).map(key => request.input(key, Discounts[key], req.body[key]))
+      Object.keys(req.body).map((key) =>
+        request.input(key, Discounts[key], req.body[key])
+      );
 
-      const { recordset } = await request.query(parameterizedInsertQuery("Discounts", req.body).query);
+      const { recordset } = await request.query(
+        parameterizedInsertQuery("Discounts", req.body).query
+      );
 
-      res
-        .status(200)
-        .send(recordset);
+      res.status(200).send(recordset);
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -373,14 +377,17 @@ let update_discount_form = (req, res) => {
       var poolConnection = await sql.connect(config);
       const request = poolConnection.request();
       const { id } = req.params;
-      Object.keys({ ...req.body, id }).map(key => request.input(key, Discounts[key], { ...req.body, id }[key]))
-      const { recordset } = request.query(parameteriedUpdateQuery("Discounts", { ...req.body, id }).query)
+      Object.keys({ ...req.body, id }).map((key) =>
+        request.input(key, Discounts[key], { ...req.body, id }[key])
+      );
+      const result = await request.query(
+        parameteriedUpdateQuery("Discounts", req.body, req.params, {}, false)
+          .query
+      );
 
-      res.status(200)
-        .send(recordset);
-
+      res.status(200).send({ updated: result.rowsAffected[0] });
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
@@ -640,7 +647,6 @@ let remove_subject_rates = (req, res) => {
 };
 
 let upload_tutor_bank = (req, res) => {
-
   marom_db(async (config) => {
     let body = {
       AccountName: req.body.acct_name,
@@ -652,7 +658,7 @@ let upload_tutor_bank = (req, res) => {
       PaymentOption: req.body.payment_option,
       AcademyId: req.body.AcademyId,
       Email: req.body.email,
-    }
+    };
     try {
       const poolConnection = await sql.connect(config);
       const request = poolConnection.request();
@@ -661,31 +667,35 @@ let upload_tutor_bank = (req, res) => {
         request.input(key, Accounting[key], body[key])
       );
 
-      const { recordset } = await request.query(parameterizedInsertQuery("TutorBank", body).query);
+      const { recordset } = await request.query(
+        parameterizedInsertQuery("TutorBank", body).query
+      );
       res.status(200).send(recordset);
     } catch (err) {
       sendErrors(err, res);
     }
   });
-
 };
 
 let update_tutor_bank = (req, res) => {
   marom_db(async (config) => {
     try {
-      const poolConnection = await sql.connect(config)
+      const poolConnection = await sql.connect(config);
       const request = poolConnection.request();
-      const { id } = request.params;
+      const { id } = req.params;
 
-      Object.keys({ ...req.body, id }).map(key => request.input(key, Accounting[key], { ...req.body, id }[key]))
-      const { recordset } = await request.query(parameterizedInsertQuery("TutorBank", req.body).query)
-      res.status(200).send(recordset)
+      Object.keys({ ...req.body, id }).map((key) =>
+        request.input(key, Accounting[key], { ...req.body, id }[key])
+      );
+      const { rowsAffected } = await request.query(
+        parameteriedUpdateQuery("TutorBank", req.body, req.params, {}, false)
+          .query
+      );
+      res.status(200).send({ updated: rowsAffected[0] });
+    } catch (err) {
+      sendErrors(err, res);
     }
-    catch (err) {
-      sendErrors(err, res)
-    }
-  })
-
+  });
 };
 
 let get_my_data = async (req, res) => {
@@ -863,7 +873,6 @@ const get_tutor_offered_subjects = (req, res) => {
 let get_tutor_discount_form = (req, res) => {
   let { AcademyId } = req.query;
   marom_db(async (config) => {
-
     var poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
@@ -959,7 +968,8 @@ let get_tutor_setup = (req, res) => {
             Status,
             CreatedAT
       
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${
+            req.query[Object.keys(req.query)[0]]
           }'`
           // findByAnyIdColumn("TutorSetup", req.query, "varchar(max)")
         );
@@ -1003,7 +1013,8 @@ let get_tutor_calender_details = (req, res) => {
             disableHoursRange,
             disableColor
 
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${
+            req.query[Object.keys(req.query)[0]]
           }'`
         );
         res.status(200).send(recordset);
@@ -1200,9 +1211,15 @@ const post_tutor_setup = (req, res) => {
             request.input(key, TutorSetup[key], req.body[key]);
           });
 
-          const { query } = parameteriedUpdateQuery("TutorSetup", req.body, {
-            AcademyId: findtutorSetup.recordset[0].AcademyId,
-          });
+          const { query } = parameteriedUpdateQuery(
+            "TutorSetup",
+            req.body,
+            {
+              AcademyId: findtutorSetup.recordset[0].AcademyId,
+            },
+            {},
+            false
+          );
           const result = await request.query(query);
 
           if (result.rowsAffected[0]) {
@@ -1216,19 +1233,12 @@ const post_tutor_setup = (req, res) => {
         } else {
           req.body.AcademyId =
             req.body.MiddleName.length > 0
-              ? req.body.FirstName +
-              "." +
-              " " +
-              req.body.MiddleName[0] +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate()
-              : req.body.FirstName +
-              "." +
-              " " +
-              req.body.LastName[0] +
-              shortId.generate();
+              ? `${req.body.FirstName}.${req.body.MiddleName[0]}.${
+                  req.body.LastName[0]
+                }${shortId.generate()}`
+              : `${req.body.FirstName}.${
+                  req.body.LastName[0]
+                }${shortId.generate()}`;
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
@@ -1366,144 +1376,86 @@ let get_tutor_students = async (req, res) => {
   });
 };
 
-// let getSessionsDetails = async (req, res) => {
-//   const { tutorId } = req.params;
-//   marom_db(async (config) => {
-//     try {
-//       const sql = require("mssql");
-//       const poolConnection = await sql.connect(config);
+let getSessionsDetails = async (req, res) => {
+  const { tutorId } = req.params;
+  marom_db(async (config) => {
+    try {
+      const sql = require("mssql");
+      const poolConnection = await sql.connect(config);
 
-//       if (poolConnection) {
-//         const result = await poolConnection.request().query(
-//           `SELECT 
-//                       b.reservedSlots, ts.GMT, b.bookedSlots, b.tutorId, b.studentId, 
-//                       b.subjectName, ss.Rate, ch.ChatID
-//                         FROM StudentBookings AS b
-//                         JOIN StudentShortList AS ss ON
-//                         b.studentId  = CAST(ss.Student AS varchar(max)) AND 
-//                         b.tutorId =  CAST(ss.AcademyId AS varchar(max))
-//                         inner JOIN TutorSetup AS ts On
-//                         b.tutorId = CAST(ts.AcademyId AS varchar(max))
-//                         left JOIN Chat AS ch ON 
-//                         ch.User1ID =cast( ss.Student AS varchar) AND
-//                         ch.User2ID =cast( ts.AcademyId AS varchar)
-//                         WHERE b.tutorId = CAST('${tutorId}' AS varchar(max)); `
-//         );
-//         const allStudentsSessions = result.recordset
-//           .map((record) => {
-//             const reservedSession = JSON.parse(record.reservedSlots);
-//             const bookedSession = JSON.parse(record.bookedSlots);
-//             const bookedSessionWithChatId = bookedSession.map((session) => ({
-//               ...session,
-//               chatId: record.ChatID,
-//             }));
+      if (poolConnection) {
+        const { recordset } = await poolConnection.request().query(
+          `SELECT ls.*, ch.ChatID as chatId
+            FROM Lessons AS ls
+            inner JOIN TutorSetup AS ts On
+            ls.tutorId = CAST(ts.AcademyId AS varchar(max))
+            left JOIN Chat AS ch ON
+            ch.User1ID =cast( ls.studentId AS varchar) AND
+            ch.User2ID =cast( ts.AcademyId AS varchar)
+            WHERE ls.tutorId = CAST('${tutorId}' AS varchar(max));`
+        );
 
-//             const reservedSlotWithChatId = reservedSession.map((session) => ({
-//               ...session,
-//               chatId: record.ChatID,
-//             }));
-//             const combinedSessions = reservedSlotWithChatId.concat(
-//               bookedSessionWithChatId
-//             );
-//             return combinedSessions;
-//           })
-//           .flat();
+        recordset.sort((a, b) => new Date(b.start) - new Date(a.start));
 
-//         const uniqueIds = new Set();
-//         const uniqueIdsSessions = allStudentsSessions.filter((obj) => {
-//           if (!uniqueIds.has(obj.id)) {
-//             uniqueIds.add(obj.id);
-//             return true;
-//           }
-//           return false;
-//         });
-//         uniqueIdsSessions.sort((a, b) => new Date(b.start) - new Date(a.start));
-//         const arrayWithSerialNumber = uniqueIdsSessions.map((obj, index) => ({
-//           ...obj,
-//           sr: uniqueIdsSessions.length - index,
-//         }));
+        const sessionWithCommision = recordset.map((session, index) => ({
+          ...session,
+          comm: commissionAccordingtoNumOfSession(recordset.length - index),
+          sr: recordset.length - index,
+          net: calcNet(
+            session.rate,
+            commissionAccordingtoNumOfSession(recordset.length - index)
+          ),
+        }));
 
-//         const commissionAccordingtoNumOfSession = (sr) => {
-//           const commissionEntry = COMMISSION_DATA.find((entry) => {
-//             if (!entry.higher) {
-//               return sr >= entry.lower && sr <= entry.higher;
-//             } else {
-//               return sr >= entry.lower;
-//             }
-//           });
-//           return commissionEntry ? commissionEntry.percent : null;
-//         };
+        const today = moment(); // Get today's date
+        let latestPayday = moment("2024-01-18T17:21:42.727Z", "YYYY-MM-DD");
 
-//         const calcNet = (rate, comm) => {
-//           const numericRate = parseFloat(rate.replace("$", ""));
-//           const commissionAmount = (numericRate * comm) / 100;
+        while (latestPayday.isBefore(today)) {
+          latestPayday.add(14, "days");
 
-//           const netAmount = numericRate - commissionAmount;
-//           return netAmount;
-//         };
+          if (latestPayday.isAfter(today)) {
+            latestPayday = moment(latestPayday).subtract(14, "days");
+            break;
+          }
+        }
 
-//         const sessionWithCommision = arrayWithSerialNumber.map((session) => ({
-//           ...session,
-//           comm: commissionAccordingtoNumOfSession(session.sr),
-//           net: calcNet(
-//             session.rate,
-//             commissionAccordingtoNumOfSession(session.sr)
-//           ),
-//         }));
+        const currentYear = moment().year();
 
-//         const today = moment(); // Get today's date
-//         let latestPayday = moment("2024-01-18T17:21:42.727Z", "YYYY-MM-DD");
+        // Filter sessions for the current year
+        const currentYearFullfilledSessions = sessionWithCommision.filter(
+          (session) =>
+            moment(session.start).year() === currentYear &&
+            session.request !== "delete"
+        );
 
-//         while (latestPayday.isBefore(today)) {
-//           latestPayday.add(14, "days");
+        const previousYearFullFilledSessions = sessionWithCommision.filter(
+          (session) =>
+            moment(session.start).year() === currentYear - 1 &&
+            session.request !== "delete"
+        );
+        const currentYearEarning = currentYearFullfilledSessions.reduce(
+          (total, session) => total + session.net,
+          0
+        );
+        const previousYearEarning = previousYearFullFilledSessions.reduce(
+          (total, session) => total + session.net,
+          0
+        );
+        const currentYearAccHours = currentYearFullfilledSessions.length;
 
-//           if (latestPayday.isAfter(today)) {
-//             latestPayday = moment(latestPayday).subtract(14, "days");
-//             break;
-//           }
-//         }
-
-//         const currentYear = moment().year();
-//         //remove the session whoes rate is NaN, later we remove them from DB
-//         const sessionsWithinPayDay = sessionWithCommision.filter(
-//           (session) =>
-//             moment(session.start).isBefore(latestPayday) && !isNaN(session.net)
-//         );
-//         // Filter sessions for the current year
-//         const currentYearFullfilledSessions = sessionsWithinPayDay.filter(
-//           (session) =>
-//             moment(session.start).year() === currentYear &&
-//             session.request !== "delete"
-//         );
-
-//         const previousYearFullFilledSessions = sessionsWithinPayDay.filter(
-//           (session) =>
-//             moment(session.start).year() === currentYear - 1 &&
-//             session.request !== "delete"
-//         );
-//         const currentYearEarning = currentYearFullfilledSessions.reduce(
-//           (total, session) => total + session.net,
-//           0
-//         );
-//         const previousYearEarning = previousYearFullFilledSessions.reduce(
-//           (total, session) => total + session.net,
-//           0
-//         );
-//         const currentYearAccHours = currentYearFullfilledSessions.length;
-
-//         res.status(200).send({
-//           currentYearEarning,
-//           previousYearEarning,
-//           currentYearAccHours,
-//           sessions: sessionsWithinPayDay,
-//         });
-//       }
-//     } catch (err) {
-//       console.log(err);
-//       sendErrors(err, res);
-//     }
-//   });
-// };
+        res.status(200).send({
+          currentYearEarning,
+          previousYearEarning,
+          currentYearAccHours,
+          sessions: sessionWithCommision,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      sendErrors(err, res);
+    }
+  });
+};
 
 const get_all_tutor_sessions_formatted = async (req, res) => {
   marom_db(async (config) => {
@@ -1848,7 +1800,8 @@ const put_ad = async (req, res) => {
       request.input("Id", sql.Int(), req.params.Id);
 
       const result = await request.query(
-        parameteriedUpdateQuery("TutorAds", req.body, req.params, false).query
+        parameteriedUpdateQuery("TutorAds", req.body, req.params, {}, false)
+          .query
       );
 
       res.status(200).send(result.recordset);
@@ -1887,8 +1840,8 @@ const get_tutor_against_code = async (req, res) => {
 //       const { timeZone } = req.query;
 //       const poolConnection = await sql.connect(config);
 //       const result = await poolConnection.request().query(`
-//             SELECT 
-//             ST.Photo, 
+//             SELECT
+//             ST.Photo,
 //             SB.studentId AS studentId,
 //             SB.tutorId AS tutorId,
 //             SB.reservedSlots AS reservedSlots,
@@ -2174,7 +2127,7 @@ module.exports = {
   get_tutor_offered_subjects,
   // fetchStudentsBookings,
   // getSessionDetailById,
-  // getSessionsDetails,
+  getSessionsDetails,
   // get_feedback_data,
   post_tutor_ad,
   update_tutor_setup,
