@@ -350,80 +350,24 @@ const dynamically_post_edu_info = (req, res) => {
 // };
 
 let post_tutor_rates_form = (req, res) => {
-  let {
-    MutiStudentHourlyRate,
-    IntroSessionDiscount,
-    CancellationPolicy,
-    FreeDemoLesson,
-    ConsentRecordingLesson,
-    ActivateSubscriptionOption,
-    SubscriptionPlan,
-    AcademyId,
-    DiscountCode,
-    CodeShareable,
-    MultiStudent,
-    CodeSubject,
-    CodeStatus,
-  } = req.body;
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
-
       var poolConnection = await sql.connect(config);
-      let result;
-      if (poolConnection) {
-        let recordExisted = await poolConnection
-          .request()
-          .query(findByAnyIdColumn("Discounts", { AcademyId }, "varchar"));
-        if (recordExisted.recordset.length) {
-          result = await poolConnection.request().query(
-            `UPDATE Discounts 
-                        SET MutiStudentHourlyRate = '${MutiStudentHourlyRate}', 
-                        CancellationPolicy = '${CancellationPolicy}', 
-                        FreeDemoLesson = '${FreeDemoLesson}',
-                         ConsentRecordingLesson = '${ConsentRecordingLesson}',
-                          ActivateSubscriptionOption = '${ActivateSubscriptionOption}', 
-                          SubscriptionPlan = '${SubscriptionPlan}',
-                           DiscountCode = '${DiscountCode}', 
-                           CodeSubject = '${CodeSubject}', 
-                           CodeShareable=${CodeShareable ? 1 : 0},  
-                           MultiStudent=${MultiStudent ? 1 : 0},
-                           IntroSessionDiscount=${IntroSessionDiscount ? 1 : 0},
-                           CodeStatus='${CodeStatus}'
-                         WHERE cast(AcademyId as varchar) = '${AcademyId}'`
-          );
-        } else {
-          result = await poolConnection.request().query(
-            ` INSERT INTO "Discounts"
-                            (MutiStudentHourlyRate,CancellationPolicy,FreeDemoLesson,
-                                ConsentRecordingLesson,ActivateSubscriptionOption,
-                                SubscriptionPlan,AcademyId, DiscountCode, CodeSubject,
-                                                                 MultiStudent,
-                                CodeShareable,IntroSessionDiscount, CodeStatus)
-                            VALUES ( '${MutiStudentHourlyRate}', 
-                            '${CancellationPolicy}','${FreeDemoLesson}',
-                            '${ConsentRecordingLesson}','${ActivateSubscriptionOption}',
-                            '${SubscriptionPlan}','${AcademyId}','${DiscountCode}', '${CodeSubject}',${MultiStudent ? 1 : 0
-            },
-                            ${CodeShareable ? 1 : 0},${IntroSessionDiscount ? 1 : 0
-            },
-                            '${CodeStatus}')  `
-          );
-        }
+      const request = await poolConnection.request();
+      Object.keys(req.body).map(key => request.input(key, Discounts[key], req.body[key]))
 
-        res
-          .status(200)
-          .send({ bool: true, mssg: "Data Was Successfully Saved" });
-      }
-    } catch (err) {
-      console.log(err);
+      const { recordset } = await request.query(parameterizedInsertQuery("Discounts", req.body).query);
+
       res
-        .status(400)
-        .send({ bool: false, mssg: "Data Was Not Successfully Saved" });
+        .status(200)
+        .send(recordset);
+    } catch (err) {
+      sendErrors(err, res)
     }
   });
 };
-let update_motivate_form = (req, res) => {
+
+let update_discount_form = (req, res) => {
   marom_db(async (config) => {
     try {
       var poolConnection = await sql.connect(config);
@@ -432,8 +376,7 @@ let update_motivate_form = (req, res) => {
       Object.keys({ ...req.body, id }).map(key => request.input(key, Discounts[key], { ...req.body, id }[key]))
       const { recordset } = request.query(parameteriedUpdateQuery("Discounts", { ...req.body, id }).query)
 
-      res
-        .status(200)
+      res.status(200)
         .send(recordset);
 
     } catch (err) {
@@ -441,7 +384,6 @@ let update_motivate_form = (req, res) => {
     }
   });
 };
-
 
 // let get_countries = (req, res) => {
 //   marom_db(async (config) => {
@@ -918,18 +860,16 @@ const get_tutor_offered_subjects = (req, res) => {
   });
 };
 
-let get_tutor_rates = (req, res) => {
+let get_tutor_discount_form = (req, res) => {
   let { AcademyId } = req.query;
   marom_db(async (config) => {
-    const sql = require("mssql");
 
     var poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
         .query(
-          `
-                    SELECT * From Discounts WHERE 
+          `  SELECT * From Discounts WHERE 
                     CONVERT(VARCHAR, AcademyId) = '${AcademyId}' 
                 `
         )
@@ -2248,7 +2188,7 @@ module.exports = {
   dynamically_post_edu_info,
   remove_subject_rates,
   subject_already_exist,
-  update_motivate_form,
+  update_discount_form,
   last_pay_day,
   ad_to_shortlist,
   subjects,
@@ -2277,7 +2217,7 @@ module.exports = {
   get_rates,
   upload_tutor_bank,
   get_tutor_setup,
-  get_tutor_rates,
+  get_tutor_discount_form,
   get_bank_details,
   storeEvents,
   storeCalenderTutorRecord,

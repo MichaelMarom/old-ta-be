@@ -21,7 +21,7 @@ const { subjects,
     get_tutor_setup,
     post_tutor_rates_form,
     get_my_edu,
-    get_tutor_rates,
+    get_tutor_discount_form,
     get_bank_details,
     storeEvents,
     fetchStudentsBookings,
@@ -59,7 +59,7 @@ const { subjects,
     update_tutor_setup,
     getAllTutorLesson,
     update_tutor_bank,
-    update_motivate_form} = require('../controllers/tutor');
+    update_discount_form} = require('../controllers/tutor');
 
 const { express, path, fs, parser, cookieParser, mocha, morgan, cors, shortId, jwt } = require('../modules');
 
@@ -85,7 +85,6 @@ TUTOR_ROUTES.get('/tutor/my-data', verifyToken, get_my_data)
 TUTOR_ROUTES.get('/tutor/my-rate', verifyToken, get_rates)
 TUTOR_ROUTES.get('/subject/:facultyId', verifyToken, get_faculty_subjects)
 TUTOR_ROUTES.get('/tutor/subjects/:id', verifyToken, get_tutor_offered_subjects)
-TUTOR_ROUTES.get('/tutor/tutor-rate', verifyToken, get_tutor_rates)
 TUTOR_ROUTES.get('/tutor/my-edu', verifyToken, get_my_edu)
 TUTOR_ROUTES.get('/tutor/tutor-bank-details', verifyToken, get_bank_details)
 
@@ -106,8 +105,9 @@ TUTOR_ROUTES.post('/tutor/edu', parser, verifyToken, dynamically_post_edu_info);
 // TUTOR_ROUTES.put('/tutor/edu', parser, verifyToken, dynamically_post_edu_info);
 
 
-TUTOR_ROUTES.post('/tutor/tutor-rates', parser, verifyToken, post_tutor_rates_form);
-TUTOR_ROUTES.put('/tutor/tutor-rates/:id', parser, verifyToken, update_motivate_form);
+TUTOR_ROUTES.get('/tutor/tutor-discounts', verifyToken, get_tutor_discount_form)
+TUTOR_ROUTES.post('/tutor/tutor-discounts', parser, verifyToken, post_tutor_rates_form);
+TUTOR_ROUTES.put('/tutor/tutor-discounts/:id', parser, verifyToken, update_discount_form);
 
 
 TUTOR_ROUTES.post('/tutor/new-subject', parser, verifyToken, post_new_subject);
