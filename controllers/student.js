@@ -384,9 +384,9 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TS.GMT,
                 TS.disableColor,
                 
-                TR.CancellationPolicy,
-                TR.IntroSessionDiscount,
-                TR.ActivateSubscriptionOption,
+                DS.CancellationPolicy,
+                DS.IntroSessionDiscount,
+                DS.ActivateSubscriptionOption,
                 
                 5 as  DiscountHours,
                 
@@ -397,14 +397,14 @@ const get_tutor_by_subject_faculty = async (req, res) => {
             JOIN 
                 TutorSetup as TS ON cast(TS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
             LEFT JOIN 
-                Discounts as TR ON cast(TR.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
-                AND TR.CodeSubject = '${subjectName}'
+                Discounts as DS ON cast(DS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
+                AND DS.CodeSubject = '${subjectName}'
             JOIN 
                 Education1 as edu ON cast(TS.AcademyId as varchar(max)) = cast(edu.AcademyId as varchar(max))
             LEFT JOIN 
                 CodeApplicationLogs  as CAL ON 
                     cast(CAL.tutorId as varchar(max)) = cast(TS.AcademyId as varchar(max)) and
-                    TR.SID = CAL.tutorMotivateId and
+                    DS.id = CAL.tutorMotivateId and
                     cast(CAL.studentId as varchar)= '${studentId}' 
 
             WHERE 

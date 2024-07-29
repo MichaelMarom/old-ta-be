@@ -782,9 +782,7 @@ const get_faculty_subjects = async (req, res) => {
     const { facultyId } = req.params;
     try {
       const poolConnection = await sql.connect(config);
-      const { recordset } = await poolConnection.request().query(`
-     
-	  SELECT 
+      const { recordset } = await poolConnection.request().query(` SELECT 
     s.Id, s.SubjectName, s.FacultyId,
     COUNT(DISTINCT CAST(ts_filtered.AcademyId AS NVARCHAR(255))) AS tutor_count
     FROM 
@@ -798,14 +796,12 @@ const get_faculty_subjects = async (req, res) => {
             LEFT JOIN 
                 TutorSetup ts ON CAST(sr.AcademyId AS VARCHAR) = CAST(ts.AcademyId AS VARCHAR)
             WHERE 
-                ts.Status = 'active'
+                ts.Status = 'active' and cast(sr.faculty as varchar) = '${facultyId}'
         ) ts_filtered ON CAST(s.SubjectName AS VARCHAR) = CAST(ts_filtered.subject AS VARCHAR)
     WHERE 
         s.FacultyId = '${facultyId}'
     GROUP BY  
-        s.Id, s.SubjectName, s.FacultyId;
-  
-            `);
+        s.Id, s.SubjectName, s.FacultyId; `);
 
       res.status(200).send(recordset);
     } catch (err) {
@@ -2080,41 +2076,27 @@ const getVideo = async (req, res) => {
   }
 };
 
-// const getSessionDetailById = async (req, res) => {
-//   marom_db(async (config) => {
-//     try {
-//       const { sessionId } = req.params;
-//       const { timezone } = req.query;
-//       const poolConnection = await sql.connect(config);
-//       const result = await poolConnection.request().query(`
-//                 SELECT sessions
-//                 FROM (
-//                     SELECT reservedSlots AS sessions
-//                     FROM [dbo].[StudentBookings]
-//                     UNION ALL
-//                     SELECT bookedSlots AS sessions
-//                     FROM [dbo].[StudentBookings]
-//                 ) combined_sessions
-//                 CROSS APPLY OPENJSON(combined_sessions.sessions)
-//                 WITH (id nvarchar(255) '$.id') AS json_data
-//                 WHERE json_data.id = '${sessionId}'; `);
+const getSessionDetailById = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const { sessionId } = req.params;
+      const { timezone } = req.query;
+      const poolConnection = await sql.connect(config);
+      const { recordset } = await poolConnection.request().query(`
+                SELECT *
+                FROM Lessons
+                WHERE id = '${sessionId}'`);
 
-//       const session = result.recordset[0]?.sessions
-//         ? JSON.parse(result.recordset[0]?.sessions)?.filter(
-//           (session) => session.id === sessionId
-//         )?.[0]
-//         : {};
+      const sessionTime = sessionId
+        ? checkSessionStatus(recordset[0], timezone)
+        : "";
 
-//       const sessionTime = session.id
-//         ? checkSessionStatus(session, timezone)
-//         : "";
-
-//       res.status(200).send({ session, time: sessionTime });
-//     } catch (err) {
-//       sendErrors(err, res);
-//     }
-//   });
-// };
+      res.status(200).send({ session: recordset[0], time: sessionTime });
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
 
 module.exports = {
   recordVideoController,
@@ -2126,7 +2108,7 @@ module.exports = {
   update_tutor_bank,
   get_tutor_offered_subjects,
   // fetchStudentsBookings,
-  // getSessionDetailById,
+  getSessionDetailById,
   getSessionsDetails,
   // get_feedback_data,
   post_tutor_ad,
