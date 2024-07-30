@@ -1,4 +1,4 @@
-const { login, signup, get_user_detail, get_setup_detail, forget_password, verifyToken, get_token } = require("../controllers/auth");
+const { login, signup, get_user_detail, get_setup_detail, forget_password, get_token } = require("../controllers/auth");
 const {
     express,
     parser,

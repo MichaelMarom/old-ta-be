@@ -33,7 +33,7 @@ ADMIN_ROUTES.get(
   verifyToken,
   get_role_count_by_status
 );
-ADMIN_ROUTES.get("/admin/user/list", verifyToken, get_users_list)
+// ADMIN_ROUTES.get("/admin/user/list", verifyToken, get_users_list)
 ADMIN_ROUTES.get("/admin/student-data", verifyToken, get_student_data);
 ADMIN_ROUTES.get(
   "/admin/tutor-new-subject",

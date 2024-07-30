@@ -53,7 +53,6 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
 })
 
 
-// app.use(verifyToken)
 app.use(TUTOR_ROUTES);
 app.use(ADMIN_ROUTES);
 app.use(STUDENT_ROUTES);
