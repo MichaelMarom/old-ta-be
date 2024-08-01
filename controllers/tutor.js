@@ -976,10 +976,18 @@ let get_tutor_setup = (req, res) => {
           );
           record = { ...record, Email: recordset?.[0]?.email || "" };
         }
-        const offset = parseInt(record?.GMT, 10);
-        let timezones = moment.tz
+
+        const match = record?.GMT?.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+
+        const hours = parseInt(match[1], 10);
+        const minutes = match[2] ? parseInt(match[2], 10) : 0;
+
+        const offset = hours * 60 + minutes; // Convert total offset to minutes
+
+        // Find timezones matching the offset
+        const timezones = moment.tz
           .names()
-          .filter((name) => moment.tz(name).utcOffset() === offset * 60);
+          .filter((name) => moment.tz(name).utcOffset() === offset);
         const timeZone = timezones[0] || null;
 
         const formattedResult = [{ ...record, timeZone }];
