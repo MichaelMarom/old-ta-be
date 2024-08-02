@@ -100,7 +100,6 @@ const signup = async (req, res) => {
         res.status(200).send(result.recordset);
       }
     } catch (err) {
-      console.log(err);
       if (err.message.includes("UNIQUE KEY constraint")) {
         sendErrors({ message: "Email Already Exists" }, res);
       } else sendErrors({ message: "Failed to Register User" }, res);
@@ -137,7 +136,6 @@ const login = async (req, res) => {
         res.status(200).send({ ...result.recordset, token });
       }
     } catch (err) {
-      console.log(err.message);
       sendErrors(err, res);
     }
   });
