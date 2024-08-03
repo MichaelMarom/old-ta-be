@@ -10,6 +10,8 @@ const HOLIDAY_ROUTES = require('./routes/holiday')
 const FILE_ROUTER = require('./routes/file')
 const { MEETING_ROUTES } = require('./routes/meeting');
 const CHAT_ROUTES = require('./routes/chat')
+const AGENCY_ROUTES = require('./routes/agency')
+
 require('dotenv').config();
 
 var { PeerServer } = require("peer");
@@ -54,6 +56,7 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
 
 
 app.use(TUTOR_ROUTES);
+app.use(AGENCY_ROUTES);
 app.use(ADMIN_ROUTES);
 app.use(STUDENT_ROUTES);
 app.use(AUTH_ROUTERS)
