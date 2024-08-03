@@ -10,7 +10,13 @@ AgencyRoutes.put('/agency/:id', parser, verifyToken, updateAgencyApi)
 AgencyRoutes.delete('/agency/:id', verifyToken, deleteAgencyApi)
 AgencyRoutes.get('/agency/:id', verifyToken, getAgencyApi)
 AgencyRoutes.get('/agency', verifyToken, getAgenciesApi)
+// subtutor
+
+AgencyRoutes.post('/agency/:agencyId/sub-tutor', parser, verifyToken, createAgencyApi)
+AgencyRoutes.put('/agency/sub-tutor/:id', parser, verifyToken, updateAgencyApi)
+AgencyRoutes.delete('/agency/sub-tutor/:id', verifyToken, deleteAgencyApi)
+AgencyRoutes.get('/agency/sub-tutor/:id', verifyToken, getAgencyApi)
+AgencyRoutes.get('/agency/:agencyId/sub-tutors', verifyToken, getAgenciesApi)
 
 
 module.exports = AgencyRoutes
-

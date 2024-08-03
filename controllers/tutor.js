@@ -975,24 +975,24 @@ let get_tutor_setup = (req, res) => {
             findByAnyIdColumn("Users1", { SID: record.userId })
           );
           record = { ...record, Email: recordset?.[0]?.email || "" };
-        }
 
-        const match = record?.GMT?.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+          const match = record?.GMT?.match(/^([+-]\d{2})(?::(\d{2}))?$/);
 
-        const hours = parseInt(match[1], 10);
-        const minutes = match[2] ? parseInt(match[2], 10) : 0;
+          const hours = parseInt(match[1], 10);
+          const minutes = match[2] ? parseInt(match[2], 10) : 0;
 
-        const offset = hours * 60 + minutes; // Convert total offset to minutes
+          const offset = hours * 60 + minutes; // Convert total offset to minutes
 
-        // Find timezones matching the offset
-        const timezones = moment.tz
-          .names()
-          .filter((name) => moment.tz(name).utcOffset() === offset);
-        const timeZone = timezones[0] || null;
+          // Find timezones matching the offset
+          const timezones = moment.tz
+            .names()
+            .filter((name) => moment.tz(name).utcOffset() === offset);
+          const timeZone = timezones[0] || null;
 
-        const formattedResult = [{ ...record, timeZone }];
+          const formattedResult = [{ ...record, timeZone }];
 
-        res.status(200).send(formattedResult);
+          res.status(200).send(formattedResult);
+        } else res.status(200).send({});
       }
     } catch (err) {
       sendErrors(err, res);
