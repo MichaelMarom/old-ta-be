@@ -7,6 +7,8 @@ const {
 const { sendErrors } = require("../helperfunctions/handleReqErrors");
 const AgencySchema = require("../schema/agency/agency");
 const SubTutorsSchema = require("../schema/agency/subTutor");
+const { capitalizeFirstLetter } = require("../constants/helperfunctions");
+const { shortId } = require("../modules");
 
 const createAgencyApi = async (req, res) => {
   marom_db(async (config) => {
@@ -113,7 +115,13 @@ const createSubTutorApi = async (req, res) => {
       const poolConnection = await sql.connect(config);
       const request = await poolConnection.request();
       const { agencyId } = req.params;
-      const insertedSubTutor = { ...req.body, AgencyId: agencyId };
+      let insertedSubTutor = { ...req.body, AgencyId: agencyId };
+
+      let TutorId = `${capitalizeFirstLetter(insertedSubTutor.FirstName)}${capitalizeFirstLetter(insertedSubTutor.LastName[0])
+      }${shortId.generate()}`
+
+      insertedSubTutor = {...insertedSubTutor, TutorId}
+
       Object.keys(insertedSubTutor).map((key) =>
         request.input(key, SubTutorsSchema[key], insertedSubTutor[key])
       );
