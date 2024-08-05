@@ -1,5 +1,5 @@
 
-const { createAgencyApi, updateAgencyApi, deleteAgencyApi, getAgencyApi, getAgenciesApi } = require('../controllers/agency');
+const { createAgencyApi, updateAgencyApi, deleteAgencyApi, getAgencyApi, getAgenciesApi, createSubTutorApi, updateSubTutorApi, deleteSubTutorApi, getSubtutorApi, getSubTutorsByAgencyApi } = require('../controllers/agency');
 const { verifyToken } = require('../controllers/auth');
 const { express, parser } = require('../modules');
 
@@ -12,11 +12,11 @@ AgencyRoutes.get('/agency/:id', verifyToken, getAgencyApi)
 AgencyRoutes.get('/agency', verifyToken, getAgenciesApi)
 // subtutor
 
-AgencyRoutes.post('/agency/:agencyId/sub-tutor', parser, verifyToken, createAgencyApi)
-AgencyRoutes.put('/agency/sub-tutor/:id', parser, verifyToken, updateAgencyApi)
-AgencyRoutes.delete('/agency/sub-tutor/:id', verifyToken, deleteAgencyApi)
-AgencyRoutes.get('/agency/sub-tutor/:id', verifyToken, getAgencyApi)
-AgencyRoutes.get('/agency/:agencyId/sub-tutors', verifyToken, getAgenciesApi)
+AgencyRoutes.post('/agency/:agencyId/sub-tutor', parser, verifyToken, createSubTutorApi)
+AgencyRoutes.put('/agency/sub-tutor/:id', parser, verifyToken, updateSubTutorApi)
+AgencyRoutes.delete('/agency/sub-tutor/:id', verifyToken, deleteSubTutorApi)
+AgencyRoutes.get('/agency/sub-tutor/:id', verifyToken, getSubtutorApi)
+AgencyRoutes.get('/agency/:agencyId/sub-tutors', verifyToken, getSubTutorsByAgencyApi)
 
 
 module.exports = AgencyRoutes

@@ -119,7 +119,7 @@ const createSubTutorApi = async (req, res) => {
       );
 
       const { recordset } = await request.query(
-        parameterizedInsertQuery("SubTutor", req.body).query
+        parameterizedInsertQuery("SubTutors",insertedSubTutor).query
       );
       res.status(200).send(recordset[0]);
     } catch (err) {
@@ -145,7 +145,7 @@ const updateSubTutorApi = async (req, res) => {
 
       const { rowsAffected } = await request.query(
         parameteriedUpdateQuery(
-          "SubTutor",
+          "SubTutors",
           req.body,
           { SubTutorId: req.params.id },
           {},
@@ -166,7 +166,7 @@ const deleteSubTutorApi = async (req, res) => {
       const request = await poolConnection.request();
 
       const { rowsAffected } = await request.query(
-        `Delete from SubTutor where AgencyId = "${req.params.id}"`
+        `Delete from SubTutors where AgencyId = "${req.params.id}"`
       );
       res.status(200).send({ deleted: rowsAffected[0] });
     } catch (err) {
@@ -182,7 +182,7 @@ const getSubtutorApi = async (req, res) => {
       const request = await poolConnection.request();
 
       const { recordset } = await request.query(
-        `Select * from SubTutor where SubTutorId = '${req.params.id}'`
+        `Select * from SubTutors where SubTutorId = '${req.params.id}'`
       );
       res.status(200).send(recordset[0] || {});
     } catch (err) {
@@ -197,7 +197,7 @@ const getSubTutorsByAgencyApi = async (req, res) => {
       const poolConnection = await sql.connect(config);
       const request = await poolConnection.request();
 
-      const { recordset } = await request.query(`SELECT * from SubTutor where AgencyId = '${req.params.agencyId}'}'`);
+      const { recordset } = await request.query(`SELECT * from SubTutors where AgencyId = '${req.params.agencyId}'`);
       res.status(200).send(recordset);
     } catch (err) {
       sendErrors(err, res);

@@ -11,8 +11,9 @@ const SubTutorsSchema = {
   Country: sql.NVarChar(100), // For NVARCHAR(100)
   Subject: sql.VarChar(200), // For VARCHAR(200)
   Faculty: sql.Int, // For INT
+  ServiceCharge: sql.Decimal(4,2),  
   CreatedAt: sql.DateTime, // For DATETIME
-  UpdatedAt: sql.DateTime, // For DATETIME
+  UpdatedAt: sql.DateTime, // For DATETIME  
 };
 
 module.exports = SubTutorsSchema;
