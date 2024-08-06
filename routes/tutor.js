@@ -113,7 +113,6 @@ TUTOR_ROUTES.put('/tutor/tutor-discounts/:id', parser, verifyToken, update_disco
 TUTOR_ROUTES.post('/tutor/new-subject', parser, verifyToken, post_new_subject);
 TUTOR_ROUTES.get('/p-payment/last_payday', verifyToken, last_pay_day);
 
-TUTOR_ROUTES.post("/api/store-event", parser, verifyToken, storeEvents);
 TUTOR_ROUTES.get("/tutor/lesson", verifyToken, getAllTutorLesson)
 
 TUTOR_ROUTES.put("/tutor/update/:id", parser, verifyToken, storeCalenderTutorRecord);
