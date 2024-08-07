@@ -34,7 +34,7 @@ const { subjects,
     get_tutor_students,
     getSessionsDetails,
     last_pay_day,
-    get_tutor_profile_data,
+    // get_tutor_profile_data,
     remove_subject_rates,
     post_tutor_ad,
     get_tutor_ads,
@@ -93,6 +93,7 @@ TUTOR_ROUTES.get('/tutor/tutor-setup/calender', verifyToken, get_tutor_calender_
 
 TUTOR_ROUTES.get('/tutor/photos', verifyToken, get_tutor_photos);
 TUTOR_ROUTES.get('/tutor/feedback/questions', verifyToken, get_tutor_feedback_questions)
+// TUTOR_ROUTES.get('/tutor/feedback', parser, verifyToken, get_feedback_data);
 
 TUTOR_ROUTES.post('/tutor/payment', parser, verifyToken, upload_tutor_bank);
 TUTOR_ROUTES.put('/tutor/payment/:id', parser, verifyToken, update_tutor_bank);
@@ -119,7 +120,6 @@ TUTOR_ROUTES.put("/tutor/update/:id", parser, verifyToken, storeCalenderTutorRec
 TUTOR_ROUTES.post('/tutor/setup', parser, verifyToken, post_tutor_setup)
 TUTOR_ROUTES.put('/tutor/setup/:AcademyId', parser, verifyToken, update_tutor_setup)
 // TUTOR_ROUTES.get("/api/bookings/:tutorId", verifyToken, fetchStudentsBookings)
-// TUTOR_ROUTES.get('/tutor/feedbacks/:tutorId', parser, verifyToken, get_feedback_data);
 TUTOR_ROUTES.get('/tutor/session/:tutorId', verifyToken, getSessionsDetails)
 TUTOR_ROUTES.get('/collab/:sessionId', verifyToken, getSessionDetailById)
 
@@ -132,7 +132,7 @@ TUTOR_ROUTES.get('/tutor/market-data', verifyToken, get_tutor_market_data)
 TUTOR_ROUTES.get('/tutor/get_students/:academyId', verifyToken, get_tutor_students)
 TUTOR_ROUTES.get('/tutor/sessions/formatted/:tutorId', verifyToken, get_all_tutor_sessions_formatted)
 
-TUTOR_ROUTES.get('/profile/:tutorId/:studentId', verifyToken, get_tutor_profile_data)
+// TUTOR_ROUTES.get('/profile/:tutorId/:studentId', verifyToken, get_tutor_profile_data)
 TUTOR_ROUTES.post('/tutor/market-place', parser, verifyToken, post_tutor_ad)
 TUTOR_ROUTES.get('/tutor/market-place/list/:AcademyId', verifyToken, get_tutor_ads)
 TUTOR_ROUTES.get('/tutor/ad/:Id', verifyToken, get_ad)

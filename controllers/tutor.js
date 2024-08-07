@@ -1578,159 +1578,159 @@ let last_pay_day = async (req, res) => {
   });
 };
 
-const get_tutor_profile_data = async (req, res) => {
-  marom_db(async (config) => {
-    try {
-      const sql = require("mssql");
-      const poolConnection = await sql.connect(config);
+// const get_tutor_profile_data = async (req, res) => {
+//   marom_db(async (config) => {
+//     try {
+//       const sql = require("mssql");
+//       const poolConnection = await sql.connect(config);
 
-      if (poolConnection) {
-        const result = await poolConnection.request().query(
-          `SELECT
-            CAST(ts.AcademyId AS VARCHAR(MAX)) AS AcademyId,
-            CAST(ts.TutorScreenname AS VARCHAR(MAX)) AS TutorScreenname,
+//       if (poolConnection) {
+//         const result = await poolConnection.request().query(
+//           `SELECT
+//             CAST(ts.AcademyId AS VARCHAR(MAX)) AS AcademyId,
+//             CAST(ts.TutorScreenname AS VARCHAR(MAX)) AS TutorScreenname,
 
-            CAST(ts.Video AS VARCHAR(MAX)) AS Video,
-            CAST(ts.Photo AS VARCHAR(MAX)) AS Photo,
-            CAST(ts.CellPhone AS VARCHAR(MAX)) AS CellPhone,
-            CAST(ts.CityTown AS VARCHAR(MAX)) AS CityTown,
-            CAST(ts.Country AS VARCHAR(MAX)) AS Country,
-            CAST(ts.FirstName AS VARCHAR(MAX)) AS FirstName,
-            CAST(ts.GMT AS VARCHAR(MAX)) AS GMT,
-            CAST(ts.Grades AS VARCHAR(MAX)) AS Grades,
-            CAST(ts.HeadLine AS VARCHAR(MAX)) AS HeadLine,
-            CAST(ts.Motivate AS VARCHAR(MAX)) AS Motivate,
-            CAST(ts.Introduction AS VARCHAR(MAX)) AS Introduction,
-            CAST(ts.Online AS VARCHAR(MAX)) AS Online,
-            CAST(ts.ResponseHrs AS VARCHAR(MAX)) AS ResponseHrs,
-            CAST(ts.StateProvince AS VARCHAR(MAX)) AS StateProvince,
+//             CAST(ts.Video AS VARCHAR(MAX)) AS Video,
+//             CAST(ts.Photo AS VARCHAR(MAX)) AS Photo,
+//             CAST(ts.CellPhone AS VARCHAR(MAX)) AS CellPhone,
+//             CAST(ts.CityTown AS VARCHAR(MAX)) AS CityTown,
+//             CAST(ts.Country AS VARCHAR(MAX)) AS Country,
+//             CAST(ts.FirstName AS VARCHAR(MAX)) AS FirstName,
+//             CAST(ts.GMT AS VARCHAR(MAX)) AS GMT,
+//             CAST(ts.Grades AS VARCHAR(MAX)) AS Grades,
+//             CAST(ts.HeadLine AS VARCHAR(MAX)) AS HeadLine,
+//             CAST(ts.Motivate AS VARCHAR(MAX)) AS Motivate,
+//             CAST(ts.Introduction AS VARCHAR(MAX)) AS Introduction,
+//             CAST(ts.Online AS VARCHAR(MAX)) AS Online,
+//             CAST(ts.ResponseHrs AS VARCHAR(MAX)) AS ResponseHrs,
+//             CAST(ts.StateProvince AS VARCHAR(MAX)) AS StateProvince,
 
-            CAST(te.WorkExperience AS VARCHAR(MAX)) As WorkExperience,
-            CAST(te.EducationalLevel AS VARCHAR(MAX)) as EducationalLevel,
-            CAST(te.EducationalLevelExperience AS VARCHAR(MAX)) EducationLevelExp,
-            CAST(te.BachCountry AS VARCHAR(MAX)) AS BachCountry,
-            CAST(te.Bach_College AS VARCHAR(MAX)) AS College1,
-            CAST(te.Bach_College_State AS VARCHAR(MAX)) AS College1State,
-            CAST(te.Bach_College_Year AS VARCHAR(MAX)) AS BachYear,
-            CAST(te.CertCountry AS VARCHAR(MAX)) AS CertCountry,
-            CAST(te.Certificate AS VARCHAR(MAX)) AS Certificate,
-            CAST(te.CertificateExpiration AS VARCHAR(MAX)) AS CertificateExpiration,
-            CAST(te.CertificateExpiration AS VARCHAR(MAX)) as CertExpDate,
-            CAST(te.DoctorateState AS VARCHAR(MAX)) as DocState,
-            CAST(te.DoctorateGradYr AS VARCHAR(MAX)) as DocYr,
-            CAST(te.DoctorateCollege AS VARCHAR(MAX)) as DocCollege,
-            CAST(te.DocCountry AS VARCHAR(MAX)) as DocCountry,
-            CAST(te.NativeLang AS VARCHAR(MAX)) as NativeLang,
-            CAST(te.NativeLangOtherLang AS VARCHAR(MAX)) as OtherLang,
-            CAST(te.Degree AS VARCHAR(MAX)) as Degree,
-            CAST(te.DegreeState AS VARCHAR(MAX)) as DegState,
-            CAST(te.DegreeYear AS VARCHAR(MAX)) as DegYr,
-            CAST(te.DegCountry AS VARCHAR(MAX)) as DegCountry,
-            CAST(te.MastCountry AS VARCHAR(MAX)) as MastCountry,
-            CAST(te.Mast_College AS VARCHAR(MAX)) as MastCollege,
-            CAST(te.Mast_College_State AS VARCHAR(MAX)) as MastState,
-            CAST(te.Mast_College_StateYear AS VARCHAR(MAX)) as MastYr,
-            CAST(te.Resume AS VARCHAR(MAX)) As Resume,
-            CAST(te.CertFileName AS VARCHAR(MAX)) As CertFileName,
-            CAST(te.DegFileName AS VARCHAR(MAX)) As DegFileName,
-
-
-
-            CAST(tc.ChatID AS VARCHAR(MAX)) AS ChatID,
-
-            CAST(tr.CancellationPolicy AS VARCHAR(MAX)) AS CancellationPolicy,
-            CAST(tr.IntroSessionDiscount AS VARCHAR(MAX))  AS IntroSessionDiscount,
+//             CAST(te.WorkExperience AS VARCHAR(MAX)) As WorkExperience,
+//             CAST(te.EducationalLevel AS VARCHAR(MAX)) as EducationalLevel,
+//             CAST(te.EducationalLevelExperience AS VARCHAR(MAX)) EducationLevelExp,
+//             CAST(te.BachCountry AS VARCHAR(MAX)) AS BachCountry,
+//             CAST(te.Bach_College AS VARCHAR(MAX)) AS College1,
+//             CAST(te.Bach_College_State AS VARCHAR(MAX)) AS College1State,
+//             CAST(te.Bach_College_Year AS VARCHAR(MAX)) AS BachYear,
+//             CAST(te.CertCountry AS VARCHAR(MAX)) AS CertCountry,
+//             CAST(te.Certificate AS VARCHAR(MAX)) AS Certificate,
+//             CAST(te.CertificateExpiration AS VARCHAR(MAX)) AS CertificateExpiration,
+//             CAST(te.CertificateExpiration AS VARCHAR(MAX)) as CertExpDate,
+//             CAST(te.DoctorateState AS VARCHAR(MAX)) as DocState,
+//             CAST(te.DoctorateGradYr AS VARCHAR(MAX)) as DocYr,
+//             CAST(te.DoctorateCollege AS VARCHAR(MAX)) as DocCollege,
+//             CAST(te.DocCountry AS VARCHAR(MAX)) as DocCountry,
+//             CAST(te.NativeLang AS VARCHAR(MAX)) as NativeLang,
+//             CAST(te.NativeLangOtherLang AS VARCHAR(MAX)) as OtherLang,
+//             CAST(te.Degree AS VARCHAR(MAX)) as Degree,
+//             CAST(te.DegreeState AS VARCHAR(MAX)) as DegState,
+//             CAST(te.DegreeYear AS VARCHAR(MAX)) as DegYr,
+//             CAST(te.DegCountry AS VARCHAR(MAX)) as DegCountry,
+//             CAST(te.MastCountry AS VARCHAR(MAX)) as MastCountry,
+//             CAST(te.Mast_College AS VARCHAR(MAX)) as MastCollege,
+//             CAST(te.Mast_College_State AS VARCHAR(MAX)) as MastState,
+//             CAST(te.Mast_College_StateYear AS VARCHAR(MAX)) as MastYr,
+//             CAST(te.Resume AS VARCHAR(MAX)) As Resume,
+//             CAST(te.CertFileName AS VARCHAR(MAX)) As CertFileName,
+//             CAST(te.DegFileName AS VARCHAR(MAX)) As DegFileName,
 
 
-            ISNULL(
-                (
-                    SELECT sr.subject AS Subject,
-                            sr.rate AS Rate, sr.Grades AS SubjectGrades
-                    FROM SubjectRates AS sr
-                    WHERE CAST(sr.AcademyId AS VARCHAR(MAX)) = CAST(ts.AcademyId AS VARCHAR(MAX))
-                    FOR JSON PATH
-                ), '') AS Subjects
-        FROM
-            TutorSetup AS ts
-        LEFT JOIN
-            Education1 AS te ON CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST(te.AcademyId AS VARCHAR(MAX))
-        LEFT JOIN
-            Chat AS tc ON CAST(ts.AcademyId AS VARCHAR) = tc.User2ID 
-            AND CAST(tc.User1ID AS VARCHAR) = '${req.params.studentId}'
-        LEFT JOIN
-            Discounts AS tr ON CAST(tr.AcademyId AS VARCHAR) = ts.AcademyId
+
+//             CAST(tc.ChatID AS VARCHAR(MAX)) AS ChatID,
+
+//             CAST(tr.CancellationPolicy AS VARCHAR(MAX)) AS CancellationPolicy,
+//             CAST(tr.IntroSessionDiscount AS VARCHAR(MAX))  AS IntroSessionDiscount,
+
+
+//             ISNULL(
+//                 (
+//                     SELECT sr.subject AS Subject,
+//                             sr.rate AS Rate, sr.Grades AS SubjectGrades
+//                     FROM SubjectRates AS sr
+//                     WHERE CAST(sr.AcademyId AS VARCHAR(MAX)) = CAST(ts.AcademyId AS VARCHAR(MAX))
+//                     FOR JSON PATH
+//                 ), '') AS Subjects
+//         FROM
+//             TutorSetup AS ts
+//         LEFT JOIN
+//             Education1 AS te ON CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST(te.AcademyId AS VARCHAR(MAX))
+//         LEFT JOIN
+//             Chat AS tc ON CAST(ts.AcademyId AS VARCHAR) = tc.User2ID 
+//             AND CAST(tc.User1ID AS VARCHAR) = '${req.params.studentId}'
+//         LEFT JOIN
+//             Discounts AS tr ON CAST(tr.AcademyId AS VARCHAR) = ts.AcademyId
             
-        WHERE
-            CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST('${req.params.tutorId}' AS VARCHAR(MAX))
-        GROUP BY
-            tc.ChatID,
-            CAST(ts.TutorScreenname AS VARCHAR(MAX)),
+//         WHERE
+//             CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST('${req.params.tutorId}' AS VARCHAR(MAX))
+//         GROUP BY
+//             tc.ChatID,
+//             CAST(ts.TutorScreenname AS VARCHAR(MAX)),
 
-            CAST(ts.AcademyId AS VARCHAR(MAX)),
-            CAST(ts.Photo AS VARCHAR(MAX)),
-            CAST(ts.Video AS VARCHAR(MAX)),
-            CAST(ts.CellPhone AS VARCHAR(MAX)),
-            CAST(ts.CityTown AS VARCHAR(MAX)),
-            CAST(ts.Country AS VARCHAR(MAX)),
-            CAST(ts.FirstName AS VARCHAR(MAX)),
-            CAST(ts.LastName AS VARCHAR(MAX)),
-            CAST(ts.GMT AS VARCHAR(MAX)),
-            CAST(ts.Grades AS VARCHAR(MAX)),
-            CAST(ts.HeadLine AS VARCHAR(MAX)),
-            CAST(ts.Motivate AS VARCHAR(MAX)),
-            CAST(ts.Introduction AS VARCHAR(MAX)),
-            CAST(ts.Online AS VARCHAR(MAX)),
-            CAST(ts.ResponseHrs AS VARCHAR(MAX)),
-            CAST(ts.StateProvince AS VARCHAR(MAX)),
+//             CAST(ts.AcademyId AS VARCHAR(MAX)),
+//             CAST(ts.Photo AS VARCHAR(MAX)),
+//             CAST(ts.Video AS VARCHAR(MAX)),
+//             CAST(ts.CellPhone AS VARCHAR(MAX)),
+//             CAST(ts.CityTown AS VARCHAR(MAX)),
+//             CAST(ts.Country AS VARCHAR(MAX)),
+//             CAST(ts.FirstName AS VARCHAR(MAX)),
+//             CAST(ts.LastName AS VARCHAR(MAX)),
+//             CAST(ts.GMT AS VARCHAR(MAX)),
+//             CAST(ts.Grades AS VARCHAR(MAX)),
+//             CAST(ts.HeadLine AS VARCHAR(MAX)),
+//             CAST(ts.Motivate AS VARCHAR(MAX)),
+//             CAST(ts.Introduction AS VARCHAR(MAX)),
+//             CAST(ts.Online AS VARCHAR(MAX)),
+//             CAST(ts.ResponseHrs AS VARCHAR(MAX)),
+//             CAST(ts.StateProvince AS VARCHAR(MAX)),
             
-            CAST(te.WorkExperience AS VARCHAR(MAX)),
-            CAST(te.EducationalLevel AS VARCHAR(MAX)),
-            CAST(te.EducationalLevelExperience AS VARCHAR(MAX)),
-            CAST(te.BachCountry AS VARCHAR(MAX)),
-            CAST(te.Bach_College AS VARCHAR(MAX)),
-            CAST(te.Bach_College_State AS VARCHAR(MAX)),
-            CAST(te.Bach_College_Year AS VARCHAR(MAX)),
-            CAST(te.CertCountry AS VARCHAR(MAX)),
-            CAST(te.Certificate AS VARCHAR(MAX)),
-            CAST(te.CertificateExpiration AS VARCHAR(MAX)),
-            CAST(te.DoctorateState AS VARCHAR(MAX)),
-            CAST(te.DoctorateGradYr AS VARCHAR(MAX)),
-            CAST(te.DoctorateCollege AS VARCHAR(MAX)),
-            CAST(te.DocCountry AS VARCHAR(MAX)),
-            CAST(te.NativeLang AS VARCHAR(MAX)),
-            CAST(te.NativeLangOtherLang AS VARCHAR(MAX)),
-            CAST(te.Degree AS VARCHAR(MAX)),
-            CAST(te.DegreeState AS VARCHAR(MAX)),
-            CAST(te.DegreeYear AS VARCHAR(MAX)),
-            CAST(te.DegCountry AS VARCHAR(MAX)),
-            CAST(te.MastCountry AS VARCHAR(MAX)),
-            CAST(te.Mast_College AS VARCHAR(MAX)),
-            CAST(te.Mast_College_State AS VARCHAR(MAX)),
-            CAST(te.Mast_College_StateYear AS VARCHAR(MAX)),
-            CAST(te.Resume AS VARCHAR(MAX)) ,
-            CAST(te.CertFileName AS VARCHAR(MAX)),
-            CAST(te.DegFileName AS VARCHAR(MAX)) ,
+//             CAST(te.WorkExperience AS VARCHAR(MAX)),
+//             CAST(te.EducationalLevel AS VARCHAR(MAX)),
+//             CAST(te.EducationalLevelExperience AS VARCHAR(MAX)),
+//             CAST(te.BachCountry AS VARCHAR(MAX)),
+//             CAST(te.Bach_College AS VARCHAR(MAX)),
+//             CAST(te.Bach_College_State AS VARCHAR(MAX)),
+//             CAST(te.Bach_College_Year AS VARCHAR(MAX)),
+//             CAST(te.CertCountry AS VARCHAR(MAX)),
+//             CAST(te.Certificate AS VARCHAR(MAX)),
+//             CAST(te.CertificateExpiration AS VARCHAR(MAX)),
+//             CAST(te.DoctorateState AS VARCHAR(MAX)),
+//             CAST(te.DoctorateGradYr AS VARCHAR(MAX)),
+//             CAST(te.DoctorateCollege AS VARCHAR(MAX)),
+//             CAST(te.DocCountry AS VARCHAR(MAX)),
+//             CAST(te.NativeLang AS VARCHAR(MAX)),
+//             CAST(te.NativeLangOtherLang AS VARCHAR(MAX)),
+//             CAST(te.Degree AS VARCHAR(MAX)),
+//             CAST(te.DegreeState AS VARCHAR(MAX)),
+//             CAST(te.DegreeYear AS VARCHAR(MAX)),
+//             CAST(te.DegCountry AS VARCHAR(MAX)),
+//             CAST(te.MastCountry AS VARCHAR(MAX)),
+//             CAST(te.Mast_College AS VARCHAR(MAX)),
+//             CAST(te.Mast_College_State AS VARCHAR(MAX)),
+//             CAST(te.Mast_College_StateYear AS VARCHAR(MAX)),
+//             CAST(te.Resume AS VARCHAR(MAX)) ,
+//             CAST(te.CertFileName AS VARCHAR(MAX)),
+//             CAST(te.DegFileName AS VARCHAR(MAX)) ,
 
-            CAST(tr.IntroSessionDiscount AS VARCHAR(MAX)),
-            CAST(tr.CancellationPolicy AS VARCHAR(MAX))
-          `
-        );
-        const record = result.recordset[0] || null;
-        if (!record) return res.status(200).send({});
-        const formattedResult = {
-          ...record,
-          Subjects: JSON.parse(record.Subjects.length ? record.Subjects : "[]"),
-          OtherLang: JSON.parse(record.OtherLang ?? "[]"),
-          NativeLang: JSON.parse(record.NativeLang ?? "[]"),
-        };
-        res.status(200).send(formattedResult);
-      }
-    } catch (err) {
-      console.log(err);
-      sendErrors(err, res);
-    }
-  });
-};
+//             CAST(tr.IntroSessionDiscount AS VARCHAR(MAX)),
+//             CAST(tr.CancellationPolicy AS VARCHAR(MAX))
+//           `
+//         );
+//         const record = result.recordset[0] || null;
+//         if (!record) return res.status(200).send({});
+//         const formattedResult = {
+//           ...record,
+//           Subjects: JSON.parse(record.Subjects.length ? record.Subjects : "[]"),
+//           OtherLang: JSON.parse(record.OtherLang ?? "[]"),
+//           NativeLang: JSON.parse(record.NativeLang ?? "[]"),
+//         };
+//         res.status(200).send(formattedResult);
+//       }
+//     } catch (err) {
+//       console.log(err);
+//       sendErrors(err, res);
+//     }
+//   });
+// };
 
 const post_tutor_ad = async (req, res) => {
   marom_db(async (config) => {
@@ -1839,20 +1839,13 @@ const get_tutor_against_code = async (req, res) => {
 // const get_feedback_data = async (req, res) => {
 //   marom_db(async (config) => {
 //     try {
-//       const { tutorId } = req.params;
+//       const { tutorId } = req.query;
 //       const { timeZone } = req.query;
 //       const poolConnection = await sql.connect(config);
 //       const result = await poolConnection.request().query(`
-//             SELECT
-//             ST.Photo,
-//             SB.studentId AS studentId,
-//             SB.tutorId AS tutorId,
-//             SB.reservedSlots AS reservedSlots,
-//             SB.bookedSlots AS bookedSlots
-//              FROM StudentBookings AS SB
-//              inner join StudentSetup1 AS ST On
-//              cast( ST.AcademyId as varchar) = CAST(SB.studentId as varchar(max))
-//              WHERE SB.tutorId = CAST('${tutorId}' as varchar(max));`);
+//             SELECT *
+//              FROM Lessons AS LS
+//              WHERE LS.tutorId = CAST('${tutorId}' as varchar(max));`);
 
 //       let sessions = [];
 
@@ -2108,7 +2101,7 @@ const getSessionDetailById = async (req, res) => {
 module.exports = {
   recordVideoController,
   getVideo,
-  get_tutor_profile_data,
+  // get_tutor_profile_data,
   get_tutor_against_code,
   get_tutor_calender_details,
   delete_ad,
