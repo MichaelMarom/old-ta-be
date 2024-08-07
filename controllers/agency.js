@@ -5,8 +5,8 @@ const {
   parameteriedUpdateQuery,
 } = require("../helperfunctions/crud_queries");
 const { sendErrors } = require("../helperfunctions/handleReqErrors");
-const AgencySchema = require("../schema/agency/agency");
-const SubTutorsSchema = require("../schema/agency/subTutor");
+const AgencySchema = require("../schema/agency/Agency");
+const SubTutorsSchema = require("../schema/agency/SubTutor");
 const { capitalizeFirstLetter } = require("../constants/helperfunctions");
 const { shortId } = require("../modules");
 
