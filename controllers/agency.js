@@ -107,6 +107,21 @@ const getAgenciesApi = async (req, res) => {
   });
 };
 
+const getAgenciesByTutorIdApi = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const {tutorId} = req.params
+      const poolConnection = await sql.connect(config);
+      const request = await poolConnection.request();
+
+      const { recordset } = await request.query(`SELECT * from Agencies where MainTutorId = '${tutorId}'`);
+      res.status(200).send(recordset);
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
 // sub-tutors
 
 const createSubTutorApi = async (req, res) => {
@@ -221,6 +236,7 @@ module.exports = {
   createSubTutorApi,
   updateSubTutorApi,
   deleteSubTutorApi,
+  getAgenciesByTutorIdApi,
   getSubtutorApi,
   getSubTutorsByAgencyApi,
 };

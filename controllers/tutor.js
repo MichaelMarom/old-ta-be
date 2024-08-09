@@ -1,5 +1,5 @@
 const { marom_db } = require("../db");
-const { shortId, fs } = require("../modules");
+const { shortId, fs, path } = require("../modules");
 const moment = require("moment-timezone");
 const {
   insert,
@@ -927,7 +927,7 @@ let get_bank_details = (req, res) => {
 let get_tutor_setup = (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const request = poolConnection.request();
         const result = await request.query(
@@ -966,28 +966,27 @@ let get_tutor_setup = (req, res) => {
           from TutorSetup where ${Object.keys(req.query)[0]} = '${
             req.query[Object.keys(req.query)[0]]
           }'`
-          // findByAnyIdColumn("TutorSetup", req.query, "varchar(max)")
         );
         let record = result.recordset?.[0] || {};
         if (record.userId) {
           const { recordset } = await request.query(
             findByAnyIdColumn("Users1", { SID: record.userId })
           );
+          let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
           record = { ...record, Email: recordset?.[0]?.email || "" };
 
-          const match = record?.GMT?.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+          const match = record.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+          if (match) {
+            const hours = parseInt(match[1], 10);
+            const minutes = match[2] ? parseInt(match[2], 10) : 0;
 
-          const hours = parseInt(match[1], 10);
-          const minutes = match[2] ? parseInt(match[2], 10) : 0;
+            const offset = hours * 60 + minutes;
 
-          const offset = hours * 60 + minutes; // Convert total offset to minutes
-
-          // Find timezones matching the offset
-          const timezones = moment.tz
-            .names()
-            .filter((name) => moment.tz(name).utcOffset() === offset);
-          const timeZone = timezones[0] || null;
-
+            const timezones = moment.tz
+              .names()
+              .filter((name) => moment.tz(name).utcOffset() === offset);
+            timeZone = timezones?.[0] || timeZone;
+          }
           const formattedResult = [{ ...record, timeZone }];
 
           res.status(200).send(formattedResult);
@@ -1634,13 +1633,10 @@ let last_pay_day = async (req, res) => {
 //             CAST(te.CertFileName AS VARCHAR(MAX)) As CertFileName,
 //             CAST(te.DegFileName AS VARCHAR(MAX)) As DegFileName,
 
-
-
 //             CAST(tc.ChatID AS VARCHAR(MAX)) AS ChatID,
 
 //             CAST(tr.CancellationPolicy AS VARCHAR(MAX)) AS CancellationPolicy,
 //             CAST(tr.IntroSessionDiscount AS VARCHAR(MAX))  AS IntroSessionDiscount,
-
 
 //             ISNULL(
 //                 (
@@ -1655,11 +1651,11 @@ let last_pay_day = async (req, res) => {
 //         LEFT JOIN
 //             Education1 AS te ON CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST(te.AcademyId AS VARCHAR(MAX))
 //         LEFT JOIN
-//             Chat AS tc ON CAST(ts.AcademyId AS VARCHAR) = tc.User2ID 
+//             Chat AS tc ON CAST(ts.AcademyId AS VARCHAR) = tc.User2ID
 //             AND CAST(tc.User1ID AS VARCHAR) = '${req.params.studentId}'
 //         LEFT JOIN
 //             Discounts AS tr ON CAST(tr.AcademyId AS VARCHAR) = ts.AcademyId
-            
+
 //         WHERE
 //             CAST(ts.AcademyId AS VARCHAR(MAX)) = CAST('${req.params.tutorId}' AS VARCHAR(MAX))
 //         GROUP BY
@@ -1682,7 +1678,7 @@ let last_pay_day = async (req, res) => {
 //             CAST(ts.Online AS VARCHAR(MAX)),
 //             CAST(ts.ResponseHrs AS VARCHAR(MAX)),
 //             CAST(ts.StateProvince AS VARCHAR(MAX)),
-            
+
 //             CAST(te.WorkExperience AS VARCHAR(MAX)),
 //             CAST(te.EducationalLevel AS VARCHAR(MAX)),
 //             CAST(te.EducationalLevelExperience AS VARCHAR(MAX)),
@@ -2046,8 +2042,8 @@ const recordVideoController = async (req, res) => {
 
       //delete the non-flipped video
       // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
-      //   const del_command = `rm ${req.file.path}`
-      const del_command = `del ${req.file.path}`;
+      // const del_command = `rm ${req.file.path}` //for mac and linux
+      const del_command = `${process.env.NODE_ENV==="production"? 'rm' : 'del'} ${req.file.path}`;
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);
