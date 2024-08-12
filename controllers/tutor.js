@@ -16,6 +16,7 @@ const {
   deleteFolder,
   commissionAccordingtoNumOfSession,
   calcNet,
+  generateAcademyId,
 } = require("../constants/helperfunctions");
 const { exec } = require("child_process");
 const sql = require("mssql");
@@ -905,21 +906,17 @@ let faculties = (req, res) => {
 let get_bank_details = (req, res) => {
   let { AcademyId } = req.query;
   marom_db(async (config) => {
-    const sql = require("mssql");
-
     var poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
         .query(
-          `
-                    SELECT * From TutorBank WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' 
-                `
+          ` SELECT * From TutorBank WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
-        });
-      // .catch(err => console.log(err))
+        })
+        .catch((err) => sendErrors(err, res));
     }
   });
 };
@@ -990,7 +987,7 @@ let get_tutor_setup = (req, res) => {
           const formattedResult = [{ ...record, timeZone }];
 
           res.status(200).send(formattedResult);
-        } else res.status(200).send({});
+        } else res.status(200).send([{}]);
       }
     } catch (err) {
       sendErrors(err, res);
@@ -1233,14 +1230,11 @@ const post_tutor_setup = (req, res) => {
             res.status(200).send(result.recordset);
           } else res.status(200).send([]);
         } else {
-          req.body.AcademyId =
-            req.body.MiddleName.length > 0
-              ? `${req.body.FirstName}.${req.body.MiddleName[0]}.${
-                  req.body.LastName[0]
-                }${shortId.generate()}`
-              : `${req.body.FirstName}.${
-                  req.body.LastName[0]
-                }${shortId.generate()}`;
+          req.body.AcademyId = generateAcademyId(
+            req.body["FirstName"],
+            req.body["LastName"],
+            req.body["MiddleName"]
+          );
 
           const request = poolConnection.request();
           Object.keys(req.body).map((key) => {
@@ -2043,7 +2037,9 @@ const recordVideoController = async (req, res) => {
       //delete the non-flipped video
       // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
       // const del_command = `rm ${req.file.path}` //for mac and linux
-      const del_command = `${process.env.NODE_ENV==="production"? 'rm' : 'del'} ${req.file.path}`;
+      const del_command = `${
+        process.env.NODE_ENV === "production" ? "rm" : "del"
+      } ${req.file.path}`;
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);

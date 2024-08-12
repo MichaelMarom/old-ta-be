@@ -11,7 +11,11 @@ const { shortId } = require("../modules");
 require("dotenv").config();
 const moment = require("moment-timezone");
 const sql = require("mssql");
-const { capitalizeFirstLetter } = require("../constants/helperfunctions.js");
+const {
+  capitalizeFirstLetter,
+  generateAcademyId,
+  generateScreenName,
+} = require("../constants/helperfunctions.js");
 const studentAd = require("../schema/student/studentAd.js");
 const { sendErrors } = require("../helperfunctions/handleReqErrors.js");
 const { resolveHostname } = require("nodemailer/lib/shared/index.js");
@@ -75,10 +79,10 @@ let upload_setup_info = (req, res) => {
   let screenName =
     mname?.length > 0
       ? capitalizeFirstLetter(fname) +
-      " " +
-      capitalizeFirstLetter(mname[0]) +
-      ". " +
-      capitalizeFirstLetter(sname[0])
+        " " +
+        capitalizeFirstLetter(mname[0]) +
+        ". " +
+        capitalizeFirstLetter(sname[0])
       : capitalizeFirstLetter(fname) + ". " + capitalizeFirstLetter(sname[0]);
 
   let action = (cb) => {
@@ -195,23 +199,17 @@ let upload_setup_info = (req, res) => {
 const post_student_setup = (req, res) => {
   marom_db(async (config) => {
     try {
-      let AcademyId =
-        req.body["MiddleName"]?.length > 0
-          ? `${req.body["FirstName"]}${req.body["MiddleName"][0]}${req.body["LastName"][0]
-          }${shortId.generate()}`
-          : `${req.body["FirstName"]}${req.body["LastName"][0]
-          }${shortId.generate()}`;
+      let AcademyId = generateAcademyId(
+        req.body["FirstName"],
+        req.body["LastName"],
+        req.body["MiddleName"]
+      );
 
-      let ScreenName =
-        req.body["MiddleName"]?.length > 0
-          ? `${capitalizeFirstLetter(
-            req.body["FirstName"]
-          )} ${capitalizeFirstLetter(
-            req.body["MiddleName"][0]
-          )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`
-          : `${capitalizeFirstLetter(
-            req.body["FirstName"]
-          )}. ${capitalizeFirstLetter(req.body["LastName"][0])}`;
+      let ScreenName = generateScreenName(
+        req.body["FirstName"],
+        req.body["LastName"],
+        req.body["MiddleName"]
+      );
 
       const updatedBody = { ...req.body, AcademyId, ScreenName };
 
@@ -282,18 +280,18 @@ let get_student_setup = (req, res) => {
         .query(findByAnyIdColumn("StudentSetup1", req.query))
         .then((result) => {
           const { recordset } = result;
-          if (recordset?.[0]?.GMT) {
-            const offset = parseInt(recordset[0].GMT, 10);
-            let timezones = moment.tz
-              .names()
-              .filter((name) => moment.tz(name).utcOffset() === offset * 60);
-            const timeZone = timezones[0] || null;
-
+          if (recordset.length) {
+            let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (recordset?.[0]?.GMT) {
+              const offset = parseInt(recordset[0].GMT, 10);
+              let timezones = moment.tz
+                .names()
+                .filter((name) => moment.tz(name).utcOffset() === offset * 60);
+              timeZone = timezones[0] || null;
+            }
             const formattedResult = [{ ...recordset[0], timeZone }];
             res.status(200).send(formattedResult);
-          } else {
-            res.status(200).send([{}]);
-          }
+          } else res.status(200).send([{}]);
         })
         .catch((err) => {
           sendErrors(err, res);
@@ -945,7 +943,7 @@ const post_student_feedback = async (req, res) => {
 
 //       if (poolConnection) {
 //         const result = await poolConnection.request().query(
-//           `SELECT 
+//           `SELECT
 //                     b.studentId AS studentId,
 //                     b.tutorId AS tutorId,
 //                     b.reservedSlots AS reservedSlots,
@@ -954,7 +952,7 @@ const post_student_feedback = async (req, res) => {
 //                     ts.Photo
 //                      FROM StudentBookings AS b
 //                      JOIN StudentShortList AS r ON
-//                      b.studentId  = CAST( r.Student as varchar(max)) AND 
+//                      b.studentId  = CAST( r.Student as varchar(max)) AND
 //                      b.tutorId =  CAST(r.AcademyId as varchar(max))
 //                      inner join TutorSetup AS ts On
 //                      ts.AcademyId = CAST(r.AcademyId as varchar(max))
@@ -1060,7 +1058,7 @@ const post_feedback_questions = async (req, res) => {
 //       if (poolConnection) {
 //         const result = await poolConnection.request().query(
 //           `
-//                     SELECT bookedSlots From StudentBookings 
+//                     SELECT bookedSlots From StudentBookings
 //                     WHERE CONVERT(VARCHAR, studentId) = '${AcademyId}'
 //                 `
 //         );
@@ -1093,12 +1091,16 @@ const post_student_agreement = async (req, res) => {
 const get_student_photos = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const { AcademyIds } = req.query
+      const { AcademyIds } = req.query;
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
-          .query(`SELECT Photo, AcademyId FROM  StudentSetup1 WHERE AcademyId in (${AcademyIds.map(id=>`'${id}'`)})`);
+          .query(
+            `SELECT Photo, AcademyId FROM  StudentSetup1 WHERE AcademyId in (${AcademyIds.map(
+              (id) => `'${id}'`
+            )})`
+          );
 
         res.status(200).send(recordset);
       }

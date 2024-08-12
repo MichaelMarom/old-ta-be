@@ -152,7 +152,7 @@ const get_user_detail = async (req, res) => {
           .request()
           .query(findByAnyIdColumn("Users1", req.params));
 
-        res.status(200).send(recordset[0]);
+        res.status(200).send(recordset[0] || {});
       }
     } catch (err) {
       sendErrors(err, res);

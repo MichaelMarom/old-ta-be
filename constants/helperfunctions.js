@@ -1,4 +1,4 @@
-const { fs, path } = require("../modules");
+const { fs, path, shortId } = require("../modules");
 const COMMISSION_DATA = require("./tutor");
 const fsPromises = fs.promises;
 
@@ -95,10 +95,25 @@ const calcNet = (rate, comm) => {
   return netAmount;
 };
 
+const generateAcademyId = (fname, lname, mname = null) => {
+  return mname?.length > 0
+    ? `${fname}${mname[0]}${lname[0]}${shortId.generate()}`
+    : `${fname}${lname[0]}${shortId.generate()}`;
+};
+const generateScreenName = (fname, lname, mname = null) => {
+  return mname?.length > 0
+    ? `${capitalizeFirstLetter(fname)} ${capitalizeFirstLetter(
+        mname[0]
+      )}. ${capitalizeFirstLetter(lname[0])}`
+    : `${capitalizeFirstLetter(fname)}. ${capitalizeFirstLetter(lname[0])}`;
+};
+
 module.exports = {
   deleteBlobsWithPrefix,
+  generateAcademyId,
   commissionAccordingtoNumOfSession,
   calcNet,
+  generateScreenName,
   capitalizeFirstLetter,
   imageToBase64Sync,
   deleteFolder,

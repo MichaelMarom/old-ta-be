@@ -9,8 +9,9 @@ let marom_db = async (cb) => {
     port: parseInt(process.env.DB_PORT),
     database: process.env.DB_NAME,
     options: {
-      encrypt: true, // Use encryption
+      encrypt: true, 
       enableArithAbort: true,
+      "trustServerCertificate": true
     },
     pool: {
       max: 10,
@@ -20,8 +21,7 @@ let marom_db = async (cb) => {
     connectionTimeout: 30000,
     requestTimeout: 30000
   };
-  console.log(config)
-
+  // console.log(config)
   return cb(config);
 };
 (async () => {
