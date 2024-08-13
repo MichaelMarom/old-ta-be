@@ -1,5 +1,5 @@
-const { imageToBase64Sync } = require("../constants/helperfunctions");
-const { sendErrors } = require("../helperfunctions/handleReqErrors");
+const { imageToBase64Sync } = require("../utils/generalHelperFunctions");
+const { sendErrors } = require("../utils/handleReqErrors");
 const { path, fs } = require("../modules");
 const smsClient = require("./sms");
 const axios = require("axios")

@@ -1,6 +1,6 @@
 const { marom_db } = require('../db');
-const { getAll, insert, find, update, parameterizedInsertQuery, findByAnyIdColumn } = require('../helperfunctions/crud_queries');
-const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const { getAll, insert, find, update, parameterizedInsertQuery, findByAnyIdColumn } = require('../utils/crud_queries');
+const { sendErrors } = require('../utils/handleReqErrors');
 const Message = require('../schema/common/Message');
 
 function capitalizeFirstLetter(str) {

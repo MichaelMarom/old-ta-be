@@ -15,7 +15,7 @@ const AGENCY_ROUTES = require('./routes/agency')
 require('dotenv').config();
 
 var { PeerServer } = require("peer");
-const { sendErrors } = require('./helperfunctions/handleReqErrors');
+const { sendErrors } = require('./utils/handleReqErrors');
 var myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
 
 const app = express();

@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path');
-const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const { sendErrors } = require('../utils/handleReqErrors');
 require('dotenv').config()
 
 // Send email function

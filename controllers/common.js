@@ -1,4 +1,4 @@
-const { update, insert } = require('../helperfunctions/crud_queries');
+const { update, insert } = require('../utils/crud_queries');
 const { marom_db } = require('../db');
 
 // General function for executing SQL queries

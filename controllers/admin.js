@@ -5,12 +5,12 @@ const {
   parameteriedUpdateQuery,
   parameterizedInsertQuery,
   findByAnyIdColumn,
-} = require("../helperfunctions/crud_queries");
+} = require("../utils/crud_queries");
 const { shortId } = require("../modules");
 const sql = require("mssql");
 const pkg = require('@clerk/clerk-sdk-node');
 const clerkClient = pkg.default;
-const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const { sendErrors } = require('../utils/handleReqErrors');
 const SMS_MMS_Temp = require("../schema/admin/SMS_MMS_Temp");
 
 let get_tutor_data = (req, res) => {

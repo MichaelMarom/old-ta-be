@@ -3,11 +3,11 @@ const sql = require("mssql");
 const {
   parameterizedInsertQuery,
   parameteriedUpdateQuery,
-} = require("../helperfunctions/crud_queries");
-const { sendErrors } = require("../helperfunctions/handleReqErrors");
+} = require("../utils/crud_queries");
+const { sendErrors } = require("../utils/handleReqErrors");
 const AgencySchema = require("../schema/agency/Agency");
 const SubTutorsSchema = require("../schema/agency/SubTutor");
-const { capitalizeFirstLetter } = require("../constants/helperfunctions");
+const { capitalizeFirstLetter } = require("../utils/generalHelperFunctions");
 const { shortId } = require("../modules");
 
 const createAgencyApi = async (req, res) => {

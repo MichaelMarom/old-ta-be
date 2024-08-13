@@ -4,10 +4,10 @@ const {
   find,
   findByAnyIdColumn,
   update,
-} = require("../helperfunctions/crud_queries");
+} = require("../utils/crud_queries");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendErrors } = require("../helperfunctions/handleReqErrors");
+const { sendErrors } = require("../utils/handleReqErrors");
 
 function generateToken(user) {
   const payload = {

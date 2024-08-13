@@ -1,6 +1,23 @@
+const moment = require("moment-timezone");
+
 const { fs, path, shortId } = require("../modules");
-const COMMISSION_DATA = require("./tutor");
+const COMMISSION_DATA = require("../constants/tutor");
 const fsPromises = fs.promises;
+
+function checkSessionStatus(session, timezone) {
+  const currentTime = moment().tz(timezone);
+
+  const sessionStart = moment(session.start).tz(timezone);
+  const sessionEnd = moment(session.end).tz(timezone);
+
+  if (currentTime.isBetween(sessionStart, sessionEnd, undefined, "[]")) {
+    return "current";
+  } else if (currentTime.isBefore(sessionStart)) {
+    return "future";
+  } else if (currentTime.isAfter(sessionEnd)) {
+    return "past";
+  }
+}
 
 const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -118,4 +135,5 @@ module.exports = {
   imageToBase64Sync,
   deleteFolder,
   deleteFolderContents,
+  checkSessionStatus,
 };

@@ -6,7 +6,7 @@ const {
   find,
   parameterizedInsertQuery,
   parameteriedUpdateQuery,
-} = require("../helperfunctions/crud_queries");
+} = require("../utils/crud_queries");
 const { shortId } = require("../modules");
 require("dotenv").config();
 const moment = require("moment-timezone");
@@ -15,9 +15,9 @@ const {
   capitalizeFirstLetter,
   generateAcademyId,
   generateScreenName,
-} = require("../constants/helperfunctions.js");
+} = require("../utils/generalHelperFunctions.js");
 const studentAd = require("../schema/student/studentAd.js");
-const { sendErrors } = require("../helperfunctions/handleReqErrors.js");
+const { sendErrors } = require("../utils/handleReqErrors.js");
 const { resolveHostname } = require("nodemailer/lib/shared/index.js");
 const StudentSetup1 = require("../schema/student/StudentSetup.js");
 const Lessons = require("../schema/common/Lessons.js");

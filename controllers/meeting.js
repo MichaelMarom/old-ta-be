@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const createNewMeetingAsync  = require('../helperfunctions/graph');
+const createNewMeetingAsync  = require('../utils/graph');
 
 const generate_meeting_link = async (req, res) => {
     try {

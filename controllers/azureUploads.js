@@ -3,7 +3,7 @@ const account = process.env.AZURE_ACCOUNT_NAME;
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 const { path } = require('../modules');
-const { deleteBlobsWithPrefix, deleteFolderContents } = require('../constants/helperfunctions');
+const { deleteBlobsWithPrefix, deleteFolderContents } = require('../utils/generalHelperFunctions');
 const { AZURE_CONT_BLOB_CODES } = require('../constants/common');
 
 const blobServiceClient = new BlobServiceClient(

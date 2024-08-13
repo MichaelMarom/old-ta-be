@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const { sendErrors } = require('../helperfunctions/handleReqErrors');
+const { sendErrors } = require('../utils/handleReqErrors');
 const fs = require('fs');
 const path = require('path');
 

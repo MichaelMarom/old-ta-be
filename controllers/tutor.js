@@ -10,25 +10,25 @@ const {
   update,
   parameteriedUpdateQuery,
   parameterizedInsertQuery,
-} = require("../helperfunctions/crud_queries");
+} = require("../utils/crud_queries");
 const {
   deleteFolderContents,
   deleteFolder,
   commissionAccordingtoNumOfSession,
   calcNet,
   generateAcademyId,
-} = require("../constants/helperfunctions");
+} = require("../utils/generalHelperFunctions");
 const { exec } = require("child_process");
 const sql = require("mssql");
 const COMMISSION_DATA = require("../constants/tutor");
 const educationSchema = require("../schema/tutor/education");
 const {
   checkSessionStatus,
-} = require("../helperfunctions/generalHelperFunctions");
+} = require("../utils/generalHelperFunctions");
 const TutorSetup = require("../schema/tutor/Setup");
 const Accounting = require("../schema/tutor/Accounting");
 
-const { sendErrors } = require("../helperfunctions/handleReqErrors");
+const { sendErrors } = require("../utils/handleReqErrors");
 
 const account = process.env.AZURE_ACCOUNT_NAME;
 const { BlobServiceClient } = require("@azure/storage-blob");

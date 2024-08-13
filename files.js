@@ -1,7 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const { fs } = require('./modules');
-const { sendErrors } = require('./helperfunctions/handleReqErrors');
+const { sendErrors } = require('./utils/handleReqErrors');
 const unlinkAsync = fs.promises.unlink;
 
 const storage = multer.diskStorage({
