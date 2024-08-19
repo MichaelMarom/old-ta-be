@@ -22,9 +22,7 @@ const { exec } = require("child_process");
 const sql = require("mssql");
 const COMMISSION_DATA = require("../constants/tutor");
 const educationSchema = require("../schema/tutor/education");
-const {
-  checkSessionStatus,
-} = require("../utils/generalHelperFunctions");
+const { checkSessionStatus } = require("../utils/generalHelperFunctions");
 const TutorSetup = require("../schema/tutor/Setup");
 const Accounting = require("../schema/tutor/Accounting");
 
@@ -2012,7 +2010,7 @@ const get_student_public_profile_data = async (req, res) => {
 
 const recordVideoController = async (req, res) => {
   try {
-    const { user_id } = req.body;
+    const { user_id, upload_type } = req.body;
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
       return sendErrors({ message: "Please upload a video file" }, res);
     }
@@ -2023,7 +2021,13 @@ const recordVideoController = async (req, res) => {
 
     // Mirror the video horizontally using ffmpeg
     const outputFileName = `interviews/${user_id}.mp4`;
-    const command = `ffmpeg -y -i ${req.file.path} -vf "hflip" ${outputFileName}`;
+
+    let command;
+    if (upload_type === "record") {
+      command = `ffmpeg -y -i ${req.file.path} -vf "hflip" ${outputFileName}`;
+    } else {
+      command = `ffmpeg -y -i ${req.file.path} ${outputFileName}`;
+    }
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
