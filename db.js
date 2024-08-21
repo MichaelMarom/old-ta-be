@@ -1,5 +1,5 @@
 require("dotenv").config();
-const sql = require("mssql")
+const sql = require("mssql");
 
 let marom_db = async (cb) => {
   const config = {
@@ -11,7 +11,7 @@ let marom_db = async (cb) => {
     options: {
       encrypt: true, 
       enableArithAbort: true,
-      "trustServerCertificate": true
+      trustServerCertificate: true
     },
     pool: {
       max: 10,
@@ -21,21 +21,19 @@ let marom_db = async (cb) => {
     connectionTimeout: 30000,
     requestTimeout: 30000
   };
-  // console.log(config)
   return cb(config);
 };
 (async () => {
   try {
-    marom_db(async(config)=>{
-      await sql.connect(config)
-      const {recordset} = await sql.query`select 1+1 as sum`
-      console.dir(recordset[0])
-    })
+    await marom_db(async (config) => {
+      await sql.connect(config);
+      const { recordset } = await sql.query`SELECT 1 + 1 AS sum`;
+      console.dir(recordset[0]);
+    });
   } catch (err) {
-    console.log(err, 'Errors')
+    console.error('Connection Error:', err.message);
   }
-
-})()
+})();
 
 module.exports = {
   marom_db,

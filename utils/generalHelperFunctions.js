@@ -1,4 +1,5 @@
 const moment = require("moment-timezone");
+const _ = require("lodash")
 
 const { fs, path, shortId } = require("../modules");
 const COMMISSION_DATA = require("../constants/tutor");
@@ -113,9 +114,11 @@ const calcNet = (rate, comm) => {
 };
 
 const generateAcademyId = (fname, lname, mname = null) => {
-  return mname?.length > 0
+  let academyId =  mname?.length > 0
     ? `${fname}${mname[0]}${lname[0]}${shortId.generate()}`
     : `${fname}${lname[0]}${shortId.generate()}`;
+
+    return _.toLower(academyId)
 };
 const generateScreenName = (fname, lname, mname = null) => {
   return mname?.length > 0
