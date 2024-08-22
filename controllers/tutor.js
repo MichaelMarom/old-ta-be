@@ -697,84 +697,84 @@ let update_tutor_bank = (req, res) => {
   });
 };
 
-let get_my_data = async (req, res) => {
-  let { AcademyId } = req.query;
-  let books = [];
+// let get_my_data = async (req, res) => {
+//   let { AcademyId } = req.query;
+//   let books = [];
 
-  let response_0 = (resolve) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
+//   let response_0 = (resolve) => {
+//     marom_db(async (config) => {
+//       const sql = require("mssql");
+//       var poolConnection = await sql.connect(config);
 
-      poolConnection
-        .request()
-        .query(
-          `SELECT * from TutorSetup WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
-        )
-        .then((result) => {
-          books.push(result.recordsets);
-          resolve();
-        })
-        .catch((err) => err);
-    });
-  };
+//       poolConnection
+//         .request()
+//         .query(
+//           `SELECT * from TutorSetup WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
+//         )
+//         .then((result) => {
+//           books.push(result.recordsets);
+//           resolve();
+//         })
+//         .catch((err) => err);
+//     });
+//   };
 
-  let response_1 = (resolve) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
+//   let response_1 = (resolve) => {
+//     marom_db(async (config) => {
+//       const sql = require("mssql");
+//       var poolConnection = await sql.connect(config);
 
-      poolConnection
-        .request()
-        .query(
-          `SELECT * from Education1 WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
-        )
-        .then((result) => {
-          books.push(result.recordsets);
-          resolve();
-        })
-        .catch((err) => err);
-    });
-  };
+//       poolConnection
+//         .request()
+//         .query(
+//           `SELECT * from Education1 WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
+//         )
+//         .then((result) => {
+//           books.push(result.recordsets);
+//           resolve();
+//         })
+//         .catch((err) => err);
+//     });
+//   };
 
-  let response_2 = (cb) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
+//   let response_2 = (cb) => {
+//     marom_db(async (config) => {
+//       const sql = require("mssql");
+//       var poolConnection = await sql.connect(config);
 
-      poolConnection
-        .request()
-        .query(
-          `SELECT * from Discounts WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
-        )
-        .then((result) => {
-          books.push(result.recordsets);
-          cb();
-        })
-        .catch((err) => err);
-    });
-  };
+//       poolConnection
+//         .request()
+//         .query(
+//           `SELECT * from Discounts WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
+//         )
+//         .then((result) => {
+//           books.push(result.recordsets);
+//           cb();
+//         })
+//         .catch((err) => err);
+//     });
+//   };
 
-  let sender = (cb) => {
-    new Promise((resolve) => {
-      response_1(resolve);
-    }).then(() => {
-      response_2(cb);
-    });
-    // .catch(err => console.log(err))
-  };
+//   let sender = (cb) => {
+//     new Promise((resolve) => {
+//       response_1(resolve);
+//     }).then(() => {
+//       response_2(cb);
+//     });
+//     // .catch(err => console.log(err))
+//   };
 
-  sender(() => {
-    new Promise((resolve) => {
-      response_0(resolve);
-    })
+//   sender(() => {
+//     new Promise((resolve) => {
+//       response_0(resolve);
+//     })
 
-      // .catch(err => console.log(err))
-      .finally(() => {
-        res.send(books);
-      });
-  });
-};
+//       // .catch(err => console.log(err))
+//       .finally(() => {
+//         res.send(books);
+//       });
+//   });
+// };
 
 const get_faculty_subjects = async (req, res) => {
   marom_db(async (config) => {
@@ -928,6 +928,7 @@ let get_tutor_setup = (req, res) => {
         const result = await request.query(
           `SELECT
             Photo,
+            Video,
             FirstName,
             MiddleName,
             LastName,
@@ -2020,7 +2021,7 @@ const recordVideoController = async (req, res) => {
     }
 
     // Mirror the video horizontally using ffmpeg
-    const outputFileName = `interviews/${user_id}.mp4`;
+    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.mp4`;
 
     let command;
     if (upload_type === "record") {
@@ -2050,11 +2051,11 @@ const recordVideoController = async (req, res) => {
           return res.status(500).send({ reason: error.message });
         }
 
-        const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
+        const blobClient = containerClient.getBlockBlobClient(`${user_id}-${new Date().getTime()}.mp4`);
         const url = await blobClient.uploadFile(outputFileName);
         const folderPath = path.join(__dirname, "../interviews");
-        await deleteFolder(folderPath);
-        res.send({ message: "Video flipped successfully", url });
+        await deleteFolderContents(folderPath);
+        res.send({ message: "Video flipped successfully", url:blobClient.url.split("?")[0] });
       });
     });
   } catch (err) {
@@ -2143,7 +2144,7 @@ module.exports = {
   get_user_data,
   // get_response,
   upload_tutor_rates,
-  get_my_data,
+  // get_my_data,
   get_my_edu,
   get_rates,
   upload_tutor_bank,

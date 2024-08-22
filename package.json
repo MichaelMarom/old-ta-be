@@ -34,6 +34,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-handlebars": "^7.1.2",
+    "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
     "holidayapi": "^6.0.1",
     "install": "^0.13.0",

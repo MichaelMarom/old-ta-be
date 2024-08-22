@@ -1,5 +1,5 @@
 const moment = require("moment-timezone");
-const _ = require("lodash")
+const _ = require("lodash");
 
 const { fs, path, shortId } = require("../modules");
 const COMMISSION_DATA = require("../constants/tutor");
@@ -82,6 +82,27 @@ const deleteBlobsWithPrefix = async (containerClient, prefix) => {
   }
 };
 
+const deleteBlobWithName = async (containerClient, name) => {
+  const blobClient = containerClient.getBlobClient(
+    name || "asiyab53bdcd-1724337665074..jpg"
+  );
+  const exists = await blobClient.getProperties().then(
+    () => true, // If the properties are retrieved, the blob exists
+    (error) => {
+      if (error.statusCode === 404) {
+        return false; // Blob does not exist
+      }
+      //   throw error; // Rethrow if the error is not a 404
+    }
+  );
+
+  //delete blob if file already exists
+  if (exists) {
+    await blobClient.delete();
+  }
+  return exists;
+};
+
 /**
  * Convert an image file to a Base64-encoded string synchronously
  * @param {string} filePath - The path to the image file
@@ -114,11 +135,12 @@ const calcNet = (rate, comm) => {
 };
 
 const generateAcademyId = (fname, lname, mname = null) => {
-  let academyId =  mname?.length > 0
-    ? `${fname}${mname[0]}${lname[0]}${shortId.generate()}`
-    : `${fname}${lname[0]}${shortId.generate()}`;
+  let academyId =
+    mname?.length > 0
+      ? `${fname}${mname[0]}${lname[0]}${shortId.generate()}`
+      : `${fname}${lname[0]}${shortId.generate()}`;
 
-    return _.toLower(academyId)
+  return _.toLower(academyId);
 };
 const generateScreenName = (fname, lname, mname = null) => {
   return mname?.length > 0
@@ -130,6 +152,7 @@ const generateScreenName = (fname, lname, mname = null) => {
 
 module.exports = {
   deleteBlobsWithPrefix,
+  deleteBlobWithName,
   generateAcademyId,
   commissionAccordingtoNumOfSession,
   calcNet,
