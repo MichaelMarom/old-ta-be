@@ -37,7 +37,6 @@ const uploadImageController = async (req, res) => {
     const blobName = `${userId}-${uuidv4()}-${req.file.originalname}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     const filePath = path.join(__dirname, `../${req.file.path}`);
-    console.log(filePath);
 
     await blockBlobClient.uploadFile(filePath);
     const folderPath = path.join(__dirname, "../profileImgs");
@@ -64,30 +63,33 @@ const uploadTutorDocs = async (req, res) => {
       return res.status(500).json({ error: "Failed to parse form data" });
     }
 
-    const file = files.file;
+    const file = files.file[0];
+    const containerName = fields.container[0];
+    const userId = fields.userId[0];
+    const fileType = fields.fileType?.[0] || "degree";
+    const existingFileName = fields.existingFileName?.[0];
+
     if (!file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
     try {
       const containerClient = blobServiceClient.getContainerClient(
-        AZURE_CONT_BLOB_CODES[fields.container[0]]
+        AZURE_CONT_BLOB_CODES[containerName]
       );
-      const blockBlobClient = containerClient.getBlockBlobClient(
-        `${fields.userId[0]}-${new Date().getTime()}.${path.extname(
-          file[0].originalFilename
-        )}`
-      );
+      const fileName = `${userId}-${fileType}-${new Date().getTime()}-${
+        file.originalFilename
+      }`;
+      const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
-      await deleteBlobWithName(containerClient, fields.existingFileName?.[0]);
-      
-      const fileStream = fs.createReadStream(file[0].filepath);
+      !!existingFileName && await deleteBlobWithName(containerClient, existingFileName);
+
+      const fileStream = fs.createReadStream(file.filepath);
       await blockBlobClient.uploadStream(fileStream);
 
       return res.status(200).json({
         message: "File uploaded successfully",
-        filename: `${fields.userId[0]}-${new Date().getTime()}${path.extname(
-          file[0].originalFilename
-        )}`,
+        fileName,
+        url: blockBlobClient.url.split('?')[0]
       });
     } catch (uploadError) {
       console.error(uploadError);

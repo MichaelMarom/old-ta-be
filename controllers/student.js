@@ -18,7 +18,6 @@ const {
 } = require("../utils/generalHelperFunctions.js");
 const studentAd = require("../schema/student/studentAd.js");
 const { sendErrors } = require("../utils/handleReqErrors.js");
-const { resolveHostname } = require("nodemailer/lib/shared/index.js");
 const StudentSetup1 = require("../schema/student/StudentSetup.js");
 const Lessons = require("../schema/common/Lessons.js");
 
@@ -425,32 +424,32 @@ const get_tutor_by_subject_faculty = async (req, res) => {
   });
 };
 
-let upload_student_short_list = async (req, res) => {
-  marom_db(async (config) => {
-    try {
-      const { Subject, Student, AcademyId } = req.body;
-      const poolConnection = await sql.connect(config);
+// let upload_student_short_list = async (req, res) => {
+//   marom_db(async (config) => {
+//     try {
+//       const { Subject, Student, AcademyId } = req.body;
+//       const poolConnection = await sql.connect(config);
 
-      const result = await poolConnection.request().query(
-        find("StudentShortList", { Subject, Student, AcademyId }, "And", {
-          Subject: "varchar",
-          Student: "varchar",
-          AcademyId: "varchar",
-        })
-      );
+//       const result = await poolConnection.request().query(
+//         find("StudentShortList", { Subject, Student, AcademyId }, "And", {
+//           Subject: "varchar",
+//           Student: "varchar",
+//           AcademyId: "varchar",
+//         })
+//       );
 
-      if (!result.recordset.length) {
-        const { recordset } = await poolConnection
-          .request()
-          .query(insert("StudentShortList", req.body));
-        res.status(200).send(recordset);
-      }
-      res.status(200).send(result.recordset);
-    } catch (err) {
-      sendErrors(err, res);
-    }
-  });
-};
+//       if (!result.recordset.length) {
+//         const { recordset } = await poolConnection
+//           .request()
+//           .query(insert("StudentShortList", req.body));
+//         res.status(200).send(recordset);
+//       }
+//       res.status(200).send(result.recordset);
+//     } catch (err) {
+//       sendErrors(err, res);
+//     }
+//   });
+// };
 
 // const get_student_short_list = async (req, res) => {
 //     try {

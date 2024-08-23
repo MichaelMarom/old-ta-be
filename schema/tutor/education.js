@@ -34,8 +34,8 @@ const educationSchema = {
     DegreeFile: sql.NVarChar(sql.MAX),
     CertificateFile: sql.NVarChar(sql.MAX),
     Resume: sql.VarChar(100),
-    CertFileName: sql.VarChar(100),
-    DegFileName: sql.VarChar(100),
+    CertFileName: sql.NVarChar(sql.MAX),
+    DegFileName: sql.NVarChar(sql.MAX),
 };
 
 module.exports = educationSchema
