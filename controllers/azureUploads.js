@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const account = process.env.AZURE_ACCOUNT_NAME;
+const { sendErrors } = require("../utils/handleReqErrors");
 
 const formidable = require("formidable");
 const fs = require("fs");
@@ -49,9 +50,8 @@ const uploadImageController = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res
-      .status(500)
-      .send({ message: "Failed to upload the image", reason: err.message });
+    res;
+    sendErrors(uploadError, res);
   }
 };
 
@@ -81,7 +81,8 @@ const uploadTutorDocs = async (req, res) => {
       }`;
       const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
-      !!existingFileName && await deleteBlobWithName(containerClient, existingFileName);
+      !!existingFileName &&
+        (await deleteBlobWithName(containerClient, existingFileName));
 
       const fileStream = fs.createReadStream(file.filepath);
       await blockBlobClient.uploadStream(fileStream);
@@ -89,11 +90,11 @@ const uploadTutorDocs = async (req, res) => {
       return res.status(200).json({
         message: "File uploaded successfully",
         fileName,
-        url: blockBlobClient.url.split('?')[0]
+        url: blockBlobClient.url.split("?")[0],
       });
     } catch (uploadError) {
       console.error(uploadError);
-      return res.status(500).json({ error: "Failed to upload file to Azure" });
+      sendErrors(uploadError, res);
     }
   });
 };
