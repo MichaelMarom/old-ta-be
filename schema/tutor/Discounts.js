@@ -13,6 +13,7 @@ const Discounts = {
     IntroSessionDiscount: sql.Bit,
     CodeSubject: sql.VarChar(255),
     CodeStatus: sql.VarChar(50),
+    ConsentRecording: sql.Bit
 };
 
 module.exports = Discounts;
