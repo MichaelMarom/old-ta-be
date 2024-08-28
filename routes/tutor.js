@@ -1,4 +1,3 @@
-const { verify } = require("jsonwebtoken");
 const { verifyToken } = require("../controllers/auth");
 const multer = require("multer");
 const upload = multer({ dest: "interviews/" });
@@ -68,15 +67,7 @@ const {
 
 const {
   express,
-  path,
-  fs,
   parser,
-  cookieParser,
-  mocha,
-  morgan,
-  cors,
-  shortId,
-  jwt,
 } = require("../modules");
 const { uploadTutorDocs } = require("../controllers/azureUploads");
 
