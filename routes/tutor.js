@@ -168,6 +168,8 @@ TUTOR_ROUTES.put(
   storeCalenderTutorRecord
 );
 TUTOR_ROUTES.post("/tutor/setup", parser, verifyToken, post_tutor_setup);
+TUTOR_ROUTES.post("/tutor/setup/signup", parser, post_tutor_setup); //do not verify token
+
 TUTOR_ROUTES.put(
   "/tutor/setup/:AcademyId",
   parser,

@@ -60,9 +60,9 @@ let post_new_subject = (req, res) => {
           result.rowsAffected[0] === 1
             ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
             : res.send({
-                bool: false,
-                mssg: "Data Was Not Successfully Saved",
-              });
+              bool: false,
+              mssg: "Data Was Not Successfully Saved",
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -959,8 +959,7 @@ let get_tutor_setup = (req, res) => {
             Status,
             CreatedAT
       
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${
-            req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
           }'`
         );
         let record = result.recordset?.[0] || {};
@@ -1011,8 +1010,7 @@ let get_tutor_calender_details = (req, res) => {
             disableHoursRange,
             disableColor
 
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${
-            req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
           }'`
         );
         res.status(200).send(recordset);
@@ -1186,11 +1184,36 @@ let getAllTutorLesson = (req, res) => {
     sendErrors(err, res);
   }
 };
+const postTutorAtSignup = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        req.body.AcademyId = generateAcademyId(
+          req.body["FirstName"],
+          req.body["LastName"],
+          req.body["MiddleName"]
+        );
+
+        const request = poolConnection.request();
+        Object.keys(req.body).map((key) => {
+          request.input(key, TutorSetup[key], req.body[key]);
+        });
+
+        const { query } = parameterizedInsertQuery("TutorSetup", req.body);
+        const result = await request.query(query);
+        res.status(200).send(result.recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res);
+    }
+  })
+}
 
 const post_tutor_setup = (req, res) => {
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const findtutorSetup = await poolConnection
@@ -2042,9 +2065,8 @@ const recordVideoController = async (req, res) => {
       //delete the non-flipped video
       // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
       // const del_command = `rm ${req.file.path}` //for mac and linux
-      const del_command = `${
-        process.env.NODE_ENV === "production" ? "rm" : "del"
-      } ${req.file.path}`;
+      const del_command = `${process.env.NODE_ENV === "production" ? "rm" : "del"
+        } ${req.file.path}`;
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);
@@ -2055,7 +2077,7 @@ const recordVideoController = async (req, res) => {
         const url = await blobClient.uploadFile(outputFileName);
         const folderPath = path.join(__dirname, "../interviews");
         await deleteFolderContents(folderPath);
-        res.send({ message: "Video flipped successfully", url:blobClient.url.split("?")[0] });
+        res.send({ message: "Video flipped successfully", url: blobClient.url.split("?")[0] });
       });
     });
   } catch (err) {
