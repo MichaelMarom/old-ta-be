@@ -63,6 +63,7 @@ const {
   getAllTutorLesson,
   update_tutor_bank,
   update_discount_form,
+  postTutorAtSignup,
 } = require("../controllers/tutor");
 
 const {
@@ -168,7 +169,7 @@ TUTOR_ROUTES.put(
   storeCalenderTutorRecord
 );
 TUTOR_ROUTES.post("/tutor/setup", parser, verifyToken, post_tutor_setup);
-TUTOR_ROUTES.post("/tutor/setup/signup", parser, post_tutor_setup); //do not verify token
+TUTOR_ROUTES.post("/tutor/setup/signup", parser, postTutorAtSignup); //do not verify token
 
 TUTOR_ROUTES.put(
   "/tutor/setup/:AcademyId",

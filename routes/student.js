@@ -43,6 +43,7 @@ const {
   update_student_lesson,
   delete_student_lesson,
   get_student_photos,
+  post_student_setup_at_signup,
 } = require("../controllers/student");
 const { express, parser } = require("../modules");
 
@@ -50,6 +51,8 @@ const STUDENT_ROUTES = express.Router();
 
 STUDENT_ROUTES.get("/student/setup", verifyToken, get_student_setup);
 STUDENT_ROUTES.post("/student/setup", parser, verifyToken, post_student_setup);
+STUDENT_ROUTES.post("/student/setup/signup", parser, post_student_setup_at_signup);
+
 STUDENT_ROUTES.put(
   "/student/setup/by-field/:id",
   parser,

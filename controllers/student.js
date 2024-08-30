@@ -229,6 +229,41 @@ const post_student_setup = (req, res) => {
   });
 };
 
+
+const post_student_setup_at_signup = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      let AcademyId = generateAcademyId(
+        req.body["FirstName"],
+        req.body["LastName"],
+        req.body["MiddleName"]
+      );
+
+      let ScreenName = generateScreenName(
+        req.body["FirstName"],
+        req.body["LastName"],
+        req.body["MiddleName"]
+      );
+
+      const updatedBody = { ...req.body, AcademyId, ScreenName };
+
+      const poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+
+      Object.keys(updatedBody).map((key) => {
+        request.input(key, StudentSetup1[key], updatedBody[key]);
+      });
+      const result = await request.query(
+        parameterizedInsertQuery("StudentSetup1", updatedBody).query
+      );
+
+      res.status(200).send(result.recordset);
+    } catch (e) {
+      sendErrors(e, res);
+    }
+  });
+};
+
 const upload_student_by_field = (req, res) => {
   marom_db(async (config) => {
     try {
@@ -1360,6 +1395,7 @@ module.exports = {
   get_tutor_by_subject_faculty,
   get_my_data,
   get_tutor_bookings,
+  post_student_setup_at_signup,
   // post_student_bookings,
   // get_student_bookings,
   // get_student_or_tutor_bookings,

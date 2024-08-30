@@ -17,6 +17,7 @@ const {
   commissionAccordingtoNumOfSession,
   calcNet,
   generateAcademyId,
+  generateScreenName,
 } = require("../utils/generalHelperFunctions");
 const { exec } = require("child_process");
 const sql = require("mssql");
@@ -969,21 +970,23 @@ let get_tutor_setup = (req, res) => {
           );
           let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
           record = { ...record, Email: recordset?.[0]?.email || "" };
+          if (record.GMT) {
 
-          const match = record.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
-          if (match) {
-            const hours = parseInt(match[1], 10);
-            const minutes = match[2] ? parseInt(match[2], 10) : 0;
+            const match = record.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+            if (match) {
+              const hours = parseInt(match[1], 10);
+              const minutes = match[2] ? parseInt(match[2], 10) : 0;
 
-            const offset = hours * 60 + minutes;
+              const offset = hours * 60 + minutes;
 
-            const timezones = moment.tz
-              .names()
-              .filter((name) => moment.tz(name).utcOffset() === offset);
-            timeZone = timezones?.[0] || timeZone;
+              const timezones = moment.tz
+                .names()
+                .filter((name) => moment.tz(name).utcOffset() === offset);
+              timeZone = timezones?.[0] || timeZone;
+            }
           }
+          
           const formattedResult = [{ ...record, timeZone }];
-
           res.status(200).send(formattedResult);
         } else res.status(200).send([{}]);
       }
@@ -1190,6 +1193,11 @@ const postTutorAtSignup = async (req, res) => {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         req.body.AcademyId = generateAcademyId(
+          req.body["FirstName"],
+          req.body["LastName"],
+          req.body["MiddleName"]
+        );
+        req.body.TutorScreenname = generateScreenName(
           req.body["FirstName"],
           req.body["LastName"],
           req.body["MiddleName"]
@@ -2150,6 +2158,7 @@ module.exports = {
   get_student_public_profile_data,
   get_tutor_students,
   post_tutor_setup,
+  postTutorAtSignup,
   faculties,
   // post_form_one,
   post_tutor_rates_form,
