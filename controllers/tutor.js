@@ -946,10 +946,7 @@ let get_tutor_setup = (req, res) => {
             HeadLine,
             Introduction,
             Motivate,
-            IdVerified,
-            BackgroundVerified,
             AcademyId,
-            Grades,
             userId,
             Online,
             AgreementDate,
@@ -985,7 +982,7 @@ let get_tutor_setup = (req, res) => {
               timeZone = timezones?.[0] || timeZone;
             }
           }
-          
+
           const formattedResult = [{ ...record, timeZone }];
           res.status(200).send(formattedResult);
         } else res.status(200).send([{}]);
@@ -1068,6 +1065,22 @@ let get_my_edu = (req, res) => {
     }
   });
 };
+
+let getDocFromEducationTable = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { recordset } = await poolConnection.request().query(`SELECT ${req.query.docType === "certificate" ? "CertFileName" : "DegFileName"} 
+          FROM Education1 WHERE AcademyId = '${req.params.id}'`);
+        res.status(200).send(recordset);
+      }
+    }
+    catch (err) {
+      sendErrors(err, res);
+    }
+  })
+}
 
 //related to booking slot and student section
 let storeEvents = (req, res) => {
@@ -2130,6 +2143,7 @@ module.exports = {
   getVideo,
   // get_tutor_profile_data,
   get_tutor_against_code,
+  getDocFromEducationTable,
   get_tutor_calender_details,
   delete_ad,
   update_tutor_bank,

@@ -64,6 +64,7 @@ const {
   update_tutor_bank,
   update_discount_form,
   postTutorAtSignup,
+  getDocFromEducationTable,
 } = require("../controllers/tutor");
 
 const {
@@ -102,6 +103,9 @@ TUTOR_ROUTES.get(
   get_tutor_offered_subjects
 );
 TUTOR_ROUTES.get("/tutor/my-edu", verifyToken, get_my_edu);
+TUTOR_ROUTES.get("/tutor/my-edu/doc/:id", verifyToken, getDocFromEducationTable);
+
+
 TUTOR_ROUTES.get("/tutor/tutor-bank-details", verifyToken, get_bank_details);
 
 TUTOR_ROUTES.get("/tutor/tutor-setup", parser, verifyToken, get_tutor_setup);
