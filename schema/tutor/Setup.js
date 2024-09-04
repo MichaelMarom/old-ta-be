@@ -29,6 +29,7 @@ const TutorSetup = {
     EndVacation: sql.DateTimeOffset,
     Step: sql.Int,
     Status: sql.VarChar(20),
+    StatusReason: sql.NVarChar(sql.MAX),
     CreatedAT: sql.DateTime,
     IsVideoRecorded: sql.Bit,
 

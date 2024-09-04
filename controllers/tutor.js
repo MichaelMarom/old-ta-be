@@ -930,6 +930,7 @@ let get_tutor_setup = (req, res) => {
           `SELECT
             Photo,
             Video,
+            StatusReason,
             FirstName,
             MiddleName,
             LastName,
