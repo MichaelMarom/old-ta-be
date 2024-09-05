@@ -25,6 +25,7 @@ let get_tutor_data = (req, res) => {
         .query(
           `SELECT 
           TS.Status, 
+          TS.StatusReason,
           TS.GMT, 
           TS.Photo, 
           TS.FirstName, 

@@ -20,6 +20,7 @@ const studentAd = require("../schema/student/studentAd.js");
 const { sendErrors } = require("../utils/handleReqErrors.js");
 const StudentSetup1 = require("../schema/student/StudentSetup.js");
 const Lessons = require("../schema/common/Lessons.js");
+const StudentBank = require("../schema/student/StudentBank.js");
 
 const executeQuery = async (query, res) => {
   try {
@@ -78,10 +79,10 @@ let upload_setup_info = (req, res) => {
   let screenName =
     mname?.length > 0
       ? capitalizeFirstLetter(fname) +
-        " " +
-        capitalizeFirstLetter(mname[0]) +
-        ". " +
-        capitalizeFirstLetter(sname[0])
+      " " +
+      capitalizeFirstLetter(mname[0]) +
+      ". " +
+      capitalizeFirstLetter(sname[0])
       : capitalizeFirstLetter(fname) + ". " + capitalizeFirstLetter(sname[0]);
 
   let action = (cb) => {
@@ -882,6 +883,29 @@ const get_student_bank_details = async (req, res) => {
   });
 };
 
+const put_student_bank_details = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+
+      if (poolConnection) {
+        const request = await poolConnection.request();
+
+        Object.keys({ ...req.body, AcademyId: req.params.id }).forEach((key) => {
+          request.input(key, StudentBank[key], { ...req.body, AcademyId: req.params.id }[key]);
+        });
+
+        const result = request
+          .query(parameteriedUpdateQuery("StudentBank", req.body, { AcademyId: req.params.id }, {}, false).query);
+
+        res.status(200).send(result.recordset);
+      }
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
 const post_student_bank_details = async (req, res) => {
   marom_db(async (config) => {
     try {
@@ -1373,6 +1397,7 @@ module.exports = {
   post_feedback_questions,
   delete_ad_from_shortlist,
   post_student_ad,
+  put_student_bank_details,
   upload_student_by_field,
   set_code_applied,
   // update_shortlist,

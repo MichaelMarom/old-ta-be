@@ -44,6 +44,7 @@ const {
   delete_student_lesson,
   get_student_photos,
   post_student_setup_at_signup,
+  put_student_bank_details,
 } = require("../controllers/student");
 const { express, parser } = require("../modules");
 
@@ -127,6 +128,13 @@ STUDENT_ROUTES.get(
   verifyToken,
   get_student_bank_details
 );
+STUDENT_ROUTES.put(
+  "/student/bank/:AcademyId",
+  parser,
+  verifyToken,
+  put_student_bank_details
+);
+
 STUDENT_ROUTES.post(
   "/student/bank",
   parser,

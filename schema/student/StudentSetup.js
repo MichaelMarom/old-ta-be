@@ -20,6 +20,7 @@ const StudentSetup = {
     ScreenName: sql.VarChar(sql.MAX),
     Photo: sql.VarChar(sql.MAX),
     Status: sql.VarChar(sql.MAX),
+    StatusReason: sql.NVarChar(sql.MAX),
     ParentConsent: sql.Bit,
     Online: sql.Bit,
     userId: sql.VarChar(100),
