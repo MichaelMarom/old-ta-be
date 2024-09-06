@@ -270,7 +270,6 @@ let decline_new_subject = (req, res) => {
 
 const postTerms = async (req, res) => {
   await marom_db(async (config) => {
-    const sql = require("mssql");
     const poolConnection = await sql.connect(config);
     try {
       const existingRecord = await poolConnection
@@ -329,7 +328,8 @@ const postTerms = async (req, res) => {
       }
     } catch (error) {
       console.error("Error storing terms:", error.message);
-sendErrors(err, res)    }
+      sendErrors(err, res)
+    }
   });
 };
 
@@ -342,9 +342,7 @@ let get_Constants = (req, res) => {
       poolConnection
         .request()
         .query(
-          `
-                    SELECT * From Constants where ID = ${req.params.id} 
-                `
+          `SELECT * From Constants where ID = ${req.params.id}     `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
@@ -432,7 +430,7 @@ const api_get_email_templates = async (req, res) => {
 
 
 
-const api_save_sms_mms_temp= async (req, res) => {
+const api_save_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
       var poolConnection = await sql.connect(config);
@@ -455,15 +453,15 @@ const api_save_sms_mms_temp= async (req, res) => {
   });
 }
 
-const api_update_sms_mms_temp= async (req, res) => {
+const api_update_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
       var poolConnection = await sql.connect(config);
       if (poolConnection) {
         const request = poolConnection.request();
 
-        Object.keys({...req.body, ...req.params}).map(key => {
-          request.input(key, SMS_MMS_Temp[key], {...req.body, ...req.params}[key]);
+        Object.keys({ ...req.body, ...req.params }).map(key => {
+          request.input(key, SMS_MMS_Temp[key], { ...req.body, ...req.params }[key]);
         })
         const { recordset } = request
           .query(
@@ -478,7 +476,7 @@ const api_update_sms_mms_temp= async (req, res) => {
   });
 }
 
-const api_get_sms_mms_temp= async (req, res) => {
+const api_get_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
       var poolConnection = await sql.connect(config);

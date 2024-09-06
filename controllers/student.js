@@ -895,10 +895,10 @@ const put_student_bank_details = async (req, res) => {
           request.input(key, StudentBank[key], { ...req.body, AcademyId: req.params.id }[key]);
         });
 
-        const result = request
+        const result =await request
           .query(parameteriedUpdateQuery("StudentBank", req.body, { AcademyId: req.params.id }, {}, false).query);
 
-        res.status(200).send(result.recordset);
+        res.status(200).send({updated:result.rowsAffected, result:result.recordset});
       }
     } catch (err) {
       sendErrors(err, res);
@@ -1137,6 +1137,24 @@ const post_student_agreement = async (req, res) => {
         const result = await poolConnection
           .request()
           .query(update("StudentSetup1", req.body, req.params));
+        res.status(200).send(result.recordset);
+      }
+    } catch (err) {
+      console.log(err);
+      sendErrors(err, res);
+    }
+  });
+};
+
+
+const update_student_agreement_to_null = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const result = await poolConnection
+          .request()
+          .query('Update StudentSetup1 set AgreementDate = null');
         res.status(200).send(result.recordset);
       }
     } catch (err) {
@@ -1397,6 +1415,7 @@ module.exports = {
   post_feedback_questions,
   delete_ad_from_shortlist,
   post_student_ad,
+  update_student_agreement_to_null,
   put_student_bank_details,
   upload_student_by_field,
   set_code_applied,

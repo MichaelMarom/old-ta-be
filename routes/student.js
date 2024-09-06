@@ -45,6 +45,7 @@ const {
   get_student_photos,
   post_student_setup_at_signup,
   put_student_bank_details,
+  update_student_agreement_to_null,
 } = require("../controllers/student");
 const { express, parser } = require("../modules");
 
@@ -66,6 +67,14 @@ STUDENT_ROUTES.put(
   verifyToken,
   post_student_agreement
 );
+
+STUDENT_ROUTES.put(
+  "/student/agreement-updated",
+  parser,
+  verifyToken,
+  update_student_agreement_to_null
+);
+
 STUDENT_ROUTES.get("/student/setup/photos", verifyToken, get_student_photos);
 
 // STUDENT_ROUTES.get('/student/grade', verifyToken, get_student_grade)
