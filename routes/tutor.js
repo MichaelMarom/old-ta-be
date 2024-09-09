@@ -30,7 +30,7 @@ const {
   get_tutor_status,
   faculties,
   post_new_subject,
-  post_tutor_setup,
+  // post_tutor_setup,
   get_tutor_market_data,
   get_tutor_students,
   getSessionsDetails,
@@ -172,7 +172,7 @@ TUTOR_ROUTES.put(
   verifyToken,
   storeCalenderTutorRecord
 );
-TUTOR_ROUTES.post("/tutor/setup", parser, verifyToken, post_tutor_setup);
+// TUTOR_ROUTES.post("/tutor/setup", parser, verifyToken, post_tutor_setup);
 TUTOR_ROUTES.post("/tutor/setup/signup", parser, postTutorAtSignup); //do not verify token
 
 TUTOR_ROUTES.put(

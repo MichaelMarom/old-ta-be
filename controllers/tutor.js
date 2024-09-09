@@ -1233,69 +1233,69 @@ const postTutorAtSignup = async (req, res) => {
   })
 }
 
-const post_tutor_setup = (req, res) => {
-  marom_db(async (config) => {
-    try {
-      const poolConnection = await sql.connect(config);
-      if (poolConnection) {
-        const findtutorSetup = await poolConnection
-          .request()
-          .query(findByAnyIdColumn("TutorSetup", { userId: req.body.userId }));
-        if (findtutorSetup.recordset.length) {
-          delete req.body["AcademyId"];
-          const request = poolConnection.request();
-          request.input(
-            "AcademyId",
-            sql.NVarChar(sql.MAX),
-            findtutorSetup.recordset[0].AcademyId
-          );
+// const post_tutor_setup = (req, res) => {
+//   marom_db(async (config) => {
+//     try {
+//       const poolConnection = await sql.connect(config);
+//       if (poolConnection) {
+//         const findtutorSetup = await poolConnection
+//           .request()
+//           .query(findByAnyIdColumn("TutorSetup", { userId: req.body.userId }));
+//         if (findtutorSetup.recordset.length) {
+//           delete req.body["AcademyId"];
+//           const request = poolConnection.request();
+//           request.input(
+//             "AcademyId",
+//             sql.NVarChar(sql.MAX),
+//             findtutorSetup.recordset[0].AcademyId
+//           );
 
-          Object.keys(req.body).map((key) => {
-            request.input(key, TutorSetup[key], req.body[key]);
-          });
+//           Object.keys(req.body).map((key) => {
+//             request.input(key, TutorSetup[key], req.body[key]);
+//           });
 
-          const { query } = parameteriedUpdateQuery(
-            "TutorSetup",
-            req.body,
-            {
-              AcademyId: findtutorSetup.recordset[0].AcademyId,
-            },
-            {},
-            false
-          );
-          const result = await request.query(query);
+//           const { query } = parameteriedUpdateQuery(
+//             "TutorSetup",
+//             req.body,
+//             {
+//               AcademyId: findtutorSetup.recordset[0].AcademyId,
+//             },
+//             {},
+//             false
+//           );
+//           const result = await request.query(query);
 
-          if (result.rowsAffected[0]) {
-            const result = await poolConnection.request().query(
-              findByAnyIdColumn("TutorSetup", {
-                AcademyId: findtutorSetup.recordset[0].AcademyId,
-              })
-            );
-            res.status(200).send(result.recordset);
-          } else res.status(200).send([]);
-        } else {
-          req.body.AcademyId = generateAcademyId(
-            req.body["FirstName"],
-            req.body["LastName"],
-            req.body["MiddleName"]
-          );
+//           if (result.rowsAffected[0]) {
+//             const result = await poolConnection.request().query(
+//               findByAnyIdColumn("TutorSetup", {
+//                 AcademyId: findtutorSetup.recordset[0].AcademyId,
+//               })
+//             );
+//             res.status(200).send(result.recordset);
+//           } else res.status(200).send([]);
+//         } else {
+//           req.body.AcademyId = generateAcademyId(
+//             req.body["FirstName"],
+//             req.body["LastName"],
+//             req.body["MiddleName"]
+//           );
 
-          const request = poolConnection.request();
-          Object.keys(req.body).map((key) => {
-            request.input(key, TutorSetup[key], req.body[key]);
-          });
+//           const request = poolConnection.request();
+//           Object.keys(req.body).map((key) => {
+//             request.input(key, TutorSetup[key], req.body[key]);
+//           });
 
-          const { query } = parameterizedInsertQuery("TutorSetup", req.body);
-          const result = await request.query(query);
+//           const { query } = parameterizedInsertQuery("TutorSetup", req.body);
+//           const result = await request.query(query);
 
-          res.status(200).send(result.recordset);
-        }
-      } else throw new Error("Facing trouble with Connection!");
-    } catch (err) {
-      sendErrors(err, res);
-    }
-  });
-};
+//           res.status(200).send(result.recordset);
+//         }
+//       } else throw new Error("Facing trouble with Connection!");
+//     } catch (err) {
+//       sendErrors(err, res);
+//     }
+//   });
+// };
 
 const update_tutor_setup = (req, res) => {
   marom_db(async (config) => {
@@ -2172,7 +2172,7 @@ module.exports = {
   get_tutor_market_data,
   get_student_public_profile_data,
   get_tutor_students,
-  post_tutor_setup,
+  // post_tutor_setup,
   postTutorAtSignup,
   faculties,
   // post_form_one,
