@@ -13,6 +13,7 @@ const Lessons = {
     tutorId: sql.NVarChar(200),
     rate: sql.Decimal(10, 2), 
     feedbackEligible: sql.Bit,
+    tutorScreenName: sql.NVarChar(200),
     invoiceNum: sql.VarChar(100),
     request: sql.VarChar(100),
     ratingByStudent: sql.Decimal(3, 2),  

@@ -565,9 +565,8 @@ let upload_tutor_rates = (req, res) => {
   let { id, faculty, subject } = req.params;
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const existed = await poolConnection.request().query(
           find(

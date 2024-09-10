@@ -411,6 +411,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TS.ResponseHrs, 
                 TS.FirstName,
                 TS.LastName,
+                TS.TutorScreenname,
                 TS.Status as status,
                 TS.AcademyId,
                 TS.Country,
