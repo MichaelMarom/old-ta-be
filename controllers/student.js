@@ -42,159 +42,159 @@ const executeQuery = async (query, res) => {
   }
 };
 
-let upload_setup_info = (req, res) => {
-  let {
-    fname,
-    mname,
-    sname,
-    email,
-    lang,
-    secLan,
-    parentAEmail,
-    parentBEmail,
-    parentAName,
-    parentBName,
-    is_18,
-    pwd,
-    cell,
-    grade,
-    add1,
-    add2,
-    city,
-    state,
-    zipCode,
-    country,
-    timeZone,
-    photo,
-    acadId,
-    parentConsent,
-    userId,
-  } = req.body;
+// let upload_setup_info = (req, res) => {
+//   let {
+//     fname,
+//     mname,
+//     sname,
+//     email,
+//     lang,
+//     secLan,
+//     parentAEmail,
+//     parentBEmail,
+//     parentAName,
+//     parentBName,
+//     is_18,
+//     pwd,
+//     cell,
+//     grade,
+//     add1,
+//     add2,
+//     city,
+//     state,
+//     zipCode,
+//     country,
+//     timeZone,
+//     photo,
+//     acadId,
+//     parentConsent,
+//     userId,
+//   } = req.body;
 
-  let UserId =
-    mname?.length > 0
-      ? fname + "." + " " + mname[0] + "." + " " + sname[0] + shortId.generate()
-      : fname + "." + " " + sname[0] + shortId.generate();
+//   let UserId =
+//     mname?.length > 0
+//       ? fname + "." + " " + mname[0] + "." + " " + sname[0] + shortId.generate()
+//       : fname + "." + " " + sname[0] + shortId.generate();
 
-  let screenName =
-    mname?.length > 0
-      ? capitalizeFirstLetter(fname) +
-      " " +
-      capitalizeFirstLetter(mname[0]) +
-      ". " +
-      capitalizeFirstLetter(sname[0])
-      : capitalizeFirstLetter(fname) + ". " + capitalizeFirstLetter(sname[0]);
+//   let screenName =
+//     mname?.length > 0
+//       ? capitalizeFirstLetter(fname) +
+//       " " +
+//       capitalizeFirstLetter(mname[0]) +
+//       ". " +
+//       capitalizeFirstLetter(sname[0])
+//       : capitalizeFirstLetter(fname) + ". " + capitalizeFirstLetter(sname[0]);
 
-  let action = (cb) => {
-    marom_db(async (config) => {
-      const sql = require("mssql");
-      var poolConnection = await sql.connect(config);
+//   let action = (cb) => {
+//     marom_db(async (config) => {
+//       const sql = require("mssql");
+//       var poolConnection = await sql.connect(config);
 
-      let result = poolConnection
-        ? await get_action(poolConnection)
-        : "connection error";
-      cb(result);
-    });
-  };
+//       let result = poolConnection
+//         ? await get_action(poolConnection)
+//         : "connection error";
+//       cb(result);
+//     });
+//   };
 
-  action((result) => {
-    if (result) {
-      marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
+//   action((result) => {
+//     if (result) {
+//       marom_db(async (config) => {
+//         const sql = require("mssql");
+//         var poolConnection = await sql.connect(config);
 
-        insert_student_data(poolConnection)
-          .then((result) => {
-            res.status(200).send({
-              user: UserId,
-              screen_name: screenName,
-              bool: true,
-              mssg: "Data Was Saved Successfully",
-              type: "save",
-            });
-          })
-          .catch((err) => {
-            res.status(400).send({
-              user: UserId,
-              screen_name: screenName,
-              bool: false,
-              mssg: "Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.",
-            });
-            console.log(err);
-          });
-      });
-    } else {
-      marom_db(async (config) => {
-        const sql = require("mssql");
-        var poolConnection = await sql.connect(config);
+//         insert_student_data(poolConnection)
+//           .then((result) => {
+//             res.status(200).send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: true,
+//               mssg: "Data Was Saved Successfully",
+//               type: "save",
+//             });
+//           })
+//           .catch((err) => {
+//             res.status(400).send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: false,
+//               mssg: "Data Was Not Saved Successfully Due To Database Malfunction, Please Try Again.",
+//             });
+//             console.log(err);
+//           });
+//       });
+//     } else {
+//       marom_db(async (config) => {
+//         const sql = require("mssql");
+//         var poolConnection = await sql.connect(config);
 
-        update_student_data(poolConnection)
-          .then((result) => {
-            res.status(200).send({
-              user: UserId,
-              screen_name: screenName,
-              bool: true,
-              mssg: "Data Was Updated Successfully",
-              type: "update",
-            });
-          })
-          .catch((err) => {
-            res.status(400).send({
-              user: UserId,
-              screen_name: screenName,
-              bool: false,
-              mssg: "Data Was Not Updated Successfully Due To Database Malfunction, Please Try Again.",
-            });
-            console.log(err);
-          });
-      });
-    }
-  });
+//         update_student_data(poolConnection)
+//           .then((result) => {
+//             res.status(200).send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: true,
+//               mssg: "Data Was Updated Successfully",
+//               type: "update",
+//             });
+//           })
+//           .catch((err) => {
+//             res.status(400).send({
+//               user: UserId,
+//               screen_name: screenName,
+//               bool: false,
+//               mssg: "Data Was Not Updated Successfully Due To Database Malfunction, Please Try Again.",
+//             });
+//             console.log(err);
+//           });
+//       });
+//     }
+//   });
 
-  let get_action = async (poolConnection) => {
-    let records = await poolConnection.request()
-      .query(`SELECT * FROM "StudentSetup1" 
-        WHERE CONVERT(VARCHAR, Email) = '${email.length > 8 ? email : null}'`);
-    let get_duplicate = await records.recordset;
+//   let get_action = async (poolConnection) => {
+//     let records = await poolConnection.request()
+//       .query(`SELECT * FROM "StudentSetup1" 
+//         WHERE CONVERT(VARCHAR, Email) = '${email.length > 8 ? email : null}'`);
+//     let get_duplicate = await records.recordset;
 
-    let result = get_duplicate.length > 0 ? false : true;
-    return result;
-  };
+//     let result = get_duplicate.length > 0 ? false : true;
+//     return result;
+//   };
 
-  let insert_student_data = async (poolConnection) => {
-    let records = await poolConnection.request()
-      .query(`INSERT INTO StudentSetup1(FirstName,
-             MiddleName, LastName, Email, Cell, Language, SecLan, ParentAEmail, ParentBEmail, 
-             ParentAName, ParentBName,
-             AgeGrade, Grade, Address1, Address2, City, State, ZipCode, Country,  GMT,
-             AcademyId, ScreenName, Photo, Status, ParentConsent, userId)
-        VALUES ('${fname}', '${mname}', '${sname}','${email}','${cell}',
-        '${lang}', '${secLan}', '${parentAEmail}', '${parentBEmail}', 
-        '${parentAName}', '${parentBName}','${is_18}', '${grade}', '${add1}','${add2}','${city}','${state}',
-         '${zipCode}',
-        '${country}','${timeZone}',
-         '${UserId}','${screenName}','${photo}', 'pending', '${parentConsent}','${userId}')`);
+//   let insert_student_data = async (poolConnection) => {
+//     let records = await poolConnection.request()
+//       .query(`INSERT INTO StudentSetup1(FirstName,
+//              MiddleName, LastName, Email, Cell, Language, SecLan, ParentAEmail, ParentBEmail, 
+//              ParentAName, ParentBName,
+//              AgeGrade, Grade, Address1, Address2, City, State, ZipCode, Country,  GMT,
+//              AcademyId, ScreenName, Photo, Status, ParentConsent, userId)
+//         VALUES ('${fname}', '${mname}', '${sname}','${email}','${cell}',
+//         '${lang}', '${secLan}', '${parentAEmail}', '${parentBEmail}', 
+//         '${parentAName}', '${parentBName}','${is_18}', '${grade}', '${add1}','${add2}','${city}','${state}',
+//          '${zipCode}',
+//         '${country}','${timeZone}',
+//          '${UserId}','${screenName}','${photo}', 'pending', '${parentConsent}','${userId}')`);
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    //console.log(result, 'boolean...')
-    return result;
-  };
+//     let result = (await records.rowsAffected[0]) === 1 ? true : false;
+//     //console.log(result, 'boolean...')
+//     return result;
+//   };
 
-  let update_student_data = async (poolConnection) => {
-    let records = await poolConnection.request().query(`UPDATE "StudentSetup1" 
-        set Photo = '${photo}', Address1 = '${add1}', Address2 = '${add2}', City = '${city}',
-         State = '${state}', ZipCode = '${zipCode}', Country = '${country}', 
-          Email = '${email}', Cell = '${cell}', FirstName='${fname}',LastName='${sname}',
-          MiddleName='${mname}', GMT = '${timeZone}', Language='${lang}', AgeGrade='${is_18}',
-         Grade='${grade}', ParentConsent='${parentConsent}', SecLan = '${secLan}', 
-         ParentAEmail='${parentAEmail}', ParentBEmail='${parentBEmail}', 
-          ParentAName='${parentAName}', ParentBName='${parentBName}', ScreenName= '${screenName}'
-          WHERE CONVERT(VARCHAR, AcademyId) = '${acadId}'`);
+//   let update_student_data = async (poolConnection) => {
+//     let records = await poolConnection.request().query(`UPDATE "StudentSetup1" 
+//         set Photo = '${photo}', Address1 = '${add1}', Address2 = '${add2}', City = '${city}',
+//          State = '${state}', ZipCode = '${zipCode}', Country = '${country}', 
+//           Email = '${email}', Cell = '${cell}', FirstName='${fname}',LastName='${sname}',
+//           MiddleName='${mname}', GMT = '${timeZone}', Language='${lang}', AgeGrade='${is_18}',
+//          Grade='${grade}', ParentConsent='${parentConsent}', SecLan = '${secLan}', 
+//          ParentAEmail='${parentAEmail}', ParentBEmail='${parentBEmail}', 
+//           ParentAName='${parentAName}', ParentBName='${parentBName}', ScreenName= '${screenName}'
+//           WHERE CONVERT(VARCHAR, AcademyId) = '${acadId}'`);
 
-    let result = (await records.rowsAffected[0]) === 1 ? true : false;
-    return result;
-  };
-};
+//     let result = (await records.rowsAffected[0]) === 1 ? true : false;
+//     return result;
+//   };
+// };
 
 const post_student_setup = (req, res) => {
   marom_db(async (config) => {
@@ -271,10 +271,10 @@ const upload_student_by_field = (req, res) => {
       const { id } = req.params;
       const poolConnection = await sql.connect(config);
       const request = poolConnection.request();
-      const { recordset } =
-        await request.query(`SELECT * FROM "StudentSetup1" WHERE AcademyId
-                = '${id}'`);
-      if (!recordset.length) throw new Error("Student does not exist");
+      // const { recordset } =
+      //   await request.query(`SELECT * FROM "StudentSetup1" WHERE AcademyId
+      //           = '${id}'`);
+      // if (!recordset.length) throw new Error("Student does not exist");
 
       Object.keys({ ...req.body, AcademyId: id }).map((key) => {
         request.input(
@@ -318,12 +318,20 @@ let get_student_setup = (req, res) => {
           if (recordset.length) {
             let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             if (recordset?.[0]?.GMT) {
-              const offset = parseInt(recordset[0].GMT, 10);
-              let timezones = moment.tz
+
+            const match = recordset?.[0]?.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
+            if (match) {
+              const hours = parseInt(match[1], 10);
+              const minutes = match[2] ? parseInt(match[2], 10) : 0;
+
+              const offset = hours * 60 + minutes;
+
+              const timezones = moment.tz
                 .names()
-                .filter((name) => moment.tz(name).utcOffset() === offset * 60);
-              timeZone = timezones[0] || null;
+                .filter((name) => moment.tz(name).utcOffset() === offset);
+              timeZone = timezones?.[0] || timeZone;
             }
+          }
             const formattedResult = [{ ...recordset[0], timeZone }];
             res.status(200).send(formattedResult);
           } else res.status(200).send([{}]);
@@ -1425,7 +1433,7 @@ module.exports = {
   post_student_agreement,
   get_feedback_of_questions,
   get_feedback_questions,
-  upload_setup_info,
+  // upload_setup_info,
   get_student_setup,
   // get_student_grade,
   get_published_ads,
