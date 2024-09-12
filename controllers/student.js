@@ -440,7 +440,6 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TutorSetup as TS ON cast(TS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
             LEFT JOIN 
                 Discounts as DS ON cast(DS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
-                AND DS.CodeSubject = '${subjectName}'
             JOIN 
                 Education1 as edu ON cast(TS.AcademyId as varchar(max)) = cast(edu.AcademyId as varchar(max))
             LEFT JOIN 

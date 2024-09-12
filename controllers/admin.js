@@ -125,7 +125,6 @@ let set_tutor_status = (req, res) => {
 
 let get_student_data = (req, res) => {
   marom_db(async (config) => {
-    const sql = require("mssql");
     const { status } = req.query
 
     var poolConnection = await sql.connect(config);
@@ -133,7 +132,20 @@ let get_student_data = (req, res) => {
       poolConnection
         .request()
         .query(
-          `SELECT * From StudentSetup1  where cast(Status as varchar) = '${status}' `
+          `SELECT 
+          SS.Photo,
+          SS.FirstName, 
+          SS.LastName, 
+          SS.Cell, 
+          SS.AcademyId, 
+          SS.Status,
+          SS.ScreenName,
+          SS.GMT,
+          U.email,
+          SS.StatusReason
+          From StudentSetup1 as SS
+          join Users1 as U on SS.userId = U.SID
+            where cast(Status as varchar) = '${status}' `
         )
         .then((result) => {
           res.status(200).send(result.recordset);
