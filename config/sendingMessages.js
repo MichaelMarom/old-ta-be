@@ -18,7 +18,7 @@ async function sendingSMS(req, res) {
     //     message: `Hello World 👋🏻 via SMS`
     //   });
     let ACCESS_TOKEN = "o.Iv3qRxAz4rD97321mu54mzqrx6gCB1Dy";
-    let numbers = [ "+15166088464"];
+    let numbers = ["+15166088464"];
     let deviceIden = "ujvsqxeJ1l6sjwly2xpbnE";
     // const instance = await axios({
     //   method: "POST",
@@ -140,19 +140,69 @@ async function sendingSMS(req, res) {
     //   throw new Error(
     //     "Failed To Send message!. Please check text message and try again."
     //   );
-    res
-      .status(200)
-      .send({
-        message: "sent!",
-        response: instance.data,
-        status: instance.status,
-      });
+    res.status(200).send({
+      message: "sent!",
+      response: instance.data,
+      status: instance.status,
+    });
   } catch (err) {
     console.log(err);
     sendErrors(err, res);
   }
 }
 
+const sendSMS = async (req, res) => {
+  try {
+    let ACCESS_TOKEN = "o.Iv3qRxAz4rD97321mu54mzqrx6gCB1Dy";
+    let numbers = ["+15166088464", "+923343165003"];
+    let deviceIden = "ujvsqxeJ1l6sjDJVdu26to";
+    // ujvsqxeJ1l6sjwly2xpbnE
+    console.log("Sending SMS..."); // Log when the process starts
+
+    const response = await axios({
+      method: "POST",
+      url: "https://api.pushbullet.com/v2/ephemerals",
+      headers: {
+        "Access-Token": ACCESS_TOKEN,
+        "Content-Type": "application/json",
+      },
+      data: {
+        type: "push",
+        push: {
+          type: "sms",
+          source_device_iden: deviceIden,
+          target_device_iden: deviceIden, // Same as source device
+          addresses: numbers, // Phone numbers
+          message: "Test message from API123 fom code" , // The message content
+        },
+      },
+    });
+
+    // Log success response
+    console.log("Status Code:", response.status); // Should be 200 for success
+    console.log("Response Body:", response.data); // Logs the API response body
+
+    if (response.status === 200) {
+      console.log("SMS successfully sent!");
+      res.status(200).send({
+        message: "sent!",
+        response: response.data,
+        status: response.status,
+      });
+    } else {
+      console.log("SMS not sent, check the response body for issues.");
+    }
+  } catch (error) {
+    // Log any errors that occur during the request
+    console.error("Error during API request:", error.message);
+    if (error.response) {
+      console.error("Error Status Code:", error.response.status);
+      console.error("Error Response Data:", error.response.data); // Logs error details
+    }
+    sendErrors(error, res)
+  }
+};
+
 module.exports = {
-  sendingSMS,
+  sendingSMS:sendSMS,
 };
