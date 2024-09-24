@@ -1955,7 +1955,8 @@ const get_student_published_ads = async (req, res) => {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection.request().query(
-          `select SA.*, SS.Photo from StudentAds as SA join
+          `select SA.*, SS.Photo, SS.ScreenName
+           from StudentAds as SA join
                   StudentSetup1 as SS on cast(SS.AcademyId as varchar) = SA.AcademyId
                   where  SA.Published_At is not null   `
         );
@@ -2013,7 +2014,7 @@ const get_shortlist_ads = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(
-        `select SA.*, SS.Photo 
+        `select SA.*, SS.Photo, SS.ScreenName
                 from 
                 TutorShortlistAd as TSA join 
                 StudentAds as SA on

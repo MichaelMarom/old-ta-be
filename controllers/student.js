@@ -153,7 +153,7 @@ const executeQuery = async (query, res) => {
 
 //   let get_action = async (poolConnection) => {
 //     let records = await poolConnection.request()
-//       .query(`SELECT * FROM "StudentSetup1" 
+//       .query(`SELECT * FROM "StudentSetup1"
 //         WHERE CONVERT(VARCHAR, Email) = '${email.length > 8 ? email : null}'`);
 //     let get_duplicate = await records.recordset;
 
@@ -164,12 +164,12 @@ const executeQuery = async (query, res) => {
 //   let insert_student_data = async (poolConnection) => {
 //     let records = await poolConnection.request()
 //       .query(`INSERT INTO StudentSetup1(FirstName,
-//              MiddleName, LastName, Email, Cell, Language, SecLan, ParentAEmail, ParentBEmail, 
+//              MiddleName, LastName, Email, Cell, Language, SecLan, ParentAEmail, ParentBEmail,
 //              ParentAName, ParentBName,
 //              AgeGrade, Grade, Address1, Address2, City, State, ZipCode, Country,  GMT,
 //              AcademyId, ScreenName, Photo, Status, ParentConsent, userId)
 //         VALUES ('${fname}', '${mname}', '${sname}','${email}','${cell}',
-//         '${lang}', '${secLan}', '${parentAEmail}', '${parentBEmail}', 
+//         '${lang}', '${secLan}', '${parentAEmail}', '${parentBEmail}',
 //         '${parentAName}', '${parentBName}','${is_18}', '${grade}', '${add1}','${add2}','${city}','${state}',
 //          '${zipCode}',
 //         '${country}','${timeZone}',
@@ -181,13 +181,13 @@ const executeQuery = async (query, res) => {
 //   };
 
 //   let update_student_data = async (poolConnection) => {
-//     let records = await poolConnection.request().query(`UPDATE "StudentSetup1" 
+//     let records = await poolConnection.request().query(`UPDATE "StudentSetup1"
 //         set Photo = '${photo}', Address1 = '${add1}', Address2 = '${add2}', City = '${city}',
-//          State = '${state}', ZipCode = '${zipCode}', Country = '${country}', 
+//          State = '${state}', ZipCode = '${zipCode}', Country = '${country}',
 //           Email = '${email}', Cell = '${cell}', FirstName='${fname}',LastName='${sname}',
 //           MiddleName='${mname}', GMT = '${timeZone}', Language='${lang}', AgeGrade='${is_18}',
-//          Grade='${grade}', ParentConsent='${parentConsent}', SecLan = '${secLan}', 
-//          ParentAEmail='${parentAEmail}', ParentBEmail='${parentBEmail}', 
+//          Grade='${grade}', ParentConsent='${parentConsent}', SecLan = '${secLan}',
+//          ParentAEmail='${parentAEmail}', ParentBEmail='${parentBEmail}',
 //           ParentAName='${parentAName}', ParentBName='${parentBName}', ScreenName= '${screenName}'
 //           WHERE CONVERT(VARCHAR, AcademyId) = '${acadId}'`);
 
@@ -229,7 +229,6 @@ const post_student_setup = (req, res) => {
     }
   });
 };
-
 
 const post_student_setup_at_signup = (req, res) => {
   marom_db(async (config) => {
@@ -318,20 +317,21 @@ let get_student_setup = (req, res) => {
           if (recordset.length) {
             let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             if (recordset?.[0]?.GMT) {
+              const match = recordset?.[0]?.GMT.match(
+                /^([+-]\d{2})(?::(\d{2}))?$/
+              );
+              if (match) {
+                const hours = parseInt(match[1], 10);
+                const minutes = match[2] ? parseInt(match[2], 10) : 0;
 
-            const match = recordset?.[0]?.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
-            if (match) {
-              const hours = parseInt(match[1], 10);
-              const minutes = match[2] ? parseInt(match[2], 10) : 0;
+                const offset = hours * 60 + minutes;
 
-              const offset = hours * 60 + minutes;
-
-              const timezones = moment.tz
-                .names()
-                .filter((name) => moment.tz(name).utcOffset() === offset);
-              timeZone = timezones?.[0] || timeZone;
+                const timezones = moment.tz
+                  .names()
+                  .filter((name) => moment.tz(name).utcOffset() === offset);
+                timeZone = timezones?.[0] || timeZone;
+              }
             }
-          }
             const formattedResult = [{ ...recordset[0], timeZone }];
             res.status(200).send(formattedResult);
           } else res.status(200).send([{}]);
@@ -899,14 +899,29 @@ const put_student_bank_details = async (req, res) => {
       if (poolConnection) {
         const request = await poolConnection.request();
 
-        Object.keys({ ...req.body, AcademyId: req.params.id }).forEach((key) => {
-          request.input(key, StudentBank[key], { ...req.body, AcademyId: req.params.id }[key]);
-        });
+        Object.keys({ ...req.body, AcademyId: req.params.id }).forEach(
+          (key) => {
+            request.input(
+              key,
+              StudentBank[key],
+              { ...req.body, AcademyId: req.params.id }[key]
+            );
+          }
+        );
 
-        const result =await request
-          .query(parameteriedUpdateQuery("StudentBank", req.body, { AcademyId: req.params.id }, {}, false).query);
+        const result = await request.query(
+          parameteriedUpdateQuery(
+            "StudentBank",
+            req.body,
+            { AcademyId: req.params.id },
+            {},
+            false
+          ).query
+        );
 
-        res.status(200).send({updated:result.rowsAffected, result:result.recordset});
+        res
+          .status(200)
+          .send({ updated: result.rowsAffected, result: result.recordset });
       }
     } catch (err) {
       sendErrors(err, res);
@@ -1154,7 +1169,6 @@ const post_student_agreement = async (req, res) => {
   });
 };
 
-
 const update_student_agreement_to_null = async (req, res) => {
   marom_db(async (config) => {
     try {
@@ -1162,7 +1176,7 @@ const update_student_agreement_to_null = async (req, res) => {
       if (poolConnection) {
         const result = await poolConnection
           .request()
-          .query('Update StudentSetup1 set AgreementDate = null');
+          .query("Update StudentSetup1 set AgreementDate = null");
         res.status(200).send(result.recordset);
       }
     } catch (err) {
@@ -1263,9 +1277,15 @@ const get_published_ads = async (req, res) => {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection.request().query(
-          `select TA.*, TS.Photo from TutorAds as TA join
-                  TutorSetup as TS on cast(TS.AcademyId as varchar) = TA.AcademyId
-                  where TS.Status = 'active' and TA.Published_At is not null   `
+          `select 
+          TA.*, TS.Photo, TS.TutorScreenname
+          from 
+          TutorAds as TA 
+          join
+          TutorSetup as TS on 
+          cast(TS.AcademyId as varchar) = TA.AcademyId
+          where 
+          TS.Status = 'active' and TA.Published_At is not null   `
         );
 
         recordset.sort(
@@ -1306,12 +1326,16 @@ const get_shortlist_ads = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(
-        `select TA.*, TS.Photo from AdShortlist as ASL join 
-                TutorAds as TA on
-                TA.Id = ASL.AdId join
-                TutorSetup as TS on 
-                cast(TS.AcademyId as varchar) = TA.AcademyId
-                where ASL.StudentId = '${req.params.studentId}'`
+        `select TA.*, 
+        TS.Photo, 
+        TS.TutorScreenname 
+        from 
+        AdShortlist as ASL join 
+        TutorAds as TA on
+        TA.Id = ASL.AdId join
+        TutorSetup as TS on 
+        cast(TS.AcademyId as varchar) = TA.AcademyId
+        where ASL.StudentId = '${req.params.studentId}'`
       );
       recordset.sort(
         (a, b) => new Date(b.Published_At) - new Date(a.Published_At)
