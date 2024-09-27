@@ -205,43 +205,44 @@ const axios = require("axios");
 
 const sendSMS = async (req, res) => {
   try {
-    let ACCESS_TOKEN = "o.deIKzwrMK8AujawICPTYWM9z6gkI22N2";  // Access Token
+    // you can write your code here...
+    // let ACCESS_TOKEN = "o.deIKzwrMK8AujawICPTYWM9z6gkI22N2";  // Access Token
     let numbers = ["+15166088464"];  // Phone numbers
-    let deviceIden = "ujvsqxeJ1l6sjDJVdu26to";  // Device ID for the Android device
+    // let deviceIden = "ujvsqxeJ1l6sjDJVdu26to";  // Device ID for the Android device
 
-    console.log("Sending SMS via Create-Text API...");
+    // console.log("Sending SMS via Create-Text API...");
 
-    // Make the request to Pushbullet Create-Text API
-    const response = await axios({
-      method: "POST",
-      url: "https://api.pushbullet.com/v2/texts",
-      headers: {
-        "Access-Token": ACCESS_TOKEN,
-        "Content-Type": "application/json",
-      },
-      data: {
-        data: {  // Wrap in a `data` object
-          addresses: numbers,  // Phone numbers array
-          message: "Hello from Pushbullet Create Text API!",  // SMS message content
-          target_device_iden: deviceIden,  // Device ID that will send the SMS
-        }
-      }
-    });
+    // // Make the request to Pushbullet Create-Text API
+    // const response = await axios({
+    //   method: "POST",
+    //   url: "https://api.pushbullet.com/v2/texts",
+    //   headers: {
+    //     "Access-Token": ACCESS_TOKEN,
+    //     "Content-Type": "application/json",
+    //   },
+    //   data: {
+    //     data: {  // Wrap in a `data` object
+    //       addresses: numbers,  // Phone numbers array
+    //       message: "Hello from Pushbullet Create Text API!",  // SMS message content
+    //       target_device_iden: deviceIden,  // Device ID that will send the SMS
+    //     }
+    //   }
+    // });
 
-    // Log and handle the response
-    console.log("Status Code:", response.status);  // Should be 200 for success
-    console.log("Response Body:", response.data);  // Logs the API response
+    // // Log and handle the response
+    // console.log("Status Code:", response.status);  // Should be 200 for success
+    // console.log("Response Body:", response.data);  // Logs the API response
 
-    if (response.status === 200) {
-      res.status(200).send({
-        message: "sent!",
-        response: response.data,  // Make sure it's `response.data`
-        status: response.status,
-      });
-      console.log("SMS successfully sent via Create-Text API!");
-    } else {
-      console.log("SMS not sent, check the response body for issues.");
-    }
+    // if (response.status === 200) {
+    //   res.status(200).send({
+    //     message: "sent!",
+    //     response: response.data,  // Make sure it's `response.data`
+    //     status: response.status,
+    //   });
+    //   console.log("SMS successfully sent via Create-Text API!");
+    // } else {
+    //   console.log("SMS not sent, check the response body for issues.");
+    // }
   } catch (error) {
     // Log and handle errors
     sendErrors(error, res);

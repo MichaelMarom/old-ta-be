@@ -1052,7 +1052,6 @@ const post_student_feedback = async (req, res) => {
 const get_feedback_questions = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
       const poolConnection = await sql.connect(config);
 
       if (poolConnection) {
