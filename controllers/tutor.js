@@ -892,7 +892,10 @@ let faculties = (req, res) => {
     if (poolConnection) {
       poolConnection
         .request()
-        .query(`SELECT * From Faculty `)
+        .query(`SELECT f.Id, f.Faculty, COUNT(s.SubjectName) AS subjectCount
+            FROM faculty f
+            JOIN subjects s ON f.Id = s.FacultyId
+            GROUP BY f.Id, f.Faculty; `)
         .then((result) => {
           res.status(200).send(result.recordset);
         })

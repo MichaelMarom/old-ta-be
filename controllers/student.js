@@ -425,6 +425,9 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 TS.Country,
                 TS.GMT,
                 TS.disableColor,
+                TS.VacationMode,
+                TS.StartVacation,
+                TS.EndVacation,
                 
                 DS.CancellationPolicy,
                 DS.IntroSessionDiscount,
