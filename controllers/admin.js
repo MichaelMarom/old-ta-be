@@ -17,7 +17,7 @@ let get_tutor_data = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
     const { status } = req.query;
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     // console.log(poolConnection._connected)
     if (poolConnection) {
       poolConnection
@@ -54,7 +54,7 @@ let get_role_count_by_status = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
     const { role } = req.params
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
 
     if (poolConnection) {
       poolConnection
@@ -91,7 +91,7 @@ let set_tutor_status = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     // console.log(poolConnection._connected)
     if (poolConnection) {
       poolConnection
@@ -127,7 +127,7 @@ let get_student_data = (req, res) => {
   marom_db(async (config) => {
     const { status } = req.query
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -160,7 +160,7 @@ let set_student_status = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -349,7 +349,7 @@ let get_Constants = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -367,7 +367,7 @@ let get_Constants = (req, res) => {
 const api_save_email_template = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
@@ -386,7 +386,7 @@ const api_save_email_template = async (req, res) => {
 const api_update_email_template = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
@@ -405,7 +405,7 @@ const api_update_email_template = async (req, res) => {
 const api_get_email_template = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
@@ -424,7 +424,7 @@ const api_get_email_template = async (req, res) => {
 const api_get_email_templates = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
@@ -445,7 +445,7 @@ const api_get_email_templates = async (req, res) => {
 const api_save_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const request = poolConnection.request();
 
@@ -468,7 +468,7 @@ const api_save_sms_mms_temp = async (req, res) => {
 const api_update_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const request = poolConnection.request();
 
@@ -491,7 +491,7 @@ const api_update_sms_mms_temp = async (req, res) => {
 const api_get_sms_mms_temp = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()
@@ -510,7 +510,7 @@ const api_get_sms_mms_temp = async (req, res) => {
 const api_get_sms_mms_temps = async (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const { recordset } = await poolConnection
           .request()

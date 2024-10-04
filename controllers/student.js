@@ -88,7 +88,7 @@ const executeQuery = async (query, res) => {
 //   let action = (cb) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 
 //       let result = poolConnection
 //         ? await get_action(poolConnection)
@@ -101,7 +101,7 @@ const executeQuery = async (query, res) => {
 //     if (result) {
 //       marom_db(async (config) => {
 //         const sql = require("mssql");
-//         var poolConnection = await sql.connect(config);
+//         let poolConnection = await sql.connect(config);
 
 //         insert_student_data(poolConnection)
 //           .then((result) => {
@@ -126,7 +126,7 @@ const executeQuery = async (query, res) => {
 //     } else {
 //       marom_db(async (config) => {
 //         const sql = require("mssql");
-//         var poolConnection = await sql.connect(config);
+//         let poolConnection = await sql.connect(config);
 
 //         update_student_data(poolConnection)
 //           .then((result) => {
@@ -305,13 +305,18 @@ const upload_student_by_field = (req, res) => {
 
 let get_student_setup = (req, res) => {
   marom_db(async (config) => {
-    const sql = require("mssql");
-
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
-        .query(findByAnyIdColumn("StudentSetup1", req.query))
+        .query(`Select 
+          SS.*, US.email 
+          from 
+          StudentSetup1 SS 
+          join 
+          Users1 US 
+          on SS.userId=US.SID
+          where SS.userId = '${req.query.userId}'`)
         .then((result) => {
           const { recordset } = result;
           if (recordset.length) {
@@ -347,7 +352,7 @@ let get_student_setup = (req, res) => {
 //     marom_db(async (config) => {
 //         const sql = require('mssql');
 
-//         var poolConnection = await sql.connect(config);
+//         let poolConnection = await sql.connect(config);
 //         // console.log(poolConnection._connected)
 //         if (poolConnection) {
 //             poolConnection.request().query(
@@ -549,8 +554,8 @@ let get_my_data = async (req, res) => {
       let poolConnection = await sql.connect(config);
 
       const result = await poolConnection.request()
-        .query(`SELECT * from StudentSetup1 
-            WHERE CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `);
+        .query(`SELECT SS.*, US.email from StudentSetup1 SS join Users1 US on US.SID = SS.userId
+            WHERE CONVERT(VARCHAR, SS.AcademyId) = '${AcademyId}' `);
       let record = result.recordset[0] || {};
       if (record.userId) {
         const { recordset } = await poolConnection
@@ -1137,7 +1142,7 @@ const post_feedback_questions = async (req, res) => {
 //     try {
 //       const sql = require("mssql");
 
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 //       if (poolConnection) {
 //         const result = await poolConnection.request().query(
 //           `

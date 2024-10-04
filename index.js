@@ -14,9 +14,9 @@ const AGENCY_ROUTES = require('./routes/agency')
 
 require('dotenv').config();
 
-var { PeerServer } = require("peer");
+let { PeerServer } = require("peer");
 const { sendErrors } = require('./utils/handleReqErrors');
-var myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
+let myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
 
 const app = express();
 app.use(cors({ origin: process.env.FE_URL }))
@@ -66,7 +66,7 @@ app.use(CHAT_ROUTES)
 app.use('/api/', MEETING_ROUTES);
 app.use(COMMON_ROUTERS)
 
-var server = app.listen(process.env.PORT, () =>
+let server = app.listen(process.env.PORT, () =>
     console.log('app is live @', process.env.PORT));
 
 

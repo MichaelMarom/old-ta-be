@@ -47,9 +47,9 @@ let post_new_subject = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
-      var resultSet = poolConnection.request().query(
+      let resultSet = poolConnection.request().query(
         `
                     INSERT INTO "NewTutorSubject"(faculty, subject, date, AcademyId, reason, facultyID)
                     VALUES ('${faculty}', '${subject}', '${date}', '${AcademyId}', '${reason}', '${facultyId}')
@@ -78,9 +78,9 @@ let subjects = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
-      var resultSet = await poolConnection.request().query(
+      let resultSet = await poolConnection.request().query(
         `SELECT Id,FacultyId,SubjectName 
         FROM 
         Subjects WHERE CONVERT(VARCHAR, FacultyId) =  '${id}' `
@@ -173,7 +173,7 @@ const subject_already_exist = async (req, res) => {
 //   let action = (cb) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 
 //       let result = poolConnection
 //         ? await get_action(poolConnection)
@@ -186,7 +186,7 @@ const subject_already_exist = async (req, res) => {
 //     if (result) {
 //       let db = marom_db(async (config) => {
 //         const sql = require("mssql");
-//         var poolConnection = await sql.connect(config);
+//         let poolConnection = await sql.connect(config);
 
 //         insert_rates(poolConnection)
 //           .then((result) => {
@@ -210,7 +210,7 @@ const subject_already_exist = async (req, res) => {
 //     } else {
 //       let db = marom_db(async (config) => {
 //         const sql = require("mssql");
-//         var poolConnection = await sql.connect(config);
+//         let poolConnection = await sql.connect(config);
 
 //         update_rates(poolConnection)
 //           .then((result) => {
@@ -354,7 +354,7 @@ const dynamically_post_edu_info = (req, res) => {
 let post_tutor_rates_form = (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       const request = await poolConnection.request();
       Object.keys(req.body).map((key) =>
         request.input(key, Discounts[key], req.body[key])
@@ -374,7 +374,7 @@ let post_tutor_rates_form = (req, res) => {
 let update_discount_form = (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       const request = poolConnection.request();
       const { id } = req.params;
       Object.keys({ ...req.body, id }).map((key) =>
@@ -396,10 +396,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT Country FROM Countries
 //                 `
@@ -414,10 +414,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM States
 //                 `
@@ -432,10 +432,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM GMT
 //                 `
@@ -450,10 +450,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM Experience
 //                 `
@@ -468,10 +468,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM EducationalLevel
 //                 `
@@ -486,10 +486,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM Degree
 //                 `
@@ -504,10 +504,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM CertificateTypes
 //                 `
@@ -522,10 +522,10 @@ let update_discount_form = (req, res) => {
 //   marom_db(async (config) => {
 //     const sql = require("mssql");
 
-//     var poolConnection = await sql.connect(config);
+//     let poolConnection = await sql.connect(config);
 //     // console.log(poolConnection._connected)
 //     if (poolConnection) {
-//       var resultSet = await poolConnection.request().query(
+//       let resultSet = await poolConnection.request().query(
 //         `
 //                     SELECT * FROM ResponseTime
 //                 `
@@ -541,7 +541,7 @@ let get_user_data = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     // console.log(poolConnection._connected)
     if (poolConnection) {
       poolConnection
@@ -629,7 +629,7 @@ let remove_subject_rates = (req, res) => {
     try {
       const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const deleted = await poolConnection
           .request()
@@ -704,7 +704,7 @@ let update_tutor_bank = (req, res) => {
 //   let response_0 = (resolve) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 
 //       poolConnection
 //         .request()
@@ -722,7 +722,7 @@ let update_tutor_bank = (req, res) => {
 //   let response_1 = (resolve) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 
 //       poolConnection
 //         .request()
@@ -740,7 +740,7 @@ let update_tutor_bank = (req, res) => {
 //   let response_2 = (cb) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 
 //       poolConnection
 //         .request()
@@ -815,7 +815,7 @@ let get_rates = (req, res) => {
     try {
       const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const result = await poolConnection.request().query(
           `Select sb.SubjectName as subject, sb.FacultyId as facultyId,
@@ -844,7 +844,7 @@ const get_tutor_offered_subjects = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -867,7 +867,7 @@ const get_tutor_offered_subjects = (req, res) => {
 let get_tutor_discount_form = (req, res) => {
   let { AcademyId } = req.query;
   marom_db(async (config) => {
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -888,7 +888,7 @@ let faculties = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -907,7 +907,7 @@ let faculties = (req, res) => {
 let get_bank_details = (req, res) => {
   let { AcademyId } = req.query;
   marom_db(async (config) => {
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -999,7 +999,7 @@ let get_tutor_setup = (req, res) => {
 let get_tutor_calender_details = (req, res) => {
   marom_db(async (config) => {
     try {
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const request = poolConnection.request();
         const { recordset } = await request.query(
@@ -1029,7 +1029,7 @@ const get_tutor_photos = async (req, res) => {
     const sql = require("mssql");
     const { AcademyIds } = req.query;
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -1053,7 +1053,7 @@ let get_my_edu = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -1093,7 +1093,7 @@ let storeEvents = (req, res) => {
     marom_db(async (config) => {
       const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         poolConnection
           .request()
@@ -1120,7 +1120,7 @@ let storeCalenderTutorRecord = (req, res) => {
     marom_db(async (config) => {
       const sql = require("mssql");
 
-      var poolConnection = await sql.connect(config);
+      let poolConnection = await sql.connect(config);
       if (poolConnection) {
         poolConnection
           .request()
@@ -1141,7 +1141,7 @@ let get_tutor_status = (req, res) => {
   marom_db(async (config) => {
     const sql = require("mssql");
 
-    var poolConnection = await sql.connect(config);
+    let poolConnection = await sql.connect(config);
     if (poolConnection) {
       poolConnection
         .request()
@@ -1164,7 +1164,7 @@ let get_tutor_status = (req, res) => {
 //     marom_db(async (config) => {
 //       const sql = require("mssql");
 
-//       var poolConnection = await sql.connect(config);
+//       let poolConnection = await sql.connect(config);
 //       if (poolConnection) {
 //         poolConnection
 //           .request()
@@ -1188,7 +1188,7 @@ let getAllTutorLesson = (req, res) => {
     const { tutorId } = req.query;
     marom_db(async (config) => {
       try {
-        var poolConnection = await sql.connect(config);
+        let poolConnection = await sql.connect(config);
         if (poolConnection) {
           const result = await poolConnection
             .request()
