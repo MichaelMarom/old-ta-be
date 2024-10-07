@@ -2,6 +2,7 @@ const { marom_db } = require('../db');
 const { getAll, insert, find, update, parameterizedInsertQuery, findByAnyIdColumn } = require('../utils/crud_queries');
 const { sendErrors } = require('../utils/handleReqErrors');
 const Message = require('../schema/common/Message');
+const sql = require('mssql');
 
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -11,7 +12,6 @@ const fetch_chats = async (req, res) => {
 
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
 
             if (poolConnection) {
@@ -53,7 +53,6 @@ const fetch_chat_messages = async (req, res) => {
 
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
 
             if (poolConnection) {
@@ -96,7 +95,6 @@ const fetch_chat_messages = async (req, res) => {
 const post_message = async (req, res) => {
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
 
             if (poolConnection) {
@@ -121,7 +119,6 @@ const post_message = async (req, res) => {
 const create_chat = async (req, res) => {
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
 
             if (poolConnection) {
@@ -141,7 +138,9 @@ const create_chat = async (req, res) => {
                     res.status(200).send(result.recordset);
                     return
                 }
-                res.status(200).send([])
+                else{
+                    res.status(200).send(data.recordset)
+                }
             }
         } catch (err) {
             sendErrors(err, res)
@@ -153,7 +152,6 @@ const create_chat = async (req, res) => {
 const set_status = async (req, res) => {
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
             const tableName = req.params.role === 'tutor' ? "TutorSetup" : 'StudentSetup1'
 
@@ -172,7 +170,6 @@ const set_status = async (req, res) => {
 const get_recomendation = async (req, res) => {
     marom_db(async (config) => {
         try {
-            const sql = require('mssql');
             const poolConnection = await sql.connect(config);
 
             if (poolConnection) {
