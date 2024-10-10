@@ -38,7 +38,6 @@ const TutorSetup = {
     enableHourSlots: sql.VarChar(sql.MAX),
     disableHourSlots: sql.VarChar(sql.MAX),
     enabledDays: sql.VarChar(sql.MAX),
-    addedDisabledHours: sql.Bit,
     disableHoursRange: sql.VarChar(sql.MAX),
     disableColor: sql.VarChar(10),
 };

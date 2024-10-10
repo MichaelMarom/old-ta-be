@@ -1009,7 +1009,6 @@ let get_tutor_calender_details = (req, res) => {
             enableHourSlots,
             disableHourSlots,
             enabledDays,
-            addedDisabledHours,
             disableHoursRange,
             disableColor
 
