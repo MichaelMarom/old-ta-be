@@ -14,7 +14,7 @@ COMMON_ROUTERS.put("/:table/:id", parser, updateRecord);
 COMMON_ROUTERS.get("/:table/list", getAllRecords);
 COMMON_ROUTERS.post("/:table", parser, createRecord);
 COMMON_ROUTERS.delete("/:table/:id", parser, deleteRecord);
-COMMON_ROUTERS.delete(
+COMMON_ROUTERS.get(
   "/:tableName/getField/:id",
   verifyToken,
   parser,

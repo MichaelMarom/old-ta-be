@@ -52,7 +52,6 @@ let get_tutor_data = (req, res) => {
 
 let get_role_count_by_status = (req, res) => {
   marom_db(async (config) => {
-    const sql = require("mssql");
     const { role } = req.params
     let poolConnection = await sql.connect(config);
 
@@ -89,8 +88,6 @@ const get_users_list = async (req, res) => {
 let set_tutor_status = (req, res) => {
   let { Id, Status } = req.body;
   marom_db(async (config) => {
-    const sql = require("mssql");
-
     let poolConnection = await sql.connect(config);
     // console.log(poolConnection._connected)
     if (poolConnection) {
@@ -190,7 +187,6 @@ let set_student_status = (req, res) => {
 let get_tutor_new_subject = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
       const poolConnection = await sql.connect(config);
 
       if (poolConnection) {

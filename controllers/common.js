@@ -1,5 +1,6 @@
 const { update, insert } = require("../utils/crud_queries");
 const { marom_db } = require("../db");
+const sql = require("mssql")
 const { sendErrors } = require("../utils/handleReqErrors");
 
 // General function for executing SQL queries
@@ -87,9 +88,9 @@ const deleteRecord = async (req, res) => {
 const get_column_by_id = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const poolConnection = sql.connect(config);
+      const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(`
-            Select ${req.query.fieldName} from ${req.params.tableName} where id = ${req.params.id}
+            Select ${req.query.fieldName} from ${req.params.tableName} where AcademyId = '${req.params.id}'
             `);
       res.status(200).send(recordset);
     } catch (err) {
