@@ -3,21 +3,9 @@ const multer = require("multer");
 const upload = multer({ dest: "interviews/" });
 const {
   subjects,
-  // post_form_one,
-  // get_countries,
-  // get_gmt,
-  // get_state,
-  // get_experience,
-  // get_level,
-  // get_degree,
-  // get_certificates,
-  // get_feedback_data,
-  // get_response,
-  // fetchStudentsBookings,
   get_user_data,
   subject_already_exist,
   upload_tutor_rates,
-  // get_my_data,
   get_rates,
   upload_tutor_bank,
   get_tutor_setup,
@@ -30,12 +18,10 @@ const {
   get_tutor_status,
   faculties,
   post_new_subject,
-  // post_tutor_setup,
   get_tutor_market_data,
   get_tutor_students,
   getSessionsDetails,
   last_pay_day,
-  // get_tutor_profile_data,
   remove_subject_rates,
   post_tutor_ad,
   get_tutor_ads,
@@ -54,8 +40,6 @@ const {
   get_shortlist_ads,
   delete_ad_from_shortlist,
   get_student_public_profile_data,
-  recordVideoController,
-  getVideo,
   getSessionDetailById,
   get_tutor_photos,
   get_tutor_calender_details,
@@ -71,11 +55,9 @@ const {
   express,
   parser,
 } = require("../modules");
-const { uploadTutorDocs } = require("../controllers/azureUploads");
+const { uploadTutorDocs, recordVideoController } = require("../controllers/azureUploads");
 
 const TUTOR_ROUTES = express.Router();
-
-// TUTOR_ROUTES.use(verifyToken);
 
 TUTOR_ROUTES.get("/tutor/tutor-status", verifyToken, get_tutor_status);
 TUTOR_ROUTES.get("/tutor/subjects", verifyToken, subjects);
@@ -85,16 +67,7 @@ TUTOR_ROUTES.get(
   subject_already_exist
 );
 TUTOR_ROUTES.get("/tutor/faculties", verifyToken, faculties);
-// TUTOR_ROUTES.get('/tutor/countries', verifyToken, get_countries)
-// // TUTOR_ROUTES.get('/tutor/state', verifyToken, get_state)
-// TUTOR_ROUTES.get('/tutor/gmt', verifyToken, get_gmt)
-// TUTOR_ROUTES.get('/tutor/experience', verifyToken, get_experience)
-// TUTOR_ROUTES.get('/tutor/level', verifyToken, get_level)
-// TUTOR_ROUTES.get('/tutor/degree', verifyToken, get_degree)
-// TUTOR_ROUTES.get('/tutor/certificates', verifyToken, get_certificates)
 TUTOR_ROUTES.get("/tutor/education", verifyToken, get_user_data);
-// TUTOR_ROUTES.get('/tutor/response', verifyToken, get_response)
-// TUTOR_ROUTES.get('/tutor/my-data', verifyToken, get_my_data)
 TUTOR_ROUTES.get("/tutor/my-rate", verifyToken, get_rates);
 TUTOR_ROUTES.get("/subject/:facultyId", verifyToken, get_faculty_subjects);
 TUTOR_ROUTES.get(
@@ -121,7 +94,6 @@ TUTOR_ROUTES.get(
   verifyToken,
   get_tutor_feedback_questions
 );
-// TUTOR_ROUTES.get('/tutor/feedback', parser, verifyToken, get_feedback_data);
 
 TUTOR_ROUTES.post("/tutor/payment", parser, verifyToken, upload_tutor_bank);
 TUTOR_ROUTES.put("/tutor/payment/:id", parser, verifyToken, update_tutor_bank);
@@ -139,9 +111,7 @@ TUTOR_ROUTES.delete(
   remove_subject_rates
 );
 
-// TUTOR_ROUTES.post('/tutor/form-one', parser, verifyToken, post_form_one);
 TUTOR_ROUTES.post("/tutor/edu", parser, verifyToken, dynamically_post_edu_info);
-// TUTOR_ROUTES.put('/tutor/edu', parser, verifyToken, dynamically_post_edu_info);
 
 TUTOR_ROUTES.get(
   "/tutor/tutor-discounts",
@@ -193,8 +163,6 @@ TUTOR_ROUTES.post(
 );
 TUTOR_ROUTES.post("/tutor/setup/doc", verifyToken, uploadTutorDocs);
 
-// TUTOR_ROUTES.get('/tutor/setup/intro', verifyToken, getVideo)
-
 TUTOR_ROUTES.put(
   "/tutor/agreement-updated",
   parser,
@@ -214,7 +182,6 @@ TUTOR_ROUTES.get(
   get_all_tutor_sessions_formatted
 );
 
-// TUTOR_ROUTES.get('/profile/:tutorId/:studentId', verifyToken, get_tutor_profile_data)
 TUTOR_ROUTES.post("/tutor/market-place", parser, verifyToken, post_tutor_ad);
 TUTOR_ROUTES.get(
   "/tutor/market-place/list/:AcademyId",

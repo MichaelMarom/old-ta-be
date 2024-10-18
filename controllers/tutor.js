@@ -19,25 +19,24 @@ const {
   generateAcademyId,
   generateScreenName,
 } = require("../utils/generalHelperFunctions");
-const { exec } = require("child_process");
 const sql = require("mssql");
 const COMMISSION_DATA = require("../constants/tutor");
 const educationSchema = require("../schema/tutor/education");
 const { checkSessionStatus } = require("../utils/generalHelperFunctions");
 const TutorSetup = require("../schema/tutor/Setup");
 const Accounting = require("../schema/tutor/Accounting");
+const Discounts = require("../schema/tutor/Discounts");
 
 const { sendErrors } = require("../utils/handleReqErrors");
 
-const account = process.env.AZURE_ACCOUNT_NAME;
-const { BlobServiceClient } = require("@azure/storage-blob");
-const Discounts = require("../schema/tutor/Discounts");
-const blobServiceClient = new BlobServiceClient(
-  `https://${account}.blob.core.windows.net/?${process.env.AZURE_BLOB_SAS_TOKEN}`
-);
-const containerClient = blobServiceClient.getContainerClient(
-  process.env.AZURE_BLOB_CONT_NAME
-);
+// const account = process.env.AZURE_ACCOUNT_NAME;
+// const { BlobServiceClient } = require("@azure/storage-blob");
+// const blobServiceClient = new BlobServiceClient(
+//   `https://${account}.blob.core.windows.net/?${process.env.AZURE_BLOB_SAS_TOKEN}`
+// );
+// const containerClient = blobServiceClient.getContainerClient(
+//   process.env.AZURE_BLOB_CONT_NAME
+// );
 
 let post_new_subject = (req, res) => {
   let { faculty, subject, reason, AcademyId, facultyId } = req.body;
@@ -2056,68 +2055,68 @@ const get_student_public_profile_data = async (req, res) => {
   });
 };
 
-const recordVideoController = async (req, res) => {
-  try {
-    const { user_id, upload_type } = req.body;
-    if (!req.file || !req.file.mimetype.startsWith("video/")) {
-      return sendErrors({ message: "Please upload a video file" }, res);
-    }
+// const recordVideoController = async (req, res) => {
+//   try {
+//     const { user_id, upload_type } = req.body;
+//     if (!req.file || !req.file.mimetype.startsWith("video/")) {
+//       return sendErrors({ message: "Please upload a video file" }, res);
+//     }
 
-    if (!user_id) {
-      return sendErrors({ message: "Please provide a user id" }, res);
-    }
+//     if (!user_id) {
+//       return sendErrors({ message: "Please provide a user id" }, res);
+//     }
 
-    // Mirror the video horizontally using ffmpeg
-    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.mp4`;
+//     // Mirror the video horizontally using ffmpeg
+//     const outputFileName = `interviews/${user_id}-${new Date().getTime()}.mp4`;
 
-    let command;
-    if (upload_type === "record") {
-      command = `ffmpeg -y -i ${req.file.path} -vf "hflip" ${outputFileName}`;
-    } else {
-      command = `ffmpeg -y -i ${req.file.path} ${outputFileName}`;
-    }
+//     let command;
+//     if (upload_type === "record") {
+//       command = `ffmpeg -y -i ${req.file.path} -vf "hflip" ${outputFileName}`;
+//     } else {
+//       command = `ffmpeg -y -i ${req.file.path} ${outputFileName}`;
+//     }
 
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send({
-          message: "Failed to upload the video. The video may be corrupted.",
-          reason: error.message,
-        });
-      }
+//     exec(command, (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(error);
+//         return res.status(500).send({
+//           message: "Failed to upload the video. The video may be corrupted.",
+//           reason: error.message,
+//         });
+//       }
 
-      //delete the non-flipped video
-      // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
-      // const del_command = `rm ${req.file.path}` //for mac and linux
-      const del_command = `${process.env.NODE_ENV === "production" ? "rm" : "del"
-        } ${req.file.path}`;
-      exec(del_command, async (error, stdout, stderr) => {
-        if (error) {
-          console.error(error);
-          return res.status(500).send({ reason: error.message });
-        }
+//       //delete the non-flipped video
+//       // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
+//       // const del_command = `rm ${req.file.path}` //for mac and linux
+//       const del_command = `${process.env.NODE_ENV === "production" ? "rm" : "del"
+//         } ${req.file.path}`;
+//       exec(del_command, async (error, stdout, stderr) => {
+//         if (error) {
+//           console.error(error);
+//           return res.status(500).send({ reason: error.message });
+//         }
 
-        const blobClient = containerClient.getBlockBlobClient(`${user_id}-${new Date().getTime()}.mp4`);
-        const url = await blobClient.uploadFile(outputFileName);
-        const folderPath = path.join(__dirname, "../interviews");
-        await deleteFolderContents(folderPath);
-        res.send({ message: "Video flipped successfully", url: blobClient.url.split("?")[0] });
-      });
-    });
-  } catch (err) {
-    sendErrors(err, res);
-  }
-};
+//         const blobClient = containerClient.getBlockBlobClient(`${user_id}-${new Date().getTime()}.mp4`);
+//         const url = await blobClient.uploadFile(outputFileName);
+//         const folderPath = path.join(__dirname, "../interviews");
+//         await deleteFolderContents(folderPath);
+//         res.send({ message: "Video flipped successfully", url: blobClient.url.split("?")[0] });
+//       });
+//     });
+//   } catch (err) {
+//     sendErrors(err, res);
+//   }
+// };
 
-const getVideo = async (req, res) => {
-  try {
-    const { user_id } = req.query;
-    const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
-    res.status(200).send({ url: blobClient.url });
-  } catch (err) {
-    sendErrors(err, res);
-  }
-};
+// const getVideo = async (req, res) => {
+//   try {
+//     const { user_id } = req.query;
+//     const blobClient = containerClient.getBlockBlobClient(`${user_id}.mp4`);
+//     res.status(200).send({ url: blobClient.url });
+//   } catch (err) {
+//     sendErrors(err, res);
+//   }
+// };
 
 const getSessionDetailById = async (req, res) => {
   marom_db(async (config) => {
@@ -2142,8 +2141,6 @@ const getSessionDetailById = async (req, res) => {
 };
 
 module.exports = {
-  recordVideoController,
-  getVideo,
   // get_tutor_profile_data,
   get_tutor_against_code,
   getDocFromEducationTable,
