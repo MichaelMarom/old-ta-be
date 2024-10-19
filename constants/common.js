@@ -3,7 +3,7 @@ const AZURE_CONT_BLOB_CODES = {
     'student-profile-image': process.env.AZURE_BLOB_STUDENT_IMG_CONT_NAME,
     'tutor-intro-video': process.env.AZURE_BLOB_CONT_NAME,
     'tutor-docs': process.env.AZURE_BLOB_TUTOR_DOCS_CONT_NAME,
-
+    'tutoring-academy-lesson-videos': process.env.AZURE_BLOB_TUTOR_LESSON_VIDEOS_CONT_NAME,
 }
 
 

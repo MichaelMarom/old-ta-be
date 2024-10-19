@@ -104,7 +104,6 @@ const uploadTutorDocs = async (req, res) => {
 const recordVideoController = async (req, res) => {
   try {
     const { user_id, upload_type } = req.body;
-    console.log(req.file)
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
       return sendErrors({ message: "Please upload a video file" }, res);
     }
@@ -114,7 +113,9 @@ const recordVideoController = async (req, res) => {
     }
 
     // Mirror the video horizontally using ffmpeg
-    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.webm`;
+    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.${
+      req.file.mimetype.split("/")[1]
+    }`;
 
     let command;
     if (upload_type === "record") {
@@ -135,23 +136,34 @@ const recordVideoController = async (req, res) => {
       //delete the non-flipped video
       // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
       // const del_command = `rm ${req.file.path}` //for mac and linux
-      const del_command = `${process.env.NODE_ENV === "production" ? "rm" : "del"
-        } ${req.file.path}`;
+      const del_command = `${
+        process.env.NODE_ENV === "production" ? "rm" : "del"
+      } ${req.file.path}`;
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);
           return res.status(500).send({ reason: error.message });
         }
 
+        const containerClientForTutorVideos =
+          blobServiceClient.getContainerClient(
+            AZURE_CONT_BLOB_CODES[req.body.containerName]
+          );
+        // use to delete old videos with same user_id prefix
+        await deleteBlobsWithPrefix(containerClientForTutorVideos, user_id);
 
-        const containerClientForTutorVideos = blobServiceClient.getContainerClient(
-          AZURE_CONT_BLOB_CODES[req.body.containerName]
+        const blobClient = containerClientForTutorVideos.getBlockBlobClient(
+          `${user_id}-${new Date().getTime()}.${
+            req.file.mimetype.split("/")[1]
+          }`
         );
-        const blobClient = containerClientForTutorVideos.getBlockBlobClient(`${user_id}-${new Date().getTime()}.mp4`);
         const url = await blobClient.uploadFile(outputFileName);
         const folderPath = path.join(__dirname, "../interviews");
         await deleteFolderContents(folderPath);
-        res.send({ message: "Video flipped successfully", url: blobClient.url.split("?")[0] });
+        res.send({
+          message: "Video flipped successfully",
+          url: blobClient.url.split("?")[0],
+        });
       });
     });
   } catch (err) {
@@ -162,12 +174,18 @@ const recordVideoController = async (req, res) => {
 const getVideo = async (req, res) => {
   try {
     const { user_id } = req.query;
-    const blobClient = containerClientForTutorVideos.getBlockBlobClient(`${user_id}.mp4`);
+    const blobClient = containerClientForTutorVideos.getBlockBlobClient(
+      `${user_id}.mp4`
+    );
     res.status(200).send({ url: blobClient.url });
   } catch (err) {
     sendErrors(err, res);
   }
 };
 
-
-module.exports = {getVideo, recordVideoController, uploadImageController, uploadTutorDocs };
+module.exports = {
+  getVideo,
+  recordVideoController,
+  uploadImageController,
+  uploadTutorDocs,
+};
