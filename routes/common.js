@@ -9,7 +9,7 @@ const {
 const { express, parser } = require("../modules");
 const COMMON_ROUTERS = express.Router();
 
-COMMON_ROUTERS.put("/:table/:id", parser, updateRecord);
+COMMON_ROUTERS.put("/:table/update/:id", parser, updateRecord);
 
 COMMON_ROUTERS.get("/:table/list", getAllRecords);
 COMMON_ROUTERS.post("/:table", parser, createRecord);

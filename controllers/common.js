@@ -1,7 +1,12 @@
-const { update, insert } = require("../utils/crud_queries");
+const {
+  update,
+  insert,
+  parameteriedUpdateQuery,
+} = require("../utils/crud_queries");
 const { marom_db } = require("../db");
-const sql = require("mssql")
+const sql = require("mssql");
 const { sendErrors } = require("../utils/handleReqErrors");
+const Lessons = require("../schema/common/Lessons");
 
 // General function for executing SQL queries
 const executeQuery = async (query) => {
@@ -27,22 +32,38 @@ const executeQuery = async (query) => {
 
 // Function to update a record
 const updateRecord = async (req, res) => {
-  try {
-    const query = update(
-      req.params.table,
-      req.body,
-      { AcademyId: req.params.id },
-      { AcademyId: "varchar" }
-    );
-    const result = await executeQuery(query);
-    console.log(result);
-    if (result?.recordSet?.length === 0) {
-      throw new Error("Update failed: Record not found");
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+
+      const request = await poolConnection.request();
+      request.input(
+        Object.keys(req.body.id)[0],
+        Lessons[Object.keys(req.body.id)[0]],
+        req.body.id.id
+      );
+      console.log(Object.keys(req.body.fields), [Object.keys(req.body.id)[0]]);
+      Object.keys(req.body.fields).map((key) => {
+        request.input(key, Lessons[key], req.body.fields[key]);
+      });
+
+      const result = await request.query(
+        parameteriedUpdateQuery(
+          req.params.table,
+          req.body.fields,
+          {
+            [Object.keys(req.body.id)[0]]: req.body.id.id,
+          },
+          {},
+          false
+        ).query
+      );
+      console.log(result);
+      res.status(200).send({ updated: result.rowsAffected[0] });
+    } catch (err) {
+      sendErrors(err, res);
     }
-    res.status(200).send(result?.recordSet);
-  } catch (error) {
-    sendErrors(error, res);
-  }
+  });
 };
 
 // Function to get all records

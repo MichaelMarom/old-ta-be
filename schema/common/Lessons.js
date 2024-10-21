@@ -20,7 +20,8 @@ const Lessons = {
     commentByStudent: sql.NVarChar(sql.MAX),
     ratingByTutor: sql.Decimal(3, 2),  
     commentByTutor: sql.NVarChar(sql.MAX),
-    tutorFeedbackEligible: sql.Bit
+    tutorFeedbackEligible: sql.Bit,
+    Recording: sql.NVarChar(200),
 };
 
 module.exports = Lessons;
