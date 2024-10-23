@@ -191,7 +191,7 @@ let get_tutor_new_subject = async (req, res) => {
 
       if (poolConnection) {
         const result = await poolConnection.request().query(
-          `SELECT * From NewTutorSubject as ts 
+          `SELECT * From NewSubjectReq as ts 
             join TutorSetup as t on t.AcademyId = CAST(ts.AcademyId as varchar(max))
             order by ts.date desc
             `
@@ -211,7 +211,7 @@ const get_new_sub_count = async (req, res) => {
 
       if (poolConnection) {
         const result = await poolConnection.request().query(
-          `SELECT count(*) as count From NewTutorSubject`
+          `SELECT count(*) as count From NewSubjectReq`
         );
         res.status(200).send(result.recordset);
       }
@@ -236,7 +236,7 @@ let accept_new_subject = async (req, res) => {
           poolConnection
             .request()
             .query(
-              ` DELETE FROM NewTutorSubject WHERE CONVERT(VARCHAR, subject)
+              ` DELETE FROM NewSubjectReq WHERE CONVERT(VARCHAR, subject)
                      = '${subject}' AND CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
             )
             .then((result) => {
@@ -266,7 +266,7 @@ let decline_new_subject = (req, res) => {
       const poolConnection = await sql.connect(config);
 
       const result = poolConnection.request()
-        .query(`Update NewTutorSubject set IsRejected = 1 
+        .query(`Update NewSubjectReq set IsRejected = 1 
             WHERE CONVERT(VARCHAR, subject) = '${subject}' AND CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `);
 
       res.status(200).send({ message: "Subject Declined succesfully" });

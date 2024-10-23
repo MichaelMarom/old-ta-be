@@ -28,6 +28,7 @@ const Accounting = require("../schema/tutor/Accounting");
 const Discounts = require("../schema/tutor/Discounts");
 
 const { sendErrors } = require("../utils/handleReqErrors");
+const NewSubjectReq = require("../schema/admin/NewSubjectReq");
 
 // const account = process.env.AZURE_ACCOUNT_NAME;
 // const { BlobServiceClient } = require("@azure/storage-blob");
@@ -39,35 +40,23 @@ const { sendErrors } = require("../utils/handleReqErrors");
 // );
 
 let post_new_subject = (req, res) => {
-  let { faculty, subject, reason, AcademyId, facultyId } = req.body;
-
   let date = new Date();
-
+  req.body["date"] = date;
   marom_db(async (config) => {
-    const sql = require("mssql");
+    try {
+      let poolConnection = await sql.connect(config);
+      const request = await poolConnection.request();
+      Object.keys(req.body).map((key) => {
+        request.input(key, NewSubjectReq[key], req.body[key]);
+      });
 
-    let poolConnection = await sql.connect(config);
-    if (poolConnection) {
-      let resultSet = poolConnection.request().query(
-        `
-                    INSERT INTO "NewTutorSubject"(faculty, subject, date, AcademyId, reason, facultyID)
-                    VALUES ('${faculty}', '${subject}', '${date}', '${AcademyId}', '${reason}', '${facultyId}')
-                    `
+      const { recordset } = await request.query(
+        parameterizedInsertQuery("NewSubjectReq", req.body).query
       );
 
-      resultSet
-        .then((result) => {
-          result.rowsAffected[0] === 1
-            ? res.send({ bool: true, mssg: "Data Was Successfully Saved" })
-            : res.send({
-              bool: false,
-              mssg: "Data Was Not Successfully Saved",
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.send({ bool: false, mssg: "Data Was Not Successfully Saved" });
-        });
+      res.status(200).send(recordset?.[0]);
+    } catch (err) {
+      sendErrors(err, res);
     }
   });
 };
@@ -98,9 +87,9 @@ const subject_already_exist = async (req, res) => {
 
       if (poolConnection) {
         const result = await poolConnection.request().query(
-          // find('NewTutorSubject', req.params, 'And', { subject: 'varchar' })
+          // find('NewSubjectReq', req.params, 'And', { subject: 'varchar' })
           `SELECT *
-                    FROM NewTutorSubject
+                    FROM NewSubjectReq
                     WHERE LOWER(cast(subject as varchar)) = LOWER('${req.params.subject}');`
         );
 
@@ -564,7 +553,6 @@ let upload_tutor_rates = (req, res) => {
   let { id, faculty, subject } = req.params;
   marom_db(async (config) => {
     try {
-
       let poolConnection = await sql.connect(config);
       if (poolConnection) {
         const existed = await poolConnection.request().query(
@@ -891,10 +879,12 @@ let faculties = (req, res) => {
     if (poolConnection) {
       poolConnection
         .request()
-        .query(`SELECT f.Id, f.Faculty, COUNT(s.SubjectName) AS subjectCount
+        .query(
+          `SELECT f.Id, f.Faculty, COUNT(s.SubjectName) AS subjectCount
             FROM faculty f
             JOIN subjects s ON f.Id = s.FacultyId
-            GROUP BY f.Id, f.Faculty; `)
+            GROUP BY f.Id, f.Faculty; `
+        )
         .then((result) => {
           res.status(200).send(result.recordset);
         })
@@ -959,7 +949,8 @@ let get_tutor_setup = (req, res) => {
             Status,
             CreatedAT
       
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${
+            req.query[Object.keys(req.query)[0]]
           }'`
         );
         let record = result.recordset?.[0] || {};
@@ -970,7 +961,6 @@ let get_tutor_setup = (req, res) => {
           let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
           record = { ...record, Email: recordset?.[0]?.email || "" };
           if (record.GMT) {
-
             const match = record.GMT.match(/^([+-]\d{2})(?::(\d{2}))?$/);
             if (match) {
               const hours = parseInt(match[1], 10);
@@ -1011,7 +1001,8 @@ let get_tutor_calender_details = (req, res) => {
             disableHoursRange,
             disableColor
 
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${
+            req.query[Object.keys(req.query)[0]]
           }'`
         );
         res.status(200).send(recordset);
@@ -1072,16 +1063,17 @@ let getDocFromEducationTable = (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
-        const { recordset } = await poolConnection.request().query(`SELECT ${req.query.docType === "certificate" ? "CertFileName" : "DegFileName"} 
+        const { recordset } = await poolConnection.request().query(`SELECT ${
+          req.query.docType === "certificate" ? "CertFileName" : "DegFileName"
+        } 
           FROM Education1 WHERE AcademyId = '${req.params.id}'`);
         res.status(200).send(recordset);
       }
-    }
-    catch (err) {
+    } catch (err) {
       sendErrors(err, res);
     }
-  })
-}
+  });
+};
 
 //related to booking slot and student section
 let storeEvents = (req, res) => {
@@ -1226,12 +1218,11 @@ const postTutorAtSignup = async (req, res) => {
         const result = await request.query(query);
         res.status(200).send(result.recordset);
       }
-    }
-    catch (err) {
+    } catch (err) {
       sendErrors(err, res);
     }
-  })
-}
+  });
+};
 
 // const post_tutor_setup = (req, res) => {
 //   marom_db(async (config) => {
