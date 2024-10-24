@@ -58,7 +58,7 @@ const sendEmail = async (to, subject, template, context) => {
 async function sendTemplatedEmail(req, res) {
     try {
         let { email, messages, files, subject } = req.body
-        let data = await sendEmail(email, "New Message From Asiya", 'newMessage', {
+        let data = await sendEmail(email, `New Message From ${messages[0].screenName}`, 'newMessage', {
             messages
         });
         res.status(200).send(data)
