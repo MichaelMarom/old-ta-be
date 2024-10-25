@@ -87,28 +87,27 @@ const subject_already_exist = async (req, res) => {
 
       if (poolConnection) {
         const result = await poolConnection.request().query(
-          // find('NewSubjectReq', req.params, 'And', { subject: 'varchar' })
-          `SELECT *
-                    FROM NewSubjectReq
-                    WHERE LOWER(cast(subject as varchar)) = LOWER('${req.params.subject}');`
+          `SELECT * FROM NewSubjectReq
+            WHERE LOWER(cast(subject as varchar)) = LOWER('${req.params.subject}');`
         );
 
         if (result.recordset.length) {
           return res.status(200).send({
-            message: "request exist",
+            message: "Subject Exists In 'New Subject Requests'",
+            newSubject: 1,
             faculties: result.recordset.map((subject) => subject.faculty),
           });
         } else {
           const result = await poolConnection.request().query(
-            // find('Subjects', { SubjectName: req.params.subject }, 'AND', { SubjectName: 'varchar' })
             `SELECT *
-                        FROM Subjects as s join Faculty as f on
-                        s.FacultyId = f.id
-                        WHERE LOWER(cast(SubjectName as varchar)) = LOWER('${req.params.subject}');`
+              FROM Subjects as s join Faculty as f on
+              s.FacultyId = f.id
+              WHERE LOWER(cast(SubjectName as varchar)) = LOWER('${req.params.subject}');`
           );
           if (result.recordset.length) {
             return res.status(200).send({
-              message: "subject exist",
+              message: "Subject Exists in 'Subjects'",
+              newSubject: 0,
               faculties: result.recordset.map((subject) => subject.Faculty),
             });
           } else {
@@ -949,8 +948,7 @@ let get_tutor_setup = (req, res) => {
             Status,
             CreatedAT
       
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${
-            req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
           }'`
         );
         let record = result.recordset?.[0] || {};
@@ -1001,8 +999,7 @@ let get_tutor_calender_details = (req, res) => {
             disableHoursRange,
             disableColor
 
-          from TutorSetup where ${Object.keys(req.query)[0]} = '${
-            req.query[Object.keys(req.query)[0]]
+          from TutorSetup where ${Object.keys(req.query)[0]} = '${req.query[Object.keys(req.query)[0]]
           }'`
         );
         res.status(200).send(recordset);
@@ -1063,9 +1060,8 @@ let getDocFromEducationTable = (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
-        const { recordset } = await poolConnection.request().query(`SELECT ${
-          req.query.docType === "certificate" ? "CertFileName" : "DegFileName"
-        } 
+        const { recordset } = await poolConnection.request().query(`SELECT ${req.query.docType === "certificate" ? "CertFileName" : "DegFileName"
+          } 
           FROM Education1 WHERE AcademyId = '${req.params.id}'`);
         res.status(200).send(recordset);
       }
