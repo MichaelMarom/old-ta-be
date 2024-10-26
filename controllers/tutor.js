@@ -768,25 +768,25 @@ const get_faculty_subjects = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       const { recordset } = await poolConnection.request().query(` SELECT 
-    s.Id, s.SubjectName, s.FacultyId,
-    COUNT(DISTINCT CAST(ts_filtered.AcademyId AS NVARCHAR(255))) AS tutor_count
-    FROM 
-        Subjects s
-    LEFT JOIN 
-        (
-            SELECT 
-                DISTINCT cast (sr.subject as varchar) as subject, ts.AcademyId as AcademyId
-            FROM 
-                SubjectRates sr
-            LEFT JOIN 
-                TutorSetup ts ON CAST(sr.AcademyId AS VARCHAR) = CAST(ts.AcademyId AS VARCHAR)
-            WHERE 
-                ts.Status = 'active' and cast(sr.faculty as varchar) = '${facultyId}'
-        ) ts_filtered ON CAST(s.SubjectName AS VARCHAR) = CAST(ts_filtered.subject AS VARCHAR)
-    WHERE 
-        s.FacultyId = '${facultyId}'
-    GROUP BY  
-        s.Id, s.SubjectName, s.FacultyId; `);
+        s.Id, s.SubjectName, s.FacultyId,
+        COUNT(DISTINCT CAST(ts_filtered.AcademyId AS NVARCHAR(255))) AS tutor_count
+        FROM 
+            Subjects s
+        LEFT JOIN 
+            (
+                SELECT 
+                    DISTINCT cast (sr.subject as varchar) as subject, ts.AcademyId as AcademyId
+                FROM 
+                    SubjectRates sr
+                LEFT JOIN 
+                    TutorSetup ts ON CAST(sr.AcademyId AS VARCHAR) = CAST(ts.AcademyId AS VARCHAR)
+                WHERE 
+                    ts.Status = 'active' and cast(sr.faculty as varchar) = '${facultyId}'
+            ) ts_filtered ON CAST(s.SubjectName AS VARCHAR) = CAST(ts_filtered.subject AS VARCHAR)
+        WHERE 
+            s.FacultyId = '${facultyId}'
+        GROUP BY  
+            s.Id, s.SubjectName, s.FacultyId `);
 
       res.status(200).send(recordset);
     } catch (err) {

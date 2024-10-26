@@ -441,13 +441,17 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 5 as  DiscountHours,
                 
                 CAL.CodeApplied,
-                CAL.tutorMotivateId
+                CAL.tutorMotivateId,
+
+                ch.ChatID
             FROM 
                 SubjectRates as SR 
             JOIN 
                 TutorSetup as TS ON cast(TS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
             LEFT JOIN 
                 Discounts as DS ON cast(DS.AcademyId as varchar(max)) = cast(SR.AcademyId as varchar(max))
+            LEFT JOIN
+                Chat as ch on ch.User2ID = cast(SR.AcademyId as varchar(max)) and ch.User1ID = '${studentId}'
             JOIN 
                 Education1 as edu ON cast(TS.AcademyId as varchar(max)) = cast(edu.AcademyId as varchar(max))
             LEFT JOIN 
@@ -459,14 +463,8 @@ const get_tutor_by_subject_faculty = async (req, res) => {
             WHERE 
                 CONVERT(VARCHAR, SR.faculty) = '${facultyId}' 
                 AND TS.Status = 'active' 
-                AND CONVERT(VARCHAR, SR.subject) = '${subjectName}'   `);
+                AND cast( SR.subject as varchar(max)) = '${subjectName}'`);
 
-        // edu.EducationalLevelExperience,
-        // edu.EducationalLevel,
-        // edu.Certificate,
-        // edu.CertificateExpiration,
-        // edu.CertificateState,
-        // edu.CertCountry,
 
         res.status(200).send(subjects.recordset);
       }
