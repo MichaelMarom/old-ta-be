@@ -4,6 +4,15 @@ const { path, fs } = require("../modules");
 const smsClient = require("./sms");
 const axios = require("axios");
 
+const twilio = require('twilio');
+
+// Twilio credentials from your Twilio Console
+const accountSid = process.env.ACC_SID;
+const authToken = process.env.AUTH_TOKEN;
+
+const client = new twilio(accountSid, authToken);
+
+
 // async function sendingSMS(req, res) {
 //   try {
 //     // const numbers = req.body.numbers;
@@ -254,6 +263,23 @@ const sendSMS = async (req, res) => {
   }
 };
 
+
+const twillio_sms = (req, res)=>{
+  let number = "+923343165003";  
+  client.messages
+    .create({
+      body: "Hello Michale from twillio code",
+      from: process.env.TWILLIO_NUM,
+      to: number
+    })
+    .then((message) => {
+      res.status(200).json({ success: true, messageId: message.sid });
+    })
+    .catch((error) => {
+      res.status(500).json({ success: false, error: error.message });
+    });
+}
+
 module.exports = {
-  sendingSMS: sendSMS,
+  sendingSMS: twillio_sms,
 };
