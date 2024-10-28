@@ -150,8 +150,8 @@ io.on('connection', socket => {
         io.emit("online", id);
     })
 
-    socket.on('offline', (id) => {
-        io.emit("offline", id);
+    socket.on('offline', (id, role) => {
+        io.emit("offline", id, role);
     })
 
     //disconnect
