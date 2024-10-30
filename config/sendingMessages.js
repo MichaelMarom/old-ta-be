@@ -265,7 +265,7 @@ const sendSMS = async (req, res) => {
 
 
 const twillio_sms = (req, res)=>{
-  let number = "+923343165003";  
+  let number = "+15166088464";  
   client.messages
     .create({
       body: "Hello Michale from twillio code",
@@ -273,7 +273,7 @@ const twillio_sms = (req, res)=>{
       to: number
     })
     .then((message) => {
-      res.status(200).json({ success: true, messageId: message.sid });
+      res.status(200).json({ success: true, messageId: message });
     })
     .catch((error) => {
       res.status(500).json({ success: false, error: error.message });
