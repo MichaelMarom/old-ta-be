@@ -76,6 +76,7 @@ const update = (
       returnUpdated ? `SELECT * FROM  ${tableName}  WHERE  ${whereClause};` : ``
     }
     `;
+    console.log(query)
   return query;
 };
 

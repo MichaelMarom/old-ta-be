@@ -21,6 +21,7 @@ const { sendErrors } = require("../utils/handleReqErrors.js");
 const StudentSetup1 = require("../schema/student/StudentSetup.js");
 const Lessons = require("../schema/common/Lessons.js");
 const StudentBank = require("../schema/student/StudentBank.js");
+const CodeApplicationLogs = require("../schema/common/CodeApplicationLogs.js");
 
 const executeQuery = async (query, res) => {
   try {
@@ -458,7 +459,8 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 CodeApplicationLogs  as CAL ON 
                     cast(CAL.tutorId as varchar(max)) = cast(TS.AcademyId as varchar(max)) and
                     DS.id = CAL.tutorMotivateId and
-                    cast(CAL.studentId as varchar)= '${studentId}' 
+                    cast(CAL.studentId as varchar)= '${studentId}' and
+                    DS.CodeSubject = '${subjectName}'
 
             WHERE 
                 CONVERT(VARCHAR, SR.faculty) = '${facultyId}' 
@@ -1241,33 +1243,43 @@ const set_code_applied = async (req, res) => {
           );
         if (!updatedTutorRateRecord.length)
           throw new Error("Code does not exist!");
-        const { recordset: updatedStudenTutorCodeStatus } = await poolConnection
-          .request()
-          .query(
-            update(
-              "CodeApplicationLogs",
-              { codeApplied: true },
-              {
-                tutorId: req.params.tutorId,
-                studentId: req.params.studentId,
-                tutorMotivateId: tutorRateRecord[0].SID,
-              }
-            )
-          );
 
-        if (!updatedStudenTutorCodeStatus.length) {
-          await poolConnection.request().query(
-            insert("CodeApplicationLogs", {
+
+
+        const request = await poolConnection.request();
+
+        request.input("codeApplied", CodeApplicationLogs["codeApplied"], true)
+        request.input("tutorId", CodeApplicationLogs["tutorId"], req.params.tutorId)
+        request.input("studentId", CodeApplicationLogs["studentId"], req.params.studentId)
+        request.input("tutorMotivateId", CodeApplicationLogs["tutorMotivateId"], tutorRateRecord[0].id)
+
+
+
+        //TODO: DO NOT UPDATING already existing tutormotivateid row< add another row with same tutormotivateiD IN CODEPPLICATIONLOGS
+        const { rowsAffected } = await request.query(parameteriedUpdateQuery("CodeApplicationLogs", { codeApplied: true },
+          {
+            tutorId: req.params.tutorId,
+            studentId: req.params.studentId,
+            tutorMotivateId: tutorRateRecord[0].id,
+          }
+          , {}, false
+        ).query)
+        console.log(req.params, rowsAffected)
+
+        if (!rowsAffected[0]) {
+          await request.query(
+            parameterizedInsertQuery("CodeApplicationLogs", {
               codeApplied: true,
               tutorId: req.params.tutorId,
               studentId: req.params.studentId,
-              tutorMotivateId: tutorRateRecord[0].SID,
-            })
+              tutorMotivateId: tutorRateRecord[0].id,
+            }).query
           );
         }
+
         res
           .status(200)
-          .send({ message: "Code applied status changed succesfully" });
+          .send({ message: "Code applied status changed succesfully", rowsAffected: rowsAffected[0] });
       }
     } catch (err) {
       sendErrors(err, res);
