@@ -29,6 +29,7 @@ const Discounts = require("../schema/tutor/Discounts");
 
 const { sendErrors } = require("../utils/handleReqErrors");
 const NewSubjectReq = require("../schema/admin/NewSubjectReq");
+const SubjectRate = require("../schema/tutor/SubjectRates");
 
 // const account = process.env.AZURE_ACCOUNT_NAME;
 // const { BlobServiceClient } = require("@azure/storage-blob");
@@ -602,6 +603,25 @@ let upload_tutor_rates = (req, res) => {
         }
         res.status(200).send(result.recordset);
       }
+    } catch (err) {
+      console.log(err);
+      sendErrors(err, res);
+    }
+  });
+};
+
+let update_subject_rate = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config)
+    const request = poolConnection.request();
+    Object.keys({...req.body, ...req.params}).map(key=>{
+      request.input( key, SubjectRate[key], {...req.body, ...req.params}[key])
+    })
+
+    const result = await request.query(parameteriedUpdateQuery("SubjectRates", req.body,req.params, {}, false ).query);
+    res.status(200).send(result.recordset);
+
     } catch (err) {
       console.log(err);
       sendErrors(err, res);
@@ -2150,6 +2170,7 @@ module.exports = {
   get_tutor_ads,
   dynamically_post_edu_info,
   remove_subject_rates,
+  update_subject_rate,
   subject_already_exist,
   update_discount_form,
   last_pay_day,

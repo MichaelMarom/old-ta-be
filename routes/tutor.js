@@ -49,6 +49,7 @@ const {
   update_discount_form,
   postTutorAtSignup,
   getDocFromEducationTable,
+  update_subject_rate,
 } = require("../controllers/tutor");
 
 const {
@@ -104,6 +105,16 @@ TUTOR_ROUTES.post(
   verifyToken,
   upload_tutor_rates
 );
+
+
+TUTOR_ROUTES.put(
+  "/tutor/rates/:SID",
+  parser,
+  verifyToken,
+  update_subject_rate
+);
+
+
 TUTOR_ROUTES.delete(
   "/subject-rate/:id",
   parser,
