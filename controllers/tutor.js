@@ -1858,13 +1858,12 @@ const put_ad = async (req, res) => {
 const get_tutor_against_code = async (req, res) => {
   marom_db(async (config) => {
     try {
-      const sql = require("mssql");
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
         const result = await poolConnection
           .request()
           .query(
-            findByAnyIdColumn("Discounts", { DiscountCode: req.params.code })
+            findByAnyIdColumn("SubjectRates", { DiscountCode: req.params.code })
           );
 
         result.recordset.length

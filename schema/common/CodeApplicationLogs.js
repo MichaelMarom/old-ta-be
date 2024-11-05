@@ -6,7 +6,7 @@ const CodeApplicationLogs = {
     studentId: sql.VarChar(200),
     codeApplied: sql.Bit,
     date: sql.DateTime,
-    tutorMotivateId: sql.UniqueIdentifier,
+    SubjectRateCodeRef: sql.Int,
 
 };
 

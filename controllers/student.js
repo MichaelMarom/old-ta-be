@@ -442,7 +442,7 @@ const get_tutor_by_subject_faculty = async (req, res) => {
                 5 as  DiscountHours,
                 
                 CAL.CodeApplied,
-                CAL.tutorMotivateId,
+                CAL.SubjectRateCodeRef,
 
                 ch.ChatID
             FROM 
@@ -458,9 +458,9 @@ const get_tutor_by_subject_faculty = async (req, res) => {
             LEFT JOIN 
                 CodeApplicationLogs  as CAL ON 
                     cast(CAL.tutorId as varchar(max)) = cast(TS.AcademyId as varchar(max)) and
-                    DS.id = CAL.tutorMotivateId and
+                    SR.SID = CAL.SubjectRateCodeRef and
                     cast(CAL.studentId as varchar)= '${studentId}' and
-                    DS.CodeSubject = '${subjectName}'
+                   cast( SR.subject as varchar(max)) = '${subjectName}'
 
             WHERE 
                 CONVERT(VARCHAR, SR.faculty) = '${facultyId}' 
@@ -1221,23 +1221,23 @@ const set_code_applied = async (req, res) => {
     try {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
-        const { recordset: tutorRateRecord } = await poolConnection
-          .request()
-          .query(
-            find("Discounts", { AcademyId: req.params.tutorId }, "AND", {
-              AcademyId: "varchar",
-            })
-          );
-        if (tutorRateRecord[0].CodeStatus === "used")
-          throw new Error("Code Already Used!");
+        // const { recordset: tutorRateRecord } = await poolConnection
+        //   .request()
+        //   .query(
+        //     find("SubjectRates", { AcademyId: req.params.tutorId }, "AND", {
+        //       AcademyId: "varchar",
+        //     })
+        //   );
+        // if (tutorRateRecord[0].CodeStatus === "used")
+        //   throw new Error("Code Already Used!");
 
         const { recordset: updatedTutorRateRecord } = await poolConnection
           .request()
           .query(
             update(
-              "Discounts",
+              "SubjectRates",
               { CodeStatus: "used" },
-              { AcademyId: req.params.tutorId },
+              { AcademyId: req.params.tutorId, SID: req.body.params.SubjectRateCodeRef },
               { AcademyId: "varchar" }
             )
           );
@@ -1251,35 +1251,31 @@ const set_code_applied = async (req, res) => {
         request.input("codeApplied", CodeApplicationLogs["codeApplied"], true)
         request.input("tutorId", CodeApplicationLogs["tutorId"], req.params.tutorId)
         request.input("studentId", CodeApplicationLogs["studentId"], req.params.studentId)
-        request.input("tutorMotivateId", CodeApplicationLogs["tutorMotivateId"], tutorRateRecord[0].id)
+        request.input("SubjectRateCodeRef", CodeApplicationLogs["SubjectRateCodeRef"], req.body.params.SubjectRateCodeRef)
 
 
+        // const { rowsAffected } = await request.query(parameteriedUpdateQuery("CodeApplicationLogs", { codeApplied: true },
+        //   {
+        //     tutorId: req.params.tutorId,
+        //     studentId: req.params.studentId,
+        //     SubjectRateCodeRef: req.body.params.SubjectRateCodeRef,
+        //   }
+        //   , {}, false
+        // ).query)
+        // console.log(req.params, rowsAffected)
 
-        //TODO: DO NOT UPDATING already existing tutormotivateid row< add another row with same tutormotivateiD IN CODEPPLICATIONLOGS
-        const { rowsAffected } = await request.query(parameteriedUpdateQuery("CodeApplicationLogs", { codeApplied: true },
-          {
-            tutorId: req.params.tutorId,
-            studentId: req.params.studentId,
-            tutorMotivateId: tutorRateRecord[0].id,
-          }
-          , {}, false
-        ).query)
-        console.log(req.params, rowsAffected)
-
-        if (!rowsAffected[0]) {
           await request.query(
             parameterizedInsertQuery("CodeApplicationLogs", {
               codeApplied: true,
               tutorId: req.params.tutorId,
               studentId: req.params.studentId,
-              tutorMotivateId: tutorRateRecord[0].id,
+              SubjectRateCodeRef: req.body.params.SubjectRateCodeRef,
             }).query
           );
-        }
 
         res
           .status(200)
-          .send({ message: "Code applied status changed succesfully", rowsAffected: rowsAffected[0] });
+          .send({ message: "Code applied status changed succesfully"});
       }
     } catch (err) {
       sendErrors(err, res);
