@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const { sendErrors } = require('../utils/handleReqErrors');
 const fs = require('fs');
 const path = require('path');
+const NodeMailer_Transporter = require('./email-config');
 
 
 
@@ -10,7 +11,7 @@ async function sendEmail(email, message, subject) {
         host: 'smtp.ionos.com',
         port: 587,
         secure: false,
-        
+
         auth: {
             user: process.env.ADMIN_EMAIL_SENDER_USER,
             pass: process.env.ADMIN_EMAIL_SENDER_PASS
@@ -79,4 +80,47 @@ async function sendMultipleEmails(req, res) {
     }
 }
 
-module.exports = sendMultipleEmails
+
+const getEmailTemplate = () => {
+    return new Promise((resolve, reject) => {
+        const filePath = path.join(__dirname, '../templates', 'tutor-marketing', 'marketing.html');
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+};
+
+async function sendTemplatedEmail(req, res) {
+    try {
+        const { emails, subject } = req.body;
+
+        // Read the Marketing HTML template
+        const emailTemplate = await getEmailTemplate();
+        if (!emailTemplate) throw new Error('Failed to read marketing HTML template');
+        if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
+
+        // Compose the email
+        const mailOptions = {
+            from: process.env.ADMIN_EMAIL_SENDER_USER,  // Your email
+            to: emails.join(', '),         // Send to multiple emails
+            subject: subject,              // Subject passed from frontend
+            html: emailTemplate,           // Use the HTML template
+        };
+
+        // Send email using nodemailer
+        NodeMailer_Transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return sendErrors(error, res);
+            }
+            res.status(200).json({ message: 'Email sent successfully', info });
+        });
+    } catch (err) {
+       sendErrors(err, res)
+    }
+}
+
+module.exports = { sendMultipleEmails, sendTemplatedEmail }

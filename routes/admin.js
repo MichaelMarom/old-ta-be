@@ -1,6 +1,6 @@
 const sendTemplatedEmail = require("../config/sendTemplateEmail");
-const sendMultipleEmails = require("../config/sendingEmails");
 const { sendingSMS } = require("../config/sendingMessages");
+const {sendMultipleEmails, sendTemplatedEmail:marketingTemplatedEmail} = require("../config/sendingEmails")
 const {
   get_tutor_data,
   set_tutor_status,
@@ -76,6 +76,9 @@ ADMIN_ROUTES.post(
 ADMIN_ROUTES.post("/admin/store-terms", parser, verifyToken, postTerms);
 ADMIN_ROUTES.post("/send-message", parser, verifyToken, sendingSMS);
 ADMIN_ROUTES.post("/send-email", parser, verifyToken, sendMultipleEmails);
+ADMIN_ROUTES.post("/send-email/tutor/template/marketing", parser, verifyToken,marketingTemplatedEmail);
+
+
 ADMIN_ROUTES.post("/send-email/chat", parser, verifyToken, sendTemplatedEmail);
 
 ADMIN_ROUTES.post("/admin/email-template", parser, verifyToken, api_save_email_template);
