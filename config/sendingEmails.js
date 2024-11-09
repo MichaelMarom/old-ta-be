@@ -96,11 +96,8 @@ const getEmailTemplate = () => {
 
 async function sendTemplatedEmail(req, res) {
     try {
-        const { emails, subject } = req.body;
-
-        // Read the Marketing HTML template
-        const emailTemplate = await getEmailTemplate();
-        if (!emailTemplate) throw new Error('Failed to read marketing HTML template');
+        const { emails, subject, htmlTemplate } = req.body;
+        if (!htmlTemplate) throw new Error('Failed to open email template');
         if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
 
         // Compose the email
@@ -108,7 +105,7 @@ async function sendTemplatedEmail(req, res) {
             from: process.env.ADMIN_EMAIL_SENDER_USER,  // Your email
             to: emails.join(', '),         // Send to multiple emails
             subject: subject,              // Subject passed from frontend
-            html: emailTemplate,           // Use the HTML template
+            html: htmlTemplate,         // Use the decoded HTML template
         };
 
         // Send email using nodemailer
