@@ -144,9 +144,7 @@ const generateAcademyId = (fname, lname, mname = null) => {
 };
 const generateScreenName = (fname, lname, mname = null) => {
   return mname?.length > 0
-    ? `${capitalizeFirstLetter(fname)} ${capitalizeFirstLetter(
-        mname[0]
-      )}. ${capitalizeFirstLetter(lname[0])}`
+    ? `${capitalizeFirstLetter(fname)} ${capitalizeFirstLetter(mname[0])}. ${capitalizeFirstLetter(lname[0])}`
     : `${capitalizeFirstLetter(fname)}. ${capitalizeFirstLetter(lname[0])}`;
 };
 

@@ -1254,16 +1254,16 @@ const set_code_applied = async (req, res) => {
         request.input("SubjectRateCodeRef", CodeApplicationLogs["SubjectRateCodeRef"], req.body.params.SubjectRateCodeRef)
 
 
-        // const { rowsAffected } = await request.query(parameteriedUpdateQuery("CodeApplicationLogs", { codeApplied: true },
-        //   {
-        //     tutorId: req.params.tutorId,
-        //     studentId: req.params.studentId,
-        //     SubjectRateCodeRef: req.body.params.SubjectRateCodeRef,
-        //   }
-        //   , {}, false
-        // ).query)
-        // console.log(req.params, rowsAffected)
+        const { rowsAffected } = await request.query(parameteriedUpdateQuery("CodeApplicationLogs", { codeApplied: true },
+          {
+            tutorId: req.params.tutorId,
+            studentId: req.params.studentId,
+            SubjectRateCodeRef: req.body.params.SubjectRateCodeRef,
+          }
+          , {}, false
+        ).query)
 
+        if(!rowsAffected[0])
           await request.query(
             parameterizedInsertQuery("CodeApplicationLogs", {
               codeApplied: true,
@@ -1275,7 +1275,7 @@ const set_code_applied = async (req, res) => {
 
         res
           .status(200)
-          .send({ message: "Code applied status changed succesfully"});
+          .send({ message: "Code applied succesfully"});
       }
     } catch (err) {
       sendErrors(err, res);
