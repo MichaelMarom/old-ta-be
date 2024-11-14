@@ -56,7 +56,7 @@ const {
   express,
   parser,
 } = require("../modules");
-const { uploadTutorDocs, recordVideoController } = require("../controllers/azureUploads");
+const { uploadTutorDocs, recordVideoController, uploadVideoWOExec } = require("../controllers/azureUploads");
 
 const TUTOR_ROUTES = express.Router();
 
@@ -168,9 +168,9 @@ TUTOR_ROUTES.get("/collab/:sessionId", verifyToken, getSessionDetailById);
 
 TUTOR_ROUTES.post(
   "/tutor/setup/record",
-  upload.single("file"),
+  // upload.single("file"),
   verifyToken,
-  recordVideoController
+  uploadVideoWOExec
 );
 TUTOR_ROUTES.post("/tutor/setup/doc", verifyToken, uploadTutorDocs);
 

@@ -14,6 +14,10 @@ const {
   deleteFolderContents,
   deleteBlobWithName,
 } = require("../utils/generalHelperFunctions");
+
+const { PassThrough } = require("stream");
+const { socket } = require('../modules')
+
 const { AZURE_CONT_BLOB_CODES } = require("../constants/common");
 
 const blobServiceClient = new BlobServiceClient(
@@ -46,9 +50,8 @@ const uploadImageController = async (req, res) => {
     deleteFolderContents(folderPath);
     res.status(200).send({
       message: "Image uploaded successfully",
-      url: `https://${account}.blob.core.windows.net/${
-        AZURE_CONT_BLOB_CODES[req.body.container]
-      }/${blobName}`,
+      url: `https://${account}.blob.core.windows.net/${AZURE_CONT_BLOB_CODES[req.body.container]
+        }/${blobName}`,
     });
   } catch (err) {
     console.error(err);
@@ -78,9 +81,8 @@ const uploadTutorDocs = async (req, res) => {
       const containerClient = blobServiceClient.getContainerClient(
         AZURE_CONT_BLOB_CODES[containerName]
       );
-      const fileName = `${userId}-${fileType}-${new Date().getTime()}-${
-        file.originalFilename
-      }`;
+      const fileName = `${userId}-${fileType}-${new Date().getTime()}-${file.originalFilename
+        }`;
       const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
       !!existingFileName &&
@@ -104,6 +106,8 @@ const uploadTutorDocs = async (req, res) => {
 const recordVideoController = async (req, res) => {
   try {
     const { user_id, upload_type } = req.body;
+    const io = req.app.get("socketio");
+
     if (!req.file || !req.file.mimetype.startsWith("video/")) {
       return sendErrors({ message: "Please upload a video file" }, res);
     }
@@ -112,10 +116,9 @@ const recordVideoController = async (req, res) => {
       return sendErrors({ message: "Please provide a user id" }, res);
     }
 
-    // Mirror the video horizontally using ffmpeg
-    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.${
-      req.file.mimetype.split("/")[1]
-    }`;
+    // Mirror the video horizontally using ffmpeg if needed
+    const outputFileName = `interviews/${user_id}-${new Date().getTime()}.${req.file.mimetype.split("/")[1]
+      }`;
 
     let command;
     if (upload_type === "record") {
@@ -124,7 +127,7 @@ const recordVideoController = async (req, res) => {
       command = `ffmpeg -y -i ${req.file.path} ${outputFileName}`;
     }
 
-    exec(command, (error, stdout, stderr) => {
+    exec(command, async (error, stdout, stderr) => {
       if (error) {
         console.error(error);
         return res.status(500).send({
@@ -133,35 +136,61 @@ const recordVideoController = async (req, res) => {
         });
       }
 
-      //delete the non-flipped video
-      // TODO: del for windows (this is only for test) typical prod servers won't run on windows but linux
-      // const del_command = `rm ${req.file.path}` //for mac and linux
-      const del_command = `${
-        process.env.NODE_ENV === "production" ? "rm" : "del"
-      } ${req.file.path}`;
+      // Delete the original non-flipped video
+      const del_command = `${process.env.NODE_ENV === "production" ? "rm" : "del"
+        } ${req.file.path}`;
+
       exec(del_command, async (error, stdout, stderr) => {
         if (error) {
           console.error(error);
           return res.status(500).send({ reason: error.message });
         }
 
-        const containerClientForTutorVideos =
-          blobServiceClient.getContainerClient(
-            AZURE_CONT_BLOB_CODES[req.body.containerName]
-          );
-        // use to delete old videos with same user_id prefix
+        const containerClientForTutorVideos = blobServiceClient.getContainerClient(
+          AZURE_CONT_BLOB_CODES[req.body.containerName]
+        );
+
+        // Use to delete old videos with the same user_id prefix
         await deleteBlobsWithPrefix(containerClientForTutorVideos, user_id);
 
+        // Set up the Azure Blob client and create a stream
         const blobClient = containerClientForTutorVideos.getBlockBlobClient(
-          `${user_id}-${new Date().getTime()}.${
-            req.file.mimetype.split("/")[1]
+          `${user_id}-${new Date().getTime()}.${req.file.mimetype.split("/")[1]
           }`
         );
-        const url = await blobClient.uploadFile(outputFileName);
+
+        const fileSize = fs.statSync(outputFileName).size;
+        const uploadStream = fs.createReadStream(outputFileName);
+        const progressStream = new PassThrough();
+
+        // WebSocket or Socket.IO can be used here to send progress updates
+        // Assuming `socket` is the connected socket from the frontend
+
+        let uploadedBytes = 0;
+        progressStream.on("data", (chunk) => {
+          uploadedBytes += chunk.length;
+          const progress = Math.round((uploadedBytes / fileSize) * 100);
+          io.emit("uploadProgress", { progress });
+        });
+
+        // Pipe the upload through progressStream for tracking
+        uploadStream.pipe(progressStream);
+
+        // Upload to Azure with progress tracking
+        await blobClient.uploadStream(progressStream, undefined, undefined, {
+          onProgress: (progress) => {
+            io.emit("uploadProgress", {
+              progress: Math.round((progress.loadedBytes / fileSize) * 100),
+            });
+          },
+        });
+
+        // Clean up local files
         const folderPath = path.join(__dirname, "../interviews");
         await deleteFolderContents(folderPath);
+
         res.send({
-          message: "Video flipped successfully",
+          message: "Video flipped and uploaded successfully",
           url: blobClient.url.split("?")[0],
         });
       });
@@ -170,6 +199,92 @@ const recordVideoController = async (req, res) => {
     sendErrors(err, res);
   }
 };
+
+
+
+const uploadVideoWOExec = async (req, res) => {
+  const form = new formidable.IncomingForm({
+    // multiples: false,
+    // keepExtensions: true, // Keep file extensions
+    // uploadDir: './uploads' // Optional: Temp upload directory
+  });
+
+  const io = req.app.get("socketio");
+
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      res.status(500).send('Error parsing the file');
+      return;
+    }
+
+    const file = files.file[0];
+    const filename = `${fields.user_id[0]}-${new Date().getTime()}.${files.file[0].mimetype.split("/")[1]}`;
+
+    uploadToAzure(file, filename, io,fields.containerName[0] )
+      .then((result) => {
+        io.emit('uploadComplete', { message: 'Upload complete' });
+      
+        res.send({
+          message: "Video flipped and uploaded successfully",
+          url: result.url.split("?")[0],
+        });
+      })
+      .catch((error) => {
+        sendErrors(error, res)
+      });
+  });
+}
+
+async function uploadToAzure(file, filename, io, containerName) {
+  const containerClientForTutorVideos = blobServiceClient.getContainerClient(
+    AZURE_CONT_BLOB_CODES[containerName]
+  );
+
+  const blobClient = containerClientForTutorVideos.getBlockBlobClient(
+    filename
+  );
+  // await blobClient.uploadStream(file, undefined, undefined, {
+  //   onProgress: (progress) => {
+  //     io.emit("uploadProgress", {
+  //       progress: Math.round((progress.loadedBytes / fileSize) * 100),
+  //     });
+  //   },
+  // });
+
+  const filePath = file.filepath; // Assuming `file` has a `filepath` attribute from Formidable
+  const fileSize = fs.statSync(filePath).size;
+
+  const uploadStream = fs.createReadStream(filePath);
+  const progressStream = new PassThrough();
+
+  // WebSocket or Socket.IO can be used here to send progress updates
+  // Assuming `socket` is the connected socket from the frontend
+
+  let uploadedBytes = 0;
+  progressStream.on("data", (chunk) => {
+    uploadedBytes += chunk.length;
+    const progress = Math.round((uploadedBytes / fileSize) * 100);
+    io.emit("uploadProgress", { progress });
+  });
+
+  // Pipe the upload through progressStream for tracking
+  uploadStream.pipe(progressStream);
+
+  // Upload to Azure with progress tracking
+  await blobClient.uploadStream(progressStream, undefined, undefined, {
+    onProgress: (progress) => {
+      io.emit("uploadProgress", {
+        progress: Math.round((progress.loadedBytes / fileSize) * 100),
+      });
+    },
+  });
+
+  return blobClient
+
+}
+
+
 
 const getVideo = async (req, res) => {
   try {
@@ -188,4 +303,5 @@ module.exports = {
   recordVideoController,
   uploadImageController,
   uploadTutorDocs,
+  uploadVideoWOExec
 };

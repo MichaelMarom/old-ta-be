@@ -76,6 +76,7 @@ const io = socket(server, {
         credentials: true,
     },
 });
+app.set("socketio", io); //// Pass io to your controller
 const socketToUserMap = {};
 const excalidraw_collaborators = new Map();
 
