@@ -204,9 +204,6 @@ const recordVideoController = async (req, res) => {
 
 const uploadVideoWOExec = async (req, res) => {
   const form = new formidable.IncomingForm({
-    // multiples: false,
-    // keepExtensions: true, // Keep file extensions
-    // uploadDir: './uploads' // Optional: Temp upload directory
   });
 
   const io = req.app.get("socketio");
