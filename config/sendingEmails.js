@@ -5,7 +5,6 @@ const path = require('path');
 const NodeMailer_Transporter = require('./email-config');
 
 
-
 async function sendEmail(email, message, subject) {
     let transporter = nodemailer.createTransport({
         host: 'smtp.ionos.com',
@@ -79,20 +78,6 @@ async function sendMultipleEmails(req, res) {
         sendErrors(err, res)
     }
 }
-
-
-const getEmailTemplate = () => {
-    return new Promise((resolve, reject) => {
-        const filePath = path.join(__dirname, '../templates', 'tutor-marketing', 'marketing.html');
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-};
 
 async function sendTemplatedEmail(req, res) {
     try {

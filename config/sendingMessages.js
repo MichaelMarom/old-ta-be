@@ -1,9 +1,4 @@
-const { imageToBase64Sync } = require("../utils/generalHelperFunctions");
 const { sendErrors } = require("../utils/handleReqErrors");
-const { path, fs } = require("../modules");
-const smsClient = require("./sms");
-const axios = require("axios");
-
 const twilio = require('twilio');
 
 // Twilio credentials from your Twilio Console
