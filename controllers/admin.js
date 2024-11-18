@@ -398,6 +398,25 @@ const api_update_email_template = async (req, res) => {
   });
 }
 
+const api_delete_email_template = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      let poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const { rowsAffected } = await poolConnection
+          .request()
+          .query(
+            ` delete from EmailTemplates where id = '${req.params.id}' `
+          )
+        res.status(200).send({ deleted: rowsAffected[0] });
+      }
+    }
+    catch (err) {
+      sendErrors(err, res)
+    }
+  });
+}
+
 const api_get_email_template = async (req, res) => {
   marom_db(async (config) => {
     try {
@@ -527,6 +546,7 @@ module.exports = {
   api_update_sms_mms_temp,
   api_get_sms_mms_temp,
   api_get_sms_mms_temps,
+  api_delete_email_template,
   postTerms,
   get_Constants,
   get_tutor_data,

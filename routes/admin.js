@@ -22,6 +22,7 @@ const {
   api_get_sms_mms_temps,
   api_get_sms_mms_temp,
   api_update_sms_mms_temp,
+  api_delete_email_template,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
@@ -77,7 +78,7 @@ ADMIN_ROUTES.post("/admin/store-terms", parser, verifyToken, postTerms);
 ADMIN_ROUTES.post("/send-message", parser, verifyToken, sendingSMS);
 ADMIN_ROUTES.post("/send-email", parser, verifyToken, sendMultipleEmails);
 ADMIN_ROUTES.post("/send-email/tutor/template/marketing", parser, verifyToken,marketingTemplatedEmail);
-
+ 
 
 ADMIN_ROUTES.post("/send-email/chat", parser, verifyToken, sendTemplatedEmail);
 
@@ -85,6 +86,7 @@ ADMIN_ROUTES.post("/admin/email-template", parser, verifyToken, api_save_email_t
 ADMIN_ROUTES.get("/admin/email-template/list", verifyToken, api_get_email_templates);
 ADMIN_ROUTES.get("/admin/email-template/:id", verifyToken, api_get_email_template);
 ADMIN_ROUTES.put("/admin/email-template/:id", parser, verifyToken, api_update_email_template);
+ADMIN_ROUTES.delete("/admin/email-template/:id", verifyToken, api_delete_email_template);
 
 
 ADMIN_ROUTES.post("/admin/sms-mms-temp", parser, verifyToken, api_save_sms_mms_temp);

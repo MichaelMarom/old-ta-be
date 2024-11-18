@@ -85,15 +85,13 @@ async function sendTemplatedEmail(req, res) {
         if (!htmlTemplate) throw new Error('Failed to open email template');
         if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
 
-        // Compose the email
         const mailOptions = {
-            from: process.env.ADMIN_EMAIL_SENDER_USER,  // Your email
-            to: emails.join(', '),         // Send to multiple emails
-            subject: subject,              // Subject passed from frontend
-            html: htmlTemplate,         // Use the decoded HTML template
+            from: process.env.ADMIN_EMAIL_SENDER_USER,
+            bcc: emails.join(', '),
+            subject: subject,    
+            html: htmlTemplate,
         };
 
-        // Send email using nodemailer
         NodeMailer_Transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 return sendErrors(error, res);
