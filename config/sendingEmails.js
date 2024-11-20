@@ -3,7 +3,8 @@ const { sendErrors } = require('../utils/handleReqErrors');
 const fs = require('fs');
 const path = require('path');
 const NodeMailer_Transporter = require('./email-config');
-
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SendGridApiKey);
 
 async function sendEmail(email, message, subject) {
     let transporter = nodemailer.createTransport({
@@ -88,7 +89,7 @@ async function sendTemplatedEmail(req, res) {
         const mailOptions = {
             from: process.env.ADMIN_EMAIL_SENDER_USER,
             bcc: emails.join(', '),
-            subject: subject,    
+            subject: subject,
             html: htmlTemplate,
         };
 
@@ -103,4 +104,32 @@ async function sendTemplatedEmail(req, res) {
     }
 }
 
-module.exports = { sendMultipleEmails, sendTemplatedEmail }
+
+
+
+const sendSendGridEmails = (req, res) => {
+    const { emails, subject, htmlTemplate } = req.body;
+    if (!htmlTemplate) throw new Error('Failed to open email template');
+    if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
+
+    const msg = {
+      to:emails,
+      from:'admin@tutoring-academy.com',
+      subject:subject,
+      text: htmlTemplate,
+      html:htmlTemplate,
+    };
+  
+    // Send the email
+    sgMail
+      .send(msg)
+      .then(() => {
+        res.status(200).send({ message: 'Email sent successfully!' });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send({ error: 'Failed to send email', details: error.message, body: error });
+      });
+  };
+
+module.exports = { sendMultipleEmails, sendTemplatedEmail,sendSendGridEmails }
