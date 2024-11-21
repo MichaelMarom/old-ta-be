@@ -113,7 +113,8 @@ const sendSendGridEmails = (req, res) => {
     if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
 
     const msg = {
-      to:emails,
+      bcc:emails,
+      to:["admin@tutoring-academy.com"],
       from:'admin@tutoring-academy.com',
       subject:subject,
       text: htmlTemplate,
