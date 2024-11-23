@@ -221,55 +221,60 @@ const get_new_sub_count = async (req, res) => {
   });
 }
 
-let accept_new_subject = async (req, res) => {
-  let { id, subject, AcademyId } = req.body;
+let post_new_subject_request = async (req, res) => {
+  let { id, subject } = req.body;
+
   marom_db(async (config) => {
     try {
       const poolConnection = await sql.connect(config);
       if (poolConnection) {
-        const query = `INSERT INTO Subjects (FacultyId, SubjectName, CreatedOn) 
-                   VALUES ('${id}', '${subject}', GETUTCDATE())`;
+        const query = `
+          INSERT INTO NewSubjectReq (FacultyId, SubjectName, CreatedOn) 
+          VALUES ('${id}', '${subject}', GETUTCDATE())`;
 
         const insert = await poolConnection.request().query(query);
-
-        if (insert.rowsAffected[0]) {
-          poolConnection
-            .request()
-            .query(
-              ` DELETE FROM NewSubjectReq WHERE CONVERT(VARCHAR, subject)
-                     = '${subject}' AND CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `
-            )
-            .then((result) => {
-              result.rowsAffected[0] === 1
-                ? res.status(200).send({
-                  bool: true,
-                  mssg: "Data was uploaded successfully",
-                })
-                : res.status(200).send({
-                  bool: false,
-                  mssg: "Database Error, Please Try Again...",
-                });
-            })
-            .catch((err) => console.log(err));
-        }
+        res.status(200).send({ added: insert.rowsAffected[0] });
       }
     } catch (err) {
-      sendErrors(err, res)
+      sendErrors(err, res);
     }
   });
 };
 
-let decline_new_subject = (req, res) => {
+
+let accept_new_subject = async (req, res) => {
+  let { id, subject, AcademyId } = req.body;
+
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      if (poolConnection) {
+        const deleteQuery = `
+            DELETE FROM NewSubjectReq 
+            WHERE subject = '${subject}' AND AcademyId = '${AcademyId}'`;
+
+        const deleteResult = await poolConnection.request().query(deleteQuery);
+
+        res.status(200).send({  updated: deleteResult.rowsAffected[0] });
+      }
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
+
+let decline_new_subject = async (req, res) => {
   marom_db(async (config) => {
     try {
       let { subject, AcademyId } = req.body;
       const poolConnection = await sql.connect(config);
 
-      const result = poolConnection.request()
+      const result = await poolConnection.request()
         .query(`Update NewSubjectReq set IsRejected = 1 
             WHERE CONVERT(VARCHAR, subject) = '${subject}' AND CONVERT(VARCHAR, AcademyId) = '${AcademyId}' `);
 
-      res.status(200).send({ message: "Subject Declined succesfully" });
+      res.status(200).send({ updated: result.rowsAffected[0] });
     } catch (err) {
       sendErrors(err, res)
     }
@@ -562,5 +567,6 @@ module.exports = {
   get_tutor_new_subject,
   accept_new_subject,
   decline_new_subject,
-  get_role_count_by_status
+  get_role_count_by_status,
+  post_new_subject_request
 };

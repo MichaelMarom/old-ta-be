@@ -23,6 +23,7 @@ const {
   api_get_sms_mms_temp,
   api_update_sms_mms_temp,
   api_delete_email_template,
+  post_new_subject_request,
 } = require("../controllers/admin");
 const { verifyToken } = require("../controllers/auth");
 const { express, parser } = require("../modules");
@@ -63,11 +64,18 @@ ADMIN_ROUTES.post(
   set_student_status
 );
 ADMIN_ROUTES.post(
-  "/admin/post-new-subject",
+  "/admin/accept-new-subject",
   parser,
   verifyToken,
   accept_new_subject
 );
+// ADMIN_ROUTES.post(
+//   "/admin/add-new-subject",
+//   parser,
+//   verifyToken,
+//   post_new_subject_request
+// );
+
 ADMIN_ROUTES.post(
   "/admin/delete-new-subject",
   parser,
