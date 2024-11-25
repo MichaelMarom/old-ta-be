@@ -100,11 +100,9 @@ async function sendTemplatedEmail(req, res) {
             res.status(200).json({ message: 'Email sent successfully', info });
         });
     } catch (err) {
-       sendErrors(err, res)
+        sendErrors(err, res)
     }
 }
-
-
 
 
 const sendSendGridEmails = (req, res) => {
@@ -113,24 +111,27 @@ const sendSendGridEmails = (req, res) => {
     if (!emails || !subject) throw new Error('Missing required fields: emails, subject');
 
     const msg = {
-      bcc:emails,
-      to:["admin@tutoring-academy.com"],
-      from:'admin@tutoring-academy.com',
-      subject:subject,
-      text: htmlTemplate,
-      html:htmlTemplate,
+        bcc: emails,
+        to: ["admin@tutoring-academy.com"],
+        from: {
+            email: 'admin@tutoring-academy.com',
+            name: 'Tutoring Academy',
+        },
+        subject: subject,
+        text: htmlTemplate,
+        html: htmlTemplate,
     };
-  
+
     // Send the email
     sgMail
-      .send(msg)
-      .then(() => {
-        res.status(200).send({ message: 'Email sent successfully!' });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send({ error: 'Failed to send email', details: error.message, body: error });
-      });
-  };
+        .send(msg)
+        .then(() => {
+            res.status(200).send({ message: 'Email sent successfully!' });
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(500).send({ error: 'Failed to send email', details: error.message, body: error });
+        });
+};
 
-module.exports = { sendMultipleEmails, sendTemplatedEmail,sendSendGridEmails }
+module.exports = { sendMultipleEmails, sendTemplatedEmail, sendSendGridEmails }

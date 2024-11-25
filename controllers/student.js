@@ -22,6 +22,7 @@ const StudentSetup1 = require("../schema/student/StudentSetup.js");
 const Lessons = require("../schema/common/Lessons.js");
 const StudentBank = require("../schema/student/StudentBank.js");
 const CodeApplicationLogs = require("../schema/common/CodeApplicationLogs.js");
+const Invoice = require("../schema/student/Invoice.js");
 
 const executeQuery = async (query, res) => {
   try {
@@ -808,6 +809,7 @@ const post_student_lesson = async (req, res) => {
     }
   });
 };
+
 const update_student_lesson = async (req, res) => {
   marom_db(async (config) => {
     try {
@@ -839,6 +841,87 @@ const delete_student_lesson = async (req, res) => {
 
       const result = await request.query(
         `Delete  from Lessons where id = '${id}'`
+      );
+      res.status(200).send(result);
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
+const post_student_invoice = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+
+      Object.keys(req.body).map(key => {
+        request.input(key, Invoice[key], req.body[key]);
+      })
+      const { recordset } = await request.query(
+        parameterizedInsertQuery("Invoice", req.body).query
+      );
+      res.status(200).send(recordset);
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+const post_student_invoice_and_lessons = async (req, res) => {
+  marom_db(async (config) => {
+    const transaction = new sql.Transaction();
+    try {
+      await transaction.begin(); // Start transaction
+
+      const { invoice, lessons } = req.body;
+
+      // Step 1: Insert into Invoice table
+      const invoiceQuery = parameterizedInsertQuery("Invoice", invoice);
+      const invoiceRequest = new sql.Request(transaction); // Create a new request for Invoice
+
+      Object.keys(invoice).forEach((key) => {
+        invoiceRequest.input(key, Invoice[key], invoice[key]);
+      });
+
+      const invoiceResult = await invoiceRequest.query(invoiceQuery.query);
+      const invoiceId = invoiceResult.recordset[0].InvoiceId; // Retrieve the InvoiceId
+
+      // Step 2: Insert Lessons linked to the InvoiceId
+      for (const lesson of lessons) {
+        const lessonWithInvoice = { ...lesson, invoiceNum: invoiceId };
+        const lessonQuery = parameterizedInsertQuery("Lessons", lessonWithInvoice);
+
+        const lessonRequest = new sql.Request(transaction); // Create a new request for each Lesson
+        Object.keys(lessonWithInvoice).forEach((key) => {
+          lessonRequest.input(key, Lessons[key], lessonWithInvoice[key]);
+        });
+
+        await lessonRequest.query(lessonQuery.query); // Execute the query
+      }
+
+      // Commit the transaction
+      await transaction.commit();
+      res.status(200).send({ success: true, invoiceId });
+    } catch (err) {
+      // Rollback in case of an error
+      await transaction.rollback();
+      sendErrors(err, res);
+    } 
+  });
+};
+
+const put_student_invoice = async (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+      const { id } = req.params;
+
+      Object.keys({ ...req.body, InvoiceId: id }).map(key => {
+        request.input(key, Invoice[key], { ...req.body, InvoiceId: id }[key]);
+      })
+      const result = await request.query(
+        parameteriedUpdateQuery("Invoice", req.body, { InvoiceId: id }, {}, false).query
       );
       res.status(200).send(result);
     } catch (err) {
@@ -1263,7 +1346,7 @@ const set_code_applied = async (req, res) => {
           , {}, false
         ).query)
 
-        if(!rowsAffected[0])
+        if (!rowsAffected[0])
           await request.query(
             parameterizedInsertQuery("CodeApplicationLogs", {
               codeApplied: true,
@@ -1275,7 +1358,7 @@ const set_code_applied = async (req, res) => {
 
         res
           .status(200)
-          .send({ message: "Code applied succesfully"});
+          .send({ message: "Code applied succesfully" });
       }
     } catch (err) {
       sendErrors(err, res);
@@ -1496,10 +1579,13 @@ module.exports = {
   post_student_bank_details,
   get_student_feedback,
   post_student_feedback,
+  post_student_invoice_and_lessons,
   delete_student_lesson,
   ad_to_shortlist,
   post_student_setup,
   get_ad,
   get_student_photos,
   put_ad,
+  post_student_invoice,
+  put_student_invoice
 };

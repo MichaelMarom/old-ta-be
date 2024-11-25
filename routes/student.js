@@ -46,6 +46,9 @@ const {
   post_student_setup_at_signup,
   put_student_bank_details,
   update_student_agreement_to_null,
+  post_student_invoice,
+  put_student_invoice,
+  post_student_invoice_and_lessons,
 } = require("../controllers/student");
 const { express, parser } = require("../modules");
 
@@ -101,16 +104,12 @@ STUDENT_ROUTES.get(
   get_tutor_bookings
 );
 
-//bookings
-// STUDENT_ROUTES.post('/student/booking', parser, verifyToken, post_student_bookings)
-// STUDENT_ROUTES.get('/student/booking/:studentId/:tutorId', parser, verifyToken, get_student_or_tutor_bookings)
-
-// STUDENT_ROUTES.get('/student/booking/:studentId', verifyToken, get_student_bookings)
 STUDENT_ROUTES.get(
   "/student/sessions/formatted/:studentId",
   verifyToken,
   get_all_students_sessions_formatted
 );
+
 //lesson
 STUDENT_ROUTES.post(
   "/student/lesson",
@@ -131,6 +130,33 @@ STUDENT_ROUTES.delete(
   verifyToken,
   delete_student_lesson
 );
+
+STUDENT_ROUTES.post(
+  "/student/invoice",
+  parser,
+  verifyToken,
+  post_student_invoice
+);
+
+STUDENT_ROUTES.put(
+  "/student/invoice/:id",
+  parser,
+  verifyToken,
+  put_student_invoice
+);
+STUDENT_ROUTES.post(
+  "/student/booking",
+  parser,
+  verifyToken,
+  post_student_invoice_and_lessons
+);
+
+// STUDENT_ROUTES.get(
+//   "/student/invoice/list",
+//   parser,
+//   verifyToken,
+//   post_student_invoice
+// );
 
 STUDENT_ROUTES.get(
   "/student/bank/:AcademyId",
