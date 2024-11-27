@@ -49,6 +49,7 @@ const {
   post_student_invoice,
   put_student_invoice,
   post_student_invoice_and_lessons,
+  update_student_invoice_and_lessons,
 } = require("../controllers/student");
 const { express, parser } = require("../modules");
 
@@ -149,6 +150,13 @@ STUDENT_ROUTES.post(
   parser,
   verifyToken,
   post_student_invoice_and_lessons
+);
+
+STUDENT_ROUTES.post(
+  "/student/booking/:id",
+  parser,
+  verifyToken,
+  update_student_invoice_and_lessons
 );
 
 // STUDENT_ROUTES.get(

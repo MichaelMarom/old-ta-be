@@ -791,17 +791,17 @@ const post_student_lesson = async (req, res) => {
       const poolConnection = await sql.connect(config);
       const request = poolConnection.request();
 
-      const invoiceNum = `${req.body.studentId.replace(
-        " ",
-        ""
-      )}${shortId.generate()}`.replace(" ", "");
+      // const invoiceNum = `${req.body.studentId.replace(
+      //   " ",
+      //   ""
+      // )}${shortId.generate()}`.replace(" ", "");
 
-      Object.keys({ ...req.body, invoiceNum }).forEach((key) => {
-        request.input(key, Lessons[key], { ...req.body, invoiceNum }[key]);
+      Object.keys({ ...req.body }).forEach((key) => {
+        request.input(key, Lessons[key], { ...req.body }[key]);
       });
 
       const result = await request.query(
-        parameterizedInsertQuery("Lessons", { ...req.body, invoiceNum }).query
+        parameterizedInsertQuery("Lessons", { ...req.body }).query
       );
       res.status(200).send(result.recordset);
     } catch (err) {
@@ -904,6 +904,45 @@ const post_student_invoice_and_lessons = async (req, res) => {
       res.status(200).send({ success: true, invoiceId });
     } catch (err) {
       // Rollback in case of an error
+      await transaction.rollback();
+      sendErrors(err, res);
+    } 
+  });
+};
+
+const update_student_invoice_and_lessons = async (req, res) => {
+  marom_db(async (config) => {
+    const transaction = new sql.Transaction();
+    try {
+      await transaction.begin(); // Start transaction
+
+      const { invoice, lesson } = req.body.params;
+
+      // Step 1: Insert into Invoice table
+      const invoiceQuery = parameterizedInsertQuery("Invoice", invoice);
+      const invoiceRequest = new sql.Request(transaction); // Create a new request for Invoice
+
+      Object.keys(invoice).forEach((key) => {
+        invoiceRequest.input(key, Invoice[key], invoice[key]);
+      });
+
+      const invoiceResult = await invoiceRequest.query(invoiceQuery.query);
+      const invoiceId = invoiceResult.recordset[0].InvoiceId; // Retrieve the InvoiceId
+
+      // Step 2: Insert Lessons linked to the InvoiceId
+        const lessonWithInvoice = { ...lesson, invoiceNum: invoiceId };
+        const lessonQuery = parameteriedUpdateQuery("Lessons", lessonWithInvoice, req.params, {}, false);
+
+        const lessonRequest = new sql.Request(transaction); // Create a new request for each Lesson
+        Object.keys(lessonWithInvoice).forEach((key) => {
+          lessonRequest.input(key, Lessons[key], lessonWithInvoice[key]);
+        });
+
+        await lessonRequest.query(lessonQuery.query); 
+
+      await transaction.commit();
+      res.status(200).send({ success: true, invoiceId });
+    } catch (err) {
       await transaction.rollback();
       sendErrors(err, res);
     } 
@@ -1587,5 +1626,6 @@ module.exports = {
   get_student_photos,
   put_ad,
   post_student_invoice,
-  put_student_invoice
+  put_student_invoice,
+  update_student_invoice_and_lessons
 };
