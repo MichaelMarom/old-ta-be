@@ -889,7 +889,9 @@ const post_student_invoice_and_lessons = async (req, res) => {
       // Step 2: Insert Lessons linked to the InvoiceId
       for (const lesson of lessons) {
         const lessonWithInvoice = { ...lesson, invoiceNum: invoiceId };
-        const lessonQuery = parameterizedInsertQuery("Lessons", lessonWithInvoice);
+        const lessonQuery = lesson.type === 'intro' ?
+          parameterizedInsertQuery("Lessons", lessonWithInvoice) :
+          parameteriedUpdateQuery("Lessons", lesson, { id: lesson.id }, {}, false)
 
         const lessonRequest = new sql.Request(transaction); // Create a new request for each Lesson
         Object.keys(lessonWithInvoice).forEach((key) => {
@@ -906,7 +908,7 @@ const post_student_invoice_and_lessons = async (req, res) => {
       // Rollback in case of an error
       await transaction.rollback();
       sendErrors(err, res);
-    } 
+    }
   });
 };
 
@@ -930,22 +932,22 @@ const update_student_invoice_and_lessons = async (req, res) => {
       const invoiceId = invoiceResult.recordset[0].InvoiceId; // Retrieve the InvoiceId
 
       // Step 2: Insert Lessons linked to the InvoiceId
-        const lessonWithInvoice = { ...lesson, invoiceNum: invoiceId };
-        const lessonQuery = parameteriedUpdateQuery("Lessons", lessonWithInvoice, req.params, {}, false);
+      const lessonWithInvoice = { ...lesson, invoiceNum: invoiceId };
+      const lessonQuery = parameteriedUpdateQuery("Lessons", lessonWithInvoice, req.params, {}, false);
 
-        const lessonRequest = new sql.Request(transaction); // Create a new request for each Lesson
-        Object.keys(lessonWithInvoice).forEach((key) => {
-          lessonRequest.input(key, Lessons[key], lessonWithInvoice[key]);
-        });
+      const lessonRequest = new sql.Request(transaction); // Create a new request for each Lesson
+      Object.keys(lessonWithInvoice).forEach((key) => {
+        lessonRequest.input(key, Lessons[key], lessonWithInvoice[key]);
+      });
 
-        await lessonRequest.query(lessonQuery.query); 
+      await lessonRequest.query(lessonQuery.query);
 
       await transaction.commit();
       res.status(200).send({ success: true, invoiceId });
     } catch (err) {
       await transaction.rollback();
       sendErrors(err, res);
-    } 
+    }
   });
 };
 
