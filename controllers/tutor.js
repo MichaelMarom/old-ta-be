@@ -30,6 +30,7 @@ const Discounts = require("../schema/tutor/Discounts");
 const { sendErrors } = require("../utils/handleReqErrors");
 const NewSubjectReq = require("../schema/admin/NewSubjectReq");
 const SubjectRate = require("../schema/tutor/SubjectRates");
+const Notification = require("../schema/common/Notifications");
 
 // const account = process.env.AZURE_ACCOUNT_NAME;
 // const { BlobServiceClient } = require("@azure/storage-blob");
@@ -2145,6 +2146,54 @@ const getSessionDetailById = async (req, res) => {
     }
   });
 };
+
+let storeNotification = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      const poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+
+      // Bind each key-value pair in the body to the SQL query
+      Object.keys(body).map((key) =>
+        request.input(key, Notification[key], body[key])
+      );
+
+      // Insert query
+      const { recordset } = await request.query(
+        parameterizedInsertQuery("Notifications", body).query
+      );
+
+      // Send success response
+      res.status(200).send(recordset);
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
+let updateNotification = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      let poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+      const { id } = req.params;
+      // Combine req.body and id, and map the keys to inputs for SQL request
+      Object.keys({ ...req.body, id }).map((key) =>
+        request.input(key, SomeTable[key], { ...req.body, id }[key])
+      );
+      // Execute the query dynamically with parameterized update query
+      const result = await request.query(
+        parameteriedUpdateQuery("Notifications", req.body, req.params, {}, false)
+          .query
+      );
+
+      res.status(200).send({ updated: result.rowsAffected[0] });
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
+
 
 module.exports = {
   // get_tutor_profile_data,
