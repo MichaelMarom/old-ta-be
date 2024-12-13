@@ -11,6 +11,7 @@ const FILE_ROUTER = require('./routes/file')
 const { MEETING_ROUTES } = require('./routes/meeting');
 const CHAT_ROUTES = require('./routes/chat')
 const AGENCY_ROUTES = require('./routes/agency')
+const webpush = require("web-push");
 
 require('dotenv').config();
 
@@ -53,6 +54,49 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
         }
     });
 })
+
+const vapidKeys = {
+    publicKey: process.env.WED_PUSH_PUBLIC_KEY,
+    privateKey: process.env.WED_PUSH_PRIVATE_KEY,
+  };
+  
+  
+  webpush.setVapidDetails(
+    "mailto:admin@tutoring-academy.com",
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+  )
+  
+  let subscriptions = [];
+  
+  app.post("/subscribe", (req, res) => {
+    const subscription = req.body;
+    subscriptions.push(subscription);
+  
+    res.status(201).json({status: "success"});
+  });
+  
+  app.post("/send-notification", (req, res) => {
+    const notificationPayload = {
+        title: "New Notification",
+        body: "This is a new notification",
+        icon: "https://some-image-url.jpg",
+        data: {
+          url: "https://example.com",
+        },
+    };
+  
+    Promise.all(
+      subscriptions.map((subscription) =>
+        webpush.sendNotification(subscription, JSON.stringify(notificationPayload))
+      )
+    )
+      .then(() => res.status(200).json({ message: "Notification sent successfully." }))
+      .catch((err) => {
+        console.error("Error sending notification");
+        res.sendStatus(500);
+      });
+  });
 
 
 app.use(TUTOR_ROUTES);
