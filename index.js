@@ -58,45 +58,45 @@ app.put('/api/update-expire-ads', parser, (req, res) => {
 const vapidKeys = {
     publicKey: process.env.WED_PUSH_PUBLIC_KEY,
     privateKey: process.env.WED_PUSH_PRIVATE_KEY,
-  };
-  
-  
-  webpush.setVapidDetails(
+};
+
+
+webpush.setVapidDetails(
     "mailto:admin@tutoring-academy.com",
     vapidKeys.publicKey,
     vapidKeys.privateKey
-  )
-  
-  let subscriptions = [];
-  
-  app.post("/subscribe", (req, res) => {
+)
+
+let subscriptions = [];
+
+app.post("/subscribe", parser, (req, res) => {
     const subscription = req.body;
+    console.log("New subscription: ", subscription);
     subscriptions.push(subscription);
-  
-    res.status(201).json({status: "success"});
-  });
-  
-  app.post("/send-notification", (req, res) => {
+
+    res.status(201).json({ status: "success" });
+});
+app.post("/send-notification", parser, (req, res) => {
     const notificationPayload = {
         title: "New Notification",
         body: "This is a new notification",
-        icon: "https://some-image-url.jpg",
+        icon: "https://rsfunctionapp9740.blob.core.windows.net/tutoring-academy-tutor-imgs/asiyab4dfa73-b2841097-0760-4929-afe8-1218f8fb7aac-4-thispersondoesnotexist.png",
         data: {
-          url: "https://example.com",
+            url: "https://tutoring-academy.com",
         },
     };
-  
+
     Promise.all(
-      subscriptions.map((subscription) =>
-        webpush.sendNotification(subscription, JSON.stringify(notificationPayload))
-      )
+        subscriptions.map(async (subscription) => {
+            const res1 = await webpush.sendNotification(subscription, JSON.stringify(notificationPayload))
+            return res1
+        })
     )
-      .then(() => res.status(200).json({ message: "Notification sent successfully." }))
-      .catch((err) => {
-        console.error("Error sending notification");
-        res.sendStatus(500);
-      });
-  });
+        .then(() => res.status(200).json({ message: "Notification sent successfully." }))
+        .catch((err) => {
+            sendErrors(err, res)
+        });
+});
 
 
 app.use(TUTOR_ROUTES);
