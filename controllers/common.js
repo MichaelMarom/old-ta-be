@@ -119,6 +119,8 @@ const get_column_by_id = async (req, res) => {
     }
   });
 };
+
+
 module.exports = {
   updateRecord,
   get_column_by_id,

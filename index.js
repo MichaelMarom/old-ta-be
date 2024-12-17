@@ -17,6 +17,7 @@ require('dotenv').config();
 
 let { PeerServer } = require("peer");
 const { sendErrors } = require('./utils/handleReqErrors');
+const NOTIFICATION_ROUTES = require('./routes/notifications');
 let myPeerServer = PeerServer({ port: process.env.PEER_SERVER_PORT });
 
 const app = express();
@@ -77,18 +78,9 @@ app.post("/subscribe", parser, (req, res) => {
     res.status(201).json({ status: "success" });
 });
 app.post("/send-notification", parser, (req, res) => {
-    const notificationPayload = {
-        title: "New Notification",
-        body: "This is a new notification",
-        icon: "https://rsfunctionapp9740.blob.core.windows.net/tutoring-academy-tutor-imgs/asiyab4dfa73-b2841097-0760-4929-afe8-1218f8fb7aac-4-thispersondoesnotexist.png",
-        data: {
-            url: "https://tutoring-academy.com",
-        },
-    };
-
     Promise.all(
         subscriptions.map(async (subscription) => {
-            const res1 = await webpush.sendNotification(subscription, JSON.stringify(notificationPayload))
+            const res1 = await webpush.sendNotification(subscription, JSON.stringify(req.body))
             return res1
         })
     )
@@ -107,6 +99,8 @@ app.use(AUTH_ROUTERS)
 app.use(HOLIDAY_ROUTES)
 app.use(FILE_ROUTER)
 app.use(CHAT_ROUTES)
+app.use(NOTIFICATION_ROUTES)
+
 app.use('/api/', MEETING_ROUTES);
 app.use(COMMON_ROUTERS)
 
@@ -129,7 +123,6 @@ io.on('connection', socket => {
 
     //collab video streaming
     socket.on('join-room', (room_id, user_id) => {
-
         socket.join(room_id);
         socket.broadcast.to(room_id).emit("user-connected", user_id);
 
@@ -197,6 +190,17 @@ io.on('connection', socket => {
 
     socket.on('offline', (id, role) => {
         io.emit("offline", id, role);
+    })
+
+    // not6ificatioin
+    socket.on('join-as-a-user', (userId) => {
+        socket.join(userId);
+        console.log(`User ${socket.id} joined by user Id: ${userId}`);
+    })
+
+    socket.on('postpone_request', (data) => {
+        data.recieverId &&
+            io.to(data.recieverId).emit('notification', { doerName:data.doerName,title: data.title, message: 'Postpone Request' })
     })
 
     //disconnect
