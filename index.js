@@ -172,9 +172,9 @@ io.on('connection', socket => {
     });
 
     //message board tab
-    socket.on("add-user", (roomId) => {
-        socket.join(roomId)
-        console.log('User', socket.id, ' joined room ', roomId)
+    socket.on("add-user", (selectedChatId) => {
+        socket.join(selectedChatId)
+        console.log('User', socket.id, ' joined room ', selectedChatId)
     });
 
     socket.on("send-msg", (data) => {
@@ -192,7 +192,11 @@ io.on('connection', socket => {
         io.emit("offline", id, role);
     })
 
-    // not6ificatioin
+    socket.on('typing', (data) => {
+        io.to(data.chatId).emit('userTyping', { typingUserId:data.typingUserId, isTyping:data.isTyping });
+    })
+
+    // notificatioin
     socket.on('join-as-a-user', (userId) => {
         socket.join(userId);
         console.log(`User ${socket.id} joined by user Id: ${userId}`);
