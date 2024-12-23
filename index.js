@@ -184,7 +184,9 @@ io.on('connection', socket => {
     });
 
     socket.on('online', (id, role) => {
-        socketToUserMap[socket.id] = { userId: id, role };
+        socketToUserMap[socket.id] = {
+            userId: id, role
+        };
         io.emit("online", id);
     })
 
@@ -193,7 +195,11 @@ io.on('connection', socket => {
     })
 
     socket.on('typing', (data) => {
-        io.to(data.chatId).emit('userTyping', { typingUserId:data.typingUserId, isTyping:data.isTyping });
+        io.to(data.chatId).emit('userTyping', {
+            chatId: data.chatId,
+            typingUserId: data.typingUserId,
+            isTyping: data.isTyping
+        });
     })
 
     // notificatioin
@@ -204,7 +210,8 @@ io.on('connection', socket => {
 
     socket.on('postpone_request', (data) => {
         data.recieverId &&
-            io.to(data.recieverId).emit('notification', { doerName:data.doerName,title: data.title, message: 'Postpone Request' })
+            io.to(data.recieverId).emit('notification',
+                { doerName: data.doerName, title: data.title, message: 'Postpone Request' })
     })
 
     //disconnect
@@ -213,7 +220,6 @@ io.on('connection', socket => {
         io.emit("offline", userId, role, 'disconn')
         console.log('disonnecting ', userId, role, ' due to', error, socket.id)
     })
-
 });
 
 myPeerServer.on("connection", function ({ id }) {
