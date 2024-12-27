@@ -214,6 +214,12 @@ io.on('connection', socket => {
                 { doerName: data.doerName, title: data.title, message: 'Postpone Request' })
     })
 
+    socket.on('newLessonsEvent', (data) => {
+        data.recieverId &&
+            io.to(data.recieverId).emit('notification',
+                { doerName: data.doerName, title: data.title, message: data.message})
+    })
+
     //disconnect
     socket.on('disconnect', (error) => {
         const { userId = null, role = null } = socketToUserMap?.[socket.id] || {};
