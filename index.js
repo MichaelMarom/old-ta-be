@@ -77,6 +77,7 @@ app.post("/subscribe", parser, (req, res) => {
 
     res.status(201).json({ status: "success" });
 });
+
 app.post("/send-notification", parser, (req, res) => {
     Promise.all(
         subscriptions.map(async (subscription) => {
@@ -202,7 +203,7 @@ io.on('connection', socket => {
         });
     })
 
-    // notificatioin
+    // notifications
     socket.on('join-as-a-user', (userId) => {
         socket.join(userId);
         console.log(`User ${socket.id} joined by user Id: ${userId}`);

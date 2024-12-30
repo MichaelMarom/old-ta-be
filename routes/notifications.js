@@ -1,5 +1,5 @@
 const { verifyToken } = require("../controllers/auth");
-const { storeNotification, updateNotification } = require("../controllers/notification");
+const { storeNotification, updateNotification, getUserNotification } = require("../controllers/notification");
 const {
     express,
     parser,
@@ -9,7 +9,7 @@ const NOTIFICATION_ROUTES = express.Router();
 // NOTIFICATION_ROUTES.get('/notification/:userId', fetch_chats);
 NOTIFICATION_ROUTES.put('/notification/:id', parser, verifyToken, updateNotification);
 NOTIFICATION_ROUTES.post('/notification', parser, verifyToken, storeNotification);
-
+NOTIFICATION_ROUTES.get('/notification/:userId', verifyToken, getUserNotification);
 
 
 module.exports = NOTIFICATION_ROUTES

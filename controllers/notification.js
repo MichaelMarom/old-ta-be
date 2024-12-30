@@ -51,10 +51,32 @@ let updateNotification = (req, res) => {
   });
 };
 
+let getUserNotification = (req, res) => {
+  marom_db(async (config) => {
+    try {
+      let poolConnection = await sql.connect(config);
+      const request = poolConnection.request();
+      const { userId } = req.params;
+
+      // Execute the query dynamically with parameterized update query
+      const result = await request.query(
+        `select ns.*, ts.TutorScreenname, st.ScreenName from Notifications ns
+        left join TutorSetup ts on ts.AcademyId = ns.senderId
+        left join StudentSetup1 st on st.AcademyId = ns.senderId 
+        where receiverId = '${userId}'`
+      );
+
+      res.status(200).send(result.recordset);
+    } catch (err) {
+      sendErrors(err, res);
+    }
+  });
+};
 
 module.exports = {
   storeNotification,
   updateNotification,
+  getUserNotification
 };
 
 
