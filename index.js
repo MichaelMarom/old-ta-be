@@ -212,8 +212,21 @@ io.on('connection', socket => {
     socket.on('postpone_request', (data) => {
         data.recieverId &&
             io.to(data.recieverId).emit('notification',
-                { doerName: data.doerName, title: data.title, message: 'Postpone Request' })
+                { doerName: data.doerName, title: data.title, message: data.message })
     })
+
+    socket.on('notif_incoming', (data) => {
+        data.recieverId &&
+            io.to(data.recieverId).emit('notification',
+                { doerName: data.doerName, title: data.title, message: data.message })
+    })
+
+    socket.on('feedback_given_by_student', (data) => {
+        data.recieverId &&
+            io.to(data.recieverId).emit('notification',
+                { doerName: data.doerName, title: data.title, message:data.message })
+    })
+    
 
     socket.on('newLessonsEvent', (data) => {
         data.recieverId &&
